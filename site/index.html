@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#123737">
+    <meta id="theme-color" name="theme-color" content="#f3e6da">
     <meta name="description" content="ציר הזמן של הורדות אוצריא: גרסאות האפליקציה, ספריית הספרים ועדכוני הדלתא.">
     <meta property="og:title" content="מפת ההורדות של אוצריא">
     <meta property="og:description" content="נתוני Releases ברורים, נגישים ומתעדכנים מדי יום.">
@@ -11,6 +11,7 @@
     <meta property="og:image" content="og.png">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
     <title>מפת ההורדות של אוצריא</title>
+    <script src="theme-init.js"></script>
     <link rel="stylesheet" href="styles.css">
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
     <script defer src="app.js"></script>
@@ -24,11 +25,18 @@
           <span class="brand-mark" aria-hidden="true">א</span>
           <span>אוצריא <small>נתוני הורדות</small></span>
         </a>
-        <nav aria-label="ניווט ראשי">
-          <a href="#timeline">ציר הזמן</a>
-          <a href="#releases">גרסאות</a>
-          <a href="#method">על הנתונים</a>
-        </nav>
+        <div class="header-actions">
+          <nav aria-label="ניווט ראשי">
+            <a href="#timeline">ציר הזמן</a>
+            <a href="#releases">גרסאות</a>
+            <a href="#method">על הנתונים</a>
+          </nav>
+          <div class="theme-control" role="group" aria-label="מצב ערכת נושא">
+            <button type="button" data-theme-choice="light" aria-pressed="false" title="מצב בהיר">בהיר</button>
+            <button type="button" data-theme-choice="system" aria-pressed="false" title="התאמה אוטומטית למערכת">מערכת</button>
+            <button type="button" data-theme-choice="dark" aria-pressed="false" title="מצב כהה">כהה</button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -222,4 +230,3 @@
     </template>
   </body>
 </html>
-

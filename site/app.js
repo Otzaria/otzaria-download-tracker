@@ -11,13 +11,33 @@ const dateTimeFormat = new Intl.DateTimeFormat("he-IL", {
   minute: "2-digit",
 });
 
-const palette = {
-  all: "#102c2d",
-  otzaria: "#18756f",
-  sivan22: "#557da0",
-  library: "#d39a3a",
-  delta: "#bd5f45",
-};
+const themeStorageKey = "otzaria-download-tracker-theme";
+const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
+
+function cssColor(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function currentPalette() {
+  return {
+    all: cssColor("--chart-all"),
+    otzaria: cssColor("--chart-otzaria"),
+    sivan22: cssColor("--chart-sivan"),
+    library: cssColor("--chart-library"),
+    delta: cssColor("--chart-delta"),
+  };
+}
+
+function hexToRgba(hex, alpha) {
+  const value = hex.replace("#", "");
+  if (!/^[0-9a-f]{6}$/i.test(value)) return hex;
+  const red = parseInt(value.slice(0, 2), 16);
+  const green = parseInt(value.slice(2, 4), 16);
+  const blue = parseInt(value.slice(4, 6), 16);
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
+let palette = currentPalette();
 
 const labels = {
   all: "כל המקורות",
@@ -79,6 +99,50 @@ function setButtonState(buttons, activeValue, attribute) {
     button.classList.toggle("active", active);
     button.setAttribute("aria-pressed", String(active));
   });
+}
+
+function applyTheme(choice, persist = true) {
+  const safeChoice = ["light", "dark", "system"].includes(choice) ? choice : "system";
+  const resolved = safeChoice === "system" ? (themeMedia.matches ? "dark" : "light") : safeChoice;
+  document.documentElement.dataset.themeChoice = safeChoice;
+  document.documentElement.dataset.theme = resolved;
+  $("#theme-color")?.setAttribute("content", resolved === "dark" ? "#2e282d" : "#f3e6da");
+
+  if (persist) {
+    try {
+      window.localStorage.setItem(themeStorageKey, safeChoice);
+    } catch (_) {
+      // The selected theme still works for this page view when storage is blocked.
+    }
+  }
+
+  $$('[data-theme-choice]').forEach((button) => {
+    const active = button.dataset.themeChoice === safeChoice;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+
+  palette = currentPalette();
+  if (state.latest) {
+    renderBreakdown();
+    renderChart();
+  }
+}
+
+function bindThemeControls() {
+  const initial = document.documentElement.dataset.themeChoice || "system";
+  applyTheme(initial, false);
+  $$('[data-theme-choice]').forEach((button) => {
+    button.addEventListener("click", () => applyTheme(button.dataset.themeChoice));
+  });
+  const handleSystemThemeChange = () => {
+    if (document.documentElement.dataset.themeChoice === "system") applyTheme("system", false);
+  };
+  if (typeof themeMedia.addEventListener === "function") {
+    themeMedia.addEventListener("change", handleSystemThemeChange);
+  } else {
+    themeMedia.addListener(handleSystemThemeChange);
+  }
 }
 
 function renderMetrics() {
@@ -178,8 +242,8 @@ function timeDataset() {
     label: labels[state.source],
     data,
     borderColor: palette[state.source],
-    backgroundColor: `${palette[state.source]}1a`,
-    pointBackgroundColor: "#fffdf8",
+    backgroundColor: hexToRgba(palette[state.source], 0.10),
+    pointBackgroundColor: cssColor("--card-background"),
     pointBorderColor: palette[state.source],
     pointBorderWidth: 2,
     pointRadius: data.length > 45 ? 0 : 4,
@@ -238,7 +302,11 @@ function renderChart() {
         tooltip: {
           rtl: true,
           textDirection: "rtl",
-          backgroundColor: "#102c2d",
+          backgroundColor: cssColor("--surface-container-highest"),
+          titleColor: cssColor("--on-surface"),
+          bodyColor: cssColor("--on-surface"),
+          borderColor: cssColor("--outline-variant"),
+          borderWidth: 1,
           padding: 12,
           titleFont: { family: "system-ui", size: 12 },
           bodyFont: { family: "system-ui", size: 12 },
@@ -263,9 +331,9 @@ function renderChart() {
         x: {
           type: "linear",
           grid: { display: false },
-          border: { color: "#d8d1c4" },
+          border: { color: cssColor("--outline-variant") },
           ticks: {
-            color: "#6b7775",
+            color: cssColor("--on-surface-variant"),
             maxTicksLimit: 8,
             callback: (value) => dateFormat.format(new Date(value)),
           },
@@ -273,9 +341,9 @@ function renderChart() {
         y: {
           beginAtZero: true,
           border: { display: false },
-          grid: { color: "rgba(16, 44, 45, 0.09)" },
+          grid: { color: hexToRgba(cssColor("--outline"), 0.18) },
           ticks: {
-            color: "#6b7775",
+            color: cssColor("--on-surface-variant"),
             callback: (value) => compactFormat.format(value),
           },
         },
@@ -418,6 +486,7 @@ async function loadData() {
 }
 
 async function init() {
+  bindThemeControls();
   bindControls();
   try {
     [state.latest, state.timeseries] = await loadData();
@@ -439,4 +508,3 @@ async function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
-

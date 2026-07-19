@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "points": [
+    {
+      "date": "2026-07-19",
+      "collected_at": "2026-07-19T21:03:21Z",
+      "totals": {
+        "tracked_downloads": 110345,
+        "by_source": {
+          "sivan22": 49484,
+          "otzaria": 57501,
+          "seforim": 3360
+        },
+        "by_category": {
+          "app": 106985,
+          "library": 3313,
+          "delta": 47
+        }
+      },
+      "changes": null
+    }
+  ]
+}

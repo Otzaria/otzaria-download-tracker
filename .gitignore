@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.idea/
+.vscode/
+
+# The supplied HTML/chat exports contain local browsing metadata. They are kept
+# beside the project for reference but must never be published in the repo.
+reference/

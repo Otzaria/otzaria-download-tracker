@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#123737">
+    <meta name="description" content="ציר הזמן של הורדות אוצריא: גרסאות האפליקציה, ספריית הספרים ועדכוני הדלתא.">
+    <meta property="og:title" content="מפת ההורדות של אוצריא">
+    <meta property="og:description" content="נתוני Releases ברורים, נגישים ומתעדכנים מדי יום.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="og.png">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+    <title>מפת ההורדות של אוצריא</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">דלג לתוכן</a>
+
+    <header class="site-header">
+      <div class="shell header-row">
+        <a class="brand" href="#top" aria-label="מפת ההורדות של אוצריא — ראש הדף">
+          <span class="brand-mark" aria-hidden="true">א</span>
+          <span>אוצריא <small>נתוני הורדות</small></span>
+        </a>
+        <nav aria-label="ניווט ראשי">
+          <a href="#timeline">ציר הזמן</a>
+          <a href="#releases">גרסאות</a>
+          <a href="#method">על הנתונים</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero" id="top">
+        <div class="shell hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> נתוני GitHub Releases · עדכון יומי</p>
+            <h1>רואים איך אוצריא<br>מגיעה לכולם.</h1>
+            <p class="hero-lead">גרסאות האפליקציה, ספריית הספרים ועדכוני הדלתא — בתמונה אחת נקייה, עם ציר זמן אמיתי שנבנה מדי יום.</p>
+            <div class="hero-actions">
+              <a class="primary-action" href="#timeline">לציר הזמן <span aria-hidden="true">←</span></a>
+              <a class="text-action" href="#method">איך קוראים את הנתונים?</a>
+            </div>
+          </div>
+
+          <aside class="hero-signal" aria-labelledby="signal-title">
+            <p id="signal-title">תמונת מצב נוכחית</p>
+            <strong id="hero-total" class="loading-value">—</strong>
+            <span>הורדות מצטברות בקבצים הנמדדים</span>
+            <div class="signal-meta">
+              <span>עדכון אחרון</span>
+              <time id="updated-at">טוען נתונים…</time>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="shell metrics-wrap" aria-label="מדדים מרכזיים">
+        <dl class="metrics" id="metrics">
+          <div>
+            <dt>Otzaria</dt>
+            <dd id="metric-otzaria">—</dd>
+            <span>הורדות גרסאות</span>
+          </div>
+          <div>
+            <dt>sivan22</dt>
+            <dd id="metric-sivan">—</dd>
+            <span>הורדות גרסאות</span>
+          </div>
+          <div>
+            <dt>ספרייה מלאה</dt>
+            <dd id="metric-library">—</dd>
+            <span>קובצי seforim.db.zst</span>
+          </div>
+          <div>
+            <dt>עדכוני דלתא</dt>
+            <dd id="metric-delta">—</dd>
+            <span>קובצי patch דחוסים</span>
+          </div>
+        </dl>
+      </section>
+
+      <section class="shell dashboard-section" id="timeline" aria-labelledby="timeline-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">המגמה, לא ערימת מספרים</p>
+            <h2 id="timeline-title">ציר הזמן של ההורדות</h2>
+            <p>עברו בין הורדות חדשות שנמדדו בפועל, מונים מצטברים וגרסאות על פי יום הפרסום.</p>
+          </div>
+          <div class="range-control" role="group" aria-label="טווח זמן">
+            <button type="button" data-range="30">30 יום</button>
+            <button type="button" data-range="90">90 יום</button>
+            <button type="button" data-range="all" class="active" aria-pressed="true">הכול</button>
+          </div>
+        </div>
+
+        <div class="chart-panel">
+          <div class="chart-toolbar">
+            <div class="mode-control" role="group" aria-label="סוג הגרף">
+              <button type="button" data-mode="daily">חדשות ביום</button>
+              <button type="button" data-mode="cumulative">מצטבר</button>
+              <button type="button" data-mode="releases" class="active" aria-pressed="true">לפי גרסה</button>
+            </div>
+            <p id="chart-summary" aria-live="polite">טוען את סדרת הזמן…</p>
+          </div>
+
+          <div class="source-control" role="group" aria-label="סינון מקור">
+            <button type="button" data-source="all" class="active" aria-pressed="true"><i class="key-all" aria-hidden="true"></i> הכול</button>
+            <button type="button" data-source="otzaria"><i class="key-otzaria" aria-hidden="true"></i> Otzaria</button>
+            <button type="button" data-source="sivan22"><i class="key-sivan" aria-hidden="true"></i> sivan22</button>
+            <button type="button" data-source="library"><i class="key-library" aria-hidden="true"></i> ספרייה</button>
+            <button type="button" data-source="delta"><i class="key-delta" aria-hidden="true"></i> דלתא</button>
+          </div>
+
+          <div class="chart-stage">
+            <canvas id="downloads-chart" role="img" aria-label="גרף נתוני הורדות לאורך זמן"></canvas>
+            <div id="chart-empty" class="chart-empty" hidden>
+              <strong>כאן יופיע קצב ההורדות היומי</strong>
+              <span>נדרשים לפחות שני Snapshots מימים שונים. האיסוף האוטומטי כבר מכין את הנקודה הבאה.</span>
+            </div>
+          </div>
+          <p class="chart-note" id="chart-note">כל נקודה מייצגת גרסה בתאריך הפרסום שלה; גובה הנקודה הוא מונה ההורדות הנוכחי של קובצי הגרסה.</p>
+        </div>
+      </section>
+
+      <section class="shell split-section" aria-label="חלוקת ההורדות">
+        <div class="breakdown-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">חלוקה מהירה</p>
+              <h2>מאין הורידו?</h2>
+            </div>
+            <span id="breakdown-total">—</span>
+          </div>
+          <div id="breakdown-bars" class="breakdown-bars"></div>
+        </div>
+
+        <aside class="truth-panel">
+          <span class="truth-index">01</span>
+          <p class="section-kicker">דיוק לפני רושם</p>
+          <h2>מהו “ציר זמן אמיתי”?</h2>
+          <p>GitHub מציג רק מונה נוכחי לכל קובץ. לכן איננו ממציאים עבר: שומרים את המונה פעם ביום, ומהיום השני מחשבים כמה הורדות חדשות נוספו.</p>
+          <a href="#method">למתודולוגיה המלאה <span aria-hidden="true">←</span></a>
+        </aside>
+      </section>
+
+      <section class="releases-section" id="releases" aria-labelledby="releases-title">
+        <div class="shell">
+          <div class="section-heading releases-heading">
+            <div>
+              <p class="section-kicker">מוצאים גרסה בשניות</p>
+              <h2 id="releases-title">גרסאות וקבצים</h2>
+              <p>חיפוש, סינון ופתיחת פרטים לפי הצורך — בלי גלילה אינסופית.</p>
+            </div>
+            <p class="result-count" id="release-count" aria-live="polite">טוען…</p>
+          </div>
+
+          <div class="release-tools">
+            <label class="search-field">
+              <span>חיפוש גרסה או קובץ</span>
+              <input id="release-search" type="search" placeholder="למשל 0.9.95 או windows" autocomplete="off">
+            </label>
+            <label class="select-field">
+              <span>מקור</span>
+              <select id="release-source">
+                <option value="all">כל המקורות</option>
+                <option value="otzaria">Otzaria</option>
+                <option value="sivan22">sivan22</option>
+                <option value="seforim">ספרייה ודלתאות</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="release-list" class="release-list" aria-busy="true"></div>
+          <button id="load-more" class="load-more" type="button" hidden>הצג עוד גרסאות</button>
+        </div>
+      </section>
+
+      <section class="shell method-section" id="method" aria-labelledby="method-title">
+        <div class="method-heading">
+          <p class="section-kicker">שקוף וניתן לבדיקה</p>
+          <h2 id="method-title">איך הנתונים נאספים?</h2>
+        </div>
+        <ol class="method-steps">
+          <li><span>1</span><div><strong>קוראים את כל ה־Releases</strong><p>מ־sivan22, מהמאגר הנוכחי של Otzaria ומ־SeforimLibrary — כולל כל עמודי ה־API.</p></div></li>
+          <li><span>2</span><div><strong>שומרים Snapshot יומי</strong><p>כל קובץ מזוהה לפי Asset ID יציב, כדי ששינוי בשם לא ייצור הורדה מדומה.</p></div></li>
+          <li><span>3</span><div><strong>מציגים רק הפרשים חיוביים</strong><p>מחיקה או החלפה של קובץ לא נרשמות כהורדות שליליות. קובץ חדש מתחיל להימדד מן ה־Snapshot הראשון שלו.</p></div></li>
+        </ol>
+        <div class="alias-note">
+          <strong>ולגבי Y-PLONI?</strong>
+          <p>הכתובת הישנה `Y-PLONI/otzaria` מפנה ב־GitHub אל `Otzaria/otzaria`. זה אותו מאגר ולכן הוא נספר פעם אחת בלבד.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell footer-row">
+        <p>נתונים פתוחים מתוך GitHub · נבנה עבור קהילת אוצריא</p>
+        <a href="https://github.com/Otzaria" target="_blank" rel="noopener noreferrer">Otzaria ב־GitHub <span aria-hidden="true">↗</span></a>
+      </div>
+    </footer>
+
+    <template id="release-template">
+      <details class="release-item">
+        <summary>
+          <span class="release-source-mark" aria-hidden="true"></span>
+          <span class="release-main">
+            <span class="release-title"></span>
+            <span class="release-subtitle"></span>
+          </span>
+          <span class="release-date"></span>
+          <span class="release-downloads"></span>
+          <span class="release-chevron" aria-hidden="true">⌄</span>
+        </summary>
+        <div class="release-details">
+          <div class="release-links"></div>
+          <div class="asset-list"></div>
+        </div>
+      </details>
+    </template>
+  </body>
+</html>
+

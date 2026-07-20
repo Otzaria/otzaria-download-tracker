@@ -21,30 +21,30 @@
     },
     {
       "date": "2026-07-20",
-      "collected_at": "2026-07-20T04:08:36Z",
+      "collected_at": "2026-07-20T06:31:04Z",
       "totals": {
-        "tracked_downloads": 110430,
+        "tracked_downloads": 110460,
         "by_source": {
-          "sivan22": 49484,
-          "otzaria": 57542,
-          "seforim": 3404
+          "sivan22": 49485,
+          "otzaria": 57560,
+          "seforim": 3415
         },
         "by_category": {
-          "app": 107026,
-          "library": 3357,
+          "app": 107045,
+          "library": 3368,
           "delta": 47
         }
       },
       "changes": {
-        "tracked_downloads": 85,
+        "tracked_downloads": 115,
         "by_source": {
-          "sivan22": 0,
-          "otzaria": 41,
-          "seforim": 44
+          "sivan22": 1,
+          "otzaria": 59,
+          "seforim": 55
         },
         "by_category": {
-          "app": 41,
-          "library": 44,
+          "app": 60,
+          "library": 55,
           "delta": 0
         }
       }

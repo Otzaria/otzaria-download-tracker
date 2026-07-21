@@ -26,9 +26,16 @@ const PLATFORMS = [
 
 const labels = {
   all: "כל המקורות",
-  app: "אפליקציה",
+  sivan22: "Sivan22/otzaria",
+  otzaria: "Otzaria/otzaria",
   library: "ספרייה מלאה",
   delta: "עדכוני דלתא",
+};
+
+const sourceLabels = {
+  sivan22: "המאגר המקורי · Sivan22",
+  otzaria: "המאגר הנוכחי · Otzaria",
+  seforim: "ספריית הספרים",
 };
 
 const osLabels = {
@@ -54,6 +61,7 @@ const channelLabels = {
 };
 
 const state = {
+  overview: null,
   latest: null,
   timeseries: null,
   chart: null,
@@ -67,6 +75,11 @@ const state = {
   releaseChannel: "all",
   releaseSearch: "",
   releaseLimit: 8,
+  latestPromise: null,
+  timeseriesPromise: null,
+  chartLibraryPromise: null,
+  statsReady: false,
+  releasesReady: false,
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -79,7 +92,8 @@ function cssColor(name) {
 function currentPalette() {
   return {
     all: cssColor("--chart-all"),
-    app: cssColor("--chart-app"),
+    sivan22: cssColor("--chart-sivan22"),
+    otzaria: cssColor("--chart-otzaria"),
     library: cssColor("--chart-library"),
     delta: cssColor("--chart-delta"),
     windows: cssColor("--chart-windows"),
@@ -137,10 +151,22 @@ function classifyOS(filename) {
 /** Classify an app asset into a use-case bucket: mobile install, a regular
  * (lightweight) desktop installer, or a full build bundled with the library. */
 function classifyVariant(asset) {
+  const name = String(asset.name || "").toLowerCase();
+  if (name.includes("full")) return "full";
   const os = classifyOS(asset.name);
   if (os === "android" || os === "ios") return "mobile";
-  if (asset.name.toLowerCase().includes("full")) return "full";
   return "regular";
+}
+
+function platformAssetPriority(asset) {
+  const variant = classifyVariant(asset);
+  if (variant === "regular" || variant === "mobile") return 0;
+  if (variant === "full") return 1;
+  return 2;
+}
+
+function sortPlatformAssets(left, right) {
+  return platformAssetPriority(left) - platformAssetPriority(right) || right.downloads - left.downloads;
 }
 
 /** Classify a release by maturity/channel from its tag+name text. GitHub's own
@@ -188,6 +214,7 @@ function valueFor(point, source, section) {
   const group = point[section];
   if (!group) return null;
   if (source === "all") return group.tracked_downloads;
+  if (source === "sivan22" || source === "otzaria") return group.by_source[source];
   return group.by_category[source];
 }
 
@@ -230,7 +257,7 @@ function applyTheme(choice, persist = true) {
   });
 
   palette = currentPalette();
-  if (state.latest) {
+  if (state.statsReady) {
     renderChart();
     renderOsChart();
   }
@@ -272,28 +299,21 @@ function bindScrollSpy() {
 }
 
 function renderMetrics() {
-  const summary = state.latest.summary;
+  const summary = state.overview.summary;
   $("#hero-total").textContent = formatNumber(summary.tracked_downloads);
   $("#hero-total").classList.remove("loading-value");
 
-  const points = state.timeseries.points || [];
-  const last = points.at(-1);
   const deltaWrap = $("#hero-delta");
-  const recentChange = last?.changes?.tracked_downloads || 0;
-  if (recentChange > 0) {
-    deltaWrap.hidden = false;
-    $("#hero-delta-text").textContent = `+${formatNumber(recentChange)} מהסריקה היומית האחרונה`;
-  } else {
-    deltaWrap.hidden = true;
-  }
+  deltaWrap.hidden = true;
 
-  const updatedDate = new Date(state.latest.collected_at);
+  const updatedDate = new Date(state.overview.collected_at);
   const updatedElement = $("#updated-at");
-  updatedElement.dateTime = state.latest.collected_at;
+  updatedElement.dateTime = state.overview.collected_at;
   updatedElement.title = dateTimeFormat.format(updatedDate);
   updatedElement.textContent = relativeTime(updatedDate);
 
-  $("#metric-app").textContent = compactFormat.format(summary.by_category.app);
+  $("#metric-sivan22").textContent = compactFormat.format(summary.by_source.sivan22);
+  $("#metric-otzaria").textContent = compactFormat.format(summary.by_source.otzaria);
   $("#metric-library").textContent = compactFormat.format(summary.by_category.library);
   $("#metric-delta").textContent = compactFormat.format(summary.by_category.delta);
   $("#metric-releases").textContent = formatNumber(summary.release_count);
@@ -302,25 +322,9 @@ function renderMetrics() {
 /* ---------- Download section ---------- */
 
 function pickCurrentRelease() {
-  const appReleases = state.latest.releases.filter(isAppRelease);
-  const stable = appReleases.filter((release) => !release.prerelease);
-  const pool = stable.length ? stable : appReleases;
-  return pool.slice().sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at))[0] || null;
-}
-
-function findFallbackForOs(osId, excludeReleaseId) {
-  const appReleases = state.latest.releases
-    .filter(isAppRelease)
-    .slice()
-    .sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at));
-  for (const release of appReleases) {
-    if (release.id === excludeReleaseId) continue;
-    const matches = release.assets
-      .filter((asset) => asset.category === "app" && classifyOS(asset.name) === osId)
-      .sort((a, b) => b.downloads - a.downloads);
-    if (matches.length) return { release, asset: matches[0] };
-  }
-  return null;
+  const release = state.overview?.featured_release;
+  if (!release || release.prerelease || classifyChannel(release) !== "stable") return null;
+  return release;
 }
 
 function buildPlatformCard(platform, current, detected) {
@@ -348,43 +352,18 @@ function buildPlatformCard(platform, current, detected) {
   meta.className = "platform-meta";
   card.append(meta);
 
-  if (platform.id === "ios") {
-    meta.textContent = "גרסת iOS מופצת רק דרך האתר הרשמי של אוצריא, ולא דרך GitHub Releases.";
-    const link = document.createElement("a");
-    link.className = "btn btn-outlined";
-    link.href = "https://otzaria.org";
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.innerHTML = 'לאתר הרשמי <span class="material-symbols" aria-hidden="true">open_in_new</span>';
-    card.append(link);
-    return card;
-  }
-
   const variants = current.assets
     .filter((asset) => asset.category === "app" && classifyOS(asset.name) === platform.id)
-    .sort((a, b) => b.downloads - a.downloads);
+    .sort(sortPlatformAssets);
 
   if (!variants.length) {
     card.classList.add("is-unavailable");
-    const fallback = findFallbackForOs(platform.id, current.id);
-    if (fallback) {
-      meta.textContent = `לא נכלל בגרסה ${current.tag}. הקובץ האחרון עבור ${platform.label}: ${fallback.release.tag}.`;
-      const link = document.createElement("a");
-      link.className = "btn btn-outlined";
-      link.href = fallback.asset.download_url;
-      link.rel = "noopener noreferrer";
-      link.innerHTML = `הורדת ${fallback.release.tag} <span class="material-symbols" aria-hidden="true">download</span>`;
-      card.append(link);
-    } else {
-      meta.textContent = `עדיין לא פורסם קובץ עבור ${platform.label}.`;
-      const link = document.createElement("a");
-      link.className = "btn btn-outlined";
-      link.href = current.url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = "לעמוד הגרסה ב־GitHub";
-      card.append(link);
-    }
+    meta.textContent = `לא פורסם קובץ עבור ${platform.label} בגרסה היציבה הנוכחית.`;
+    const link = document.createElement("a");
+    link.className = "btn btn-outlined";
+    link.href = "#releases";
+    link.textContent = "חיפוש בגרסאות קודמות";
+    card.append(link);
     return card;
   }
 
@@ -556,7 +535,8 @@ function rangeCutoff(referenceDate) {
 
 function releaseDatasets() {
   const configurations = [
-    { key: "app", category: "app", match: isAppRelease },
+    { key: "sivan22", category: "app", match: (release) => release.source === "sivan22" },
+    { key: "otzaria", category: "app", match: (release) => release.source === "otzaria" },
     { key: "library", category: "library", match: (release) => release.source === "seforim" },
     { key: "delta", category: "delta", match: (release) => release.source === "seforim" },
   ];
@@ -735,7 +715,7 @@ function renderReleaseItem(release) {
   details.dataset.source = release.source;
   $(".release-source-mark .material-symbols", fragment).textContent = release.source === "seforim" ? "menu_book" : "apps";
   $(".release-title", fragment).textContent = release.name;
-  $(".release-subtitle", fragment).textContent = `${releaseKind(release)} · ${release.tag}`;
+  $(".release-subtitle", fragment).textContent = `${sourceLabels[release.source]} · ${releaseKind(release)} · ${release.tag}`;
   $(".release-date", fragment).textContent = release.published_at ? dateFormat.format(new Date(release.published_at)) : "ללא תאריך";
   $(".release-downloads", fragment).textContent = formatNumber(release.downloads);
 
@@ -795,7 +775,7 @@ function filteredReleases() {
   return state.latest.releases.filter((release) => {
     const typeMatches =
       state.releaseType === "all" ||
-      (state.releaseType === "app" ? isAppRelease(release) : release.source === "seforim");
+      (state.releaseType === "library" ? release.source === "seforim" : release.source === state.releaseType);
     if (!typeMatches) return false;
 
     if (state.releaseOS !== "all") {
@@ -848,69 +828,69 @@ function renderReleases() {
 
 function bindControls() {
   $$("[data-mode]").forEach((button) =>
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       state.mode = button.dataset.mode;
       setButtonState($$("[data-mode]"), state.mode, "mode");
-      renderChart();
+      await refreshStats();
     }),
   );
 
   $$("[data-source]").forEach((button) =>
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       state.source = button.dataset.source;
       setButtonState($$("[data-source]"), state.source, "source");
-      renderChart();
+      await refreshStats();
     }),
   );
 
   $$("[data-range]").forEach((button) =>
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       state.range = button.dataset.range;
       setButtonState($$("[data-range]"), state.range, "range");
-      renderChart();
+      await refreshStats();
     }),
   );
 
   $$("[data-type]").forEach((button) =>
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       state.releaseType = button.dataset.type;
       state.releaseLimit = 8;
       setButtonState($$("[data-type]"), state.releaseType, "type");
-      renderReleases();
+      await refreshReleases();
     }),
   );
 
   $$("[data-os]").forEach((button) =>
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       state.releaseOS = button.dataset.os;
       state.releaseLimit = 8;
       setButtonState($$("[data-os]"), state.releaseOS, "os");
-      renderReleases();
+      await refreshReleases();
     }),
   );
 
   $$("[data-variant]").forEach((button) =>
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       state.releaseVariant = button.dataset.variant;
       state.releaseLimit = 8;
       setButtonState($$("[data-variant]"), state.releaseVariant, "variant");
-      renderReleases();
+      await refreshReleases();
     }),
   );
 
   $$("[data-channel]").forEach((button) =>
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       state.releaseChannel = button.dataset.channel;
       state.releaseLimit = 8;
       setButtonState($$("[data-channel]"), state.releaseChannel, "channel");
-      renderReleases();
+      await refreshReleases();
     }),
   );
 
-  $("#release-search").addEventListener("input", (event) => {
+  $("#release-search").addEventListener("input", async (event) => {
     state.releaseSearch = event.target.value;
     state.releaseLimit = 8;
-    renderReleases();
+    await refreshReleases();
   });
 
   document.addEventListener("keydown", (event) => {
@@ -919,21 +899,133 @@ function bindControls() {
     $("#release-search")?.focus();
   });
 
-  $("#load-more").addEventListener("click", () => {
+  $("#load-more").addEventListener("click", async () => {
+    await ensureReleasesReady();
     state.releaseLimit += 8;
-    renderReleases();
+    if (state.releasesReady) renderReleases();
   });
 }
 
-async function loadData() {
-  const [latestResponse, timeseriesResponse] = await Promise.all([
-    fetch("data/latest.json", { cache: "no-store" }),
-    fetch("data/timeseries.json", { cache: "no-store" }),
-  ]);
-  if (!latestResponse.ok || !timeseriesResponse.ok) {
-    throw new Error("קובצי הנתונים עדיין לא נוצרו. יש להריץ את פעולת האיסוף הראשונה.");
+async function fetchJson(path) {
+  const response = await fetch(path, { cache: "no-cache" });
+  if (!response.ok) throw new Error(`טעינת ${path} נכשלה (${response.status})`);
+  return response.json();
+}
+
+function loadLatest() {
+  if (!state.latestPromise) {
+    state.latestPromise = fetchJson("data/latest.json").then((latest) => {
+      if (!Array.isArray(latest?.releases)) latest.releases = [];
+      latest.releases.forEach((release) => {
+        if (!Array.isArray(release.assets)) release.assets = [];
+      });
+      state.latest = latest;
+      return latest;
+    });
   }
-  return Promise.all([latestResponse.json(), timeseriesResponse.json()]);
+  return state.latestPromise;
+}
+
+function loadTimeseries() {
+  if (!state.timeseriesPromise) {
+    state.timeseriesPromise = fetchJson("data/timeseries.json").then((timeseries) => {
+      state.timeseries = timeseries;
+      return timeseries;
+    });
+  }
+  return state.timeseriesPromise;
+}
+
+function loadChartLibrary() {
+  if (window.Chart) return Promise.resolve(window.Chart);
+  if (!state.chartLibraryPromise) {
+    state.chartLibraryPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      script.addEventListener("load", () => resolve(window.Chart), { once: true });
+      script.addEventListener("error", () => reject(new Error("ספריית התרשימים לא נטענה")), { once: true });
+      document.head.append(script);
+    });
+  }
+  return state.chartLibraryPromise;
+}
+
+function updateRecentChange() {
+  const last = state.timeseries?.points?.at(-1);
+  const recentChange = last?.changes?.tracked_downloads || 0;
+  const deltaWrap = $("#hero-delta");
+  deltaWrap.hidden = recentChange <= 0;
+  if (recentChange > 0) {
+    $("#hero-delta-text").textContent = `+${formatNumber(recentChange)} מהסריקה היומית האחרונה`;
+  }
+}
+
+async function ensureStatsReady() {
+  if (state.statsReady) return;
+  const summary = $("#chart-summary");
+  summary.textContent = "טוען תרשימים…";
+  try {
+    await Promise.all([loadLatest(), loadTimeseries(), loadChartLibrary()]);
+    state.statsReady = true;
+    $("#stats").setAttribute("aria-busy", "false");
+    updateRecentChange();
+    renderOsChart();
+    renderChart();
+  } catch (error) {
+    $("#stats").setAttribute("aria-busy", "false");
+    summary.textContent = error.message;
+  }
+}
+
+async function refreshStats() {
+  if (!state.statsReady) {
+    await ensureStatsReady();
+    return;
+  }
+  renderChart();
+}
+
+async function ensureReleasesReady() {
+  if (state.releasesReady) return;
+  try {
+    await loadLatest();
+    state.releasesReady = true;
+    renderReleases();
+  } catch (error) {
+    $("#release-count").textContent = error.message;
+    $("#release-list").setAttribute("aria-busy", "false");
+  }
+}
+
+async function refreshReleases() {
+  if (!state.releasesReady) {
+    await ensureReleasesReady();
+    return;
+  }
+  renderReleases();
+}
+
+function lazyLoadSection(element, loader) {
+  if (!("IntersectionObserver" in window)) {
+    loader();
+    return;
+  }
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      loader();
+    },
+    { rootMargin: "700px 0px" },
+  );
+  observer.observe(element);
+}
+
+function initLazyContent() {
+  lazyLoadSection($("#stats"), ensureStatsReady);
+  lazyLoadSection($("#releases"), ensureReleasesReady);
 }
 
 async function init() {
@@ -941,20 +1033,13 @@ async function init() {
   bindControls();
   bindScrollSpy();
   try {
-    [state.latest, state.timeseries] = await loadData();
-    // The collector always writes a real (possibly empty) assets array, but
-    // normalize defensively in case latest.json is ever hand-edited, served
-    // stale/truncated, or produced by a future pipeline change.
-    if (Array.isArray(state.latest?.releases)) {
-      state.latest.releases.forEach((release) => {
-        if (!Array.isArray(release.assets)) release.assets = [];
-      });
+    state.overview = await fetchJson("data/overview.json");
+    if (state.overview.featured_release && !Array.isArray(state.overview.featured_release.assets)) {
+      state.overview.featured_release.assets = [];
     }
     renderMetrics();
     renderDownloadGrid();
-    renderOsChart();
-    renderChart();
-    renderReleases();
+    initLazyContent();
   } catch (error) {
     const message = document.createElement("div");
     message.className = "error-state";

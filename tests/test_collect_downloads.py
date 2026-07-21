@@ -9,9 +9,11 @@ from scripts.collect_downloads import (
     Source,
     asset_category,
     build_latest,
+    build_overview,
     build_snapshot,
     calculate_changes,
     previous_snapshot,
+    release_channel,
     update_timeseries,
     write_json,
 )
@@ -123,6 +125,33 @@ class SourceConfigurationTests(unittest.TestCase):
         self.assertNotIn("y-ploni/otzaria", repositories)
 
 
+class OverviewTests(unittest.TestCase):
+    def test_preview_named_release_is_not_featured_even_when_flag_is_false(self):
+        stable = release(2, 201, "otzaria-windows.exe", 20, "2026-06-01T12:00:00Z")
+        preview = release(3, 301, "otzaria-windows.exe", 30, "2026-07-01T12:00:00Z")
+        preview["name"] = "Otzaria 0.9.95 (Preview from dev)"
+        raw = {"sivan22": [], "otzaria": [preview, stable], "seforim": []}
+        latest = build_latest(raw, datetime(2026, 7, 19, 12, 0, tzinfo=timezone.utc))
+
+        overview = build_overview(latest)
+
+        self.assertEqual(release_channel(latest["releases"][0]), "dev")
+        self.assertEqual(overview["featured_release"]["id"], 2)
+
+    def test_overview_keeps_source_totals_but_not_the_full_release_history(self):
+        raw = {
+            "sivan22": [release(1, 101, "app-release.apk", 10)],
+            "otzaria": [release(2, 201, "otzaria-windows.exe", 20)],
+            "seforim": [],
+        }
+        latest = build_latest(raw, datetime(2026, 7, 19, 12, 0, tzinfo=timezone.utc))
+
+        overview = build_overview(latest)
+
+        self.assertEqual(overview["summary"]["by_source"]["sivan22"], 10)
+        self.assertEqual(overview["summary"]["by_source"]["otzaria"], 20)
+        self.assertNotIn("releases", overview)
+
+
 if __name__ == "__main__":
     unittest.main()
-

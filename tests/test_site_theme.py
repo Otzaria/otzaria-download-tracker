@@ -32,10 +32,31 @@ class SiteThemeTests(unittest.TestCase):
         self.assertIn("window.localStorage.getItem(storageKey)", self.init_js)
 
     def test_chart_palette_comes_from_theme_tokens(self):
-        self.assertIn('cssColor("--chart-app")', self.app_js)
+        self.assertIn('cssColor("--chart-sivan22")', self.app_js)
+        self.assertIn('cssColor("--chart-otzaria")', self.app_js)
         self.assertIn('cssColor("--chart-delta")', self.app_js)
+
+    def test_repository_sources_stay_separate_in_the_ui(self):
+        self.assertIn('data-source="sivan22"', self.html)
+        self.assertIn('data-source="otzaria"', self.html)
+        self.assertIn('id="metric-sivan22"', self.html)
+        self.assertIn('id="metric-otzaria"', self.html)
+
+    def test_heavy_explorer_assets_are_loaded_lazily(self):
+        self.assertNotIn('<script defer src="https://cdn.jsdelivr.net/npm/chart.js', self.html)
+        self.assertIn('function lazyLoadSection', self.app_js)
+        self.assertIn('fetchJson("data/overview.json")', self.app_js)
+        self.assertIn('fetchJson("data/latest.json")', self.app_js)
+
+    def test_full_mobile_bundle_is_classified_as_full_first(self):
+        full_check = self.app_js.index('name.includes("full")')
+        mobile_check = self.app_js.index('os === "android" || os === "ios"')
+        self.assertLess(full_check, mobile_check)
+
+    def test_uses_local_otzaria_favicon(self):
+        self.assertIn('href="favicon.png"', self.html)
+        self.assertTrue((ROOT / "site" / "favicon.png").exists())
 
 
 if __name__ == "__main__":
     unittest.main()
-

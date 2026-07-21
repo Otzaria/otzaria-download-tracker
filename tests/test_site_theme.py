@@ -32,7 +32,7 @@ class SiteThemeTests(unittest.TestCase):
         self.assertIn("window.localStorage.getItem(storageKey)", self.init_js)
 
     def test_chart_palette_comes_from_theme_tokens(self):
-        self.assertIn('cssColor("--chart-otzaria")', self.app_js)
+        self.assertIn('cssColor("--chart-app")', self.app_js)
         self.assertIn('cssColor("--chart-delta")', self.app_js)
 
 

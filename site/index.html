@@ -3,14 +3,22 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta id="theme-color" name="theme-color" content="#f3e6da">
-    <meta name="description" content="ציר הזמן של הורדות אוצריא: גרסאות האפליקציה, ספריית הספרים ועדכוני הדלתא.">
-    <meta property="og:title" content="מפת ההורדות של אוצריא">
-    <meta property="og:description" content="נתוני Releases ברורים, נגישים ומתעדכנים מדי יום.">
+    <meta id="theme-color" name="theme-color" content="#2b2419">
+    <meta name="description" content="לוח מעקב בלתי־רשמי אחרי הורדות אוצריא: הורדת הגרסה האחרונה לפי מערכת הפעלה, סטטיסטיקות חיות וציר זמן של כל הגרסאות שיצאו אי־פעם.">
+    <meta property="og:title" content="לוח ההורדות של אוצריא">
+    <meta property="og:description" content="הורידו את הגרסה האחרונה של אוצריא, וצפו בסטטיסטיקות ההורדה המלאות — מתעדכן מדי יום.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="og.png">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
-    <title>מפת ההורדות של אוצריא</title>
+    <meta property="og:locale" content="he_IL">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://otzaria.org; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+    <title>לוח ההורדות של אוצריא</title>
+    <link rel="shortcut icon" href="https://otzaria.org/logo.svg">
+    <link rel="icon" href="https://otzaria.org/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="https://otzaria.org/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400%3B500%3B600%3B700%3B800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
     <script src="theme-init.js"></script>
     <link rel="stylesheet" href="styles.css">
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
@@ -21,20 +29,26 @@
 
     <header class="site-header">
       <div class="shell header-row">
-        <a class="brand" href="#top" aria-label="מפת ההורדות של אוצריא — ראש הדף">
-          <span class="brand-mark" aria-hidden="true">א</span>
-          <span>אוצריא <small>נתוני הורדות</small></span>
+        <a class="brand" href="#top" aria-label="לוח ההורדות של אוצריא — ראש הדף">
+          <img src="https://otzaria.org/logo.svg" alt="" width="32" height="32" loading="eager">
+          <span class="brand-text">אוצריא <small>לוח הורדות וסטטיסטיקה</small></span>
         </a>
+        <nav class="main-nav" aria-label="ניווט ראשי" id="main-nav">
+          <a href="#about" data-nav="about"><span class="material-symbols" aria-hidden="true">auto_stories</span>אודות</a>
+          <a href="#download" data-nav="download"><span class="material-symbols" aria-hidden="true">download</span>הורדה</a>
+          <a href="#stats" data-nav="stats"><span class="material-symbols" aria-hidden="true">bar_chart</span>סטטיסטיקות</a>
+          <a href="#releases" data-nav="releases"><span class="material-symbols" aria-hidden="true">history</span>גרסאות</a>
+          <a href="#method" data-nav="method"><span class="material-symbols" aria-hidden="true">help</span>איך זה עובד</a>
+        </nav>
         <div class="header-actions">
-          <nav aria-label="ניווט ראשי">
-            <a href="#timeline">ציר הזמן</a>
-            <a href="#releases">גרסאות</a>
-            <a href="#method">על הנתונים</a>
-          </nav>
+          <a class="official-link" href="https://otzaria.org" target="_blank" rel="noopener noreferrer">
+            <span>האתר הרשמי</span>
+            <span class="material-symbols" aria-hidden="true">open_in_new</span>
+          </a>
           <div class="theme-control" role="group" aria-label="מצב ערכת נושא">
-            <button type="button" data-theme-choice="light" aria-pressed="false" title="מצב בהיר">בהיר</button>
-            <button type="button" data-theme-choice="system" aria-pressed="false" title="התאמה אוטומטית למערכת">מערכת</button>
-            <button type="button" data-theme-choice="dark" aria-pressed="false" title="מצב כהה">כהה</button>
+            <button type="button" data-theme-choice="light" aria-pressed="false" title="מצב בהיר"><span class="material-symbols" aria-hidden="true">light_mode</span></button>
+            <button type="button" data-theme-choice="system" aria-pressed="false" title="התאמה אוטומטית למערכת"><span class="material-symbols" aria-hidden="true">brightness_auto</span></button>
+            <button type="button" data-theme-choice="dark" aria-pressed="false" title="מצב כהה"><span class="material-symbols" aria-hidden="true">dark_mode</span></button>
           </div>
         </div>
       </div>
@@ -44,19 +58,20 @@
       <section class="hero" id="top">
         <div class="shell hero-grid">
           <div class="hero-copy">
-            <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> נתוני GitHub Releases · עדכון יומי</p>
-            <h1>רואים איך אוצריא<br>מגיעה לכולם.</h1>
-            <p class="hero-lead">גרסאות האפליקציה, ספריית הספרים ועדכוני הדלתא — בתמונה אחת נקייה, עם ציר זמן אמיתי שנבנה מדי יום.</p>
+            <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> נתוני GitHub Releases · מתעדכן מדי יום</p>
+            <h1>כל הורדה של אוצריא, במקום אחד.</h1>
+            <p class="hero-lead">לוח מעקב קהילתי ובלתי־רשמי: הורידו את הגרסה האחרונה לפי המערכת שלכם, וצפו כמה פעמים אוצריא הורדה לאורך הזמן — כולל כל ההיסטוריה, מהגרסה הראשונה ועד היום.</p>
             <div class="hero-actions">
-              <a class="primary-action" href="#timeline">לציר הזמן <span aria-hidden="true">←</span></a>
-              <a class="text-action" href="#method">איך קוראים את הנתונים?</a>
+              <a class="btn btn-filled" href="#download"><span class="material-symbols" aria-hidden="true">download</span> הורידו את הגרסה האחרונה</a>
+              <a class="btn btn-text" href="https://otzaria.org" target="_blank" rel="noopener noreferrer">לאתר הרשמי של אוצריא <span class="material-symbols" aria-hidden="true">open_in_new</span></a>
             </div>
+            <p class="hero-footnote"><span class="material-symbols" aria-hidden="true">visibility_off</span> ללא הרשמה, ללא פרסומות וללא מעקב אחרי משתמשים — רק נתונים ציבוריים מ־GitHub.</p>
           </div>
 
           <aside class="hero-signal" aria-labelledby="signal-title">
-            <p id="signal-title">תמונת מצב נוכחית</p>
+            <p id="signal-title">סך כל ההורדות שנמדדו</p>
             <strong id="hero-total" class="loading-value">—</strong>
-            <span>הורדות מצטברות בקבצים הנמדדים</span>
+            <span id="hero-delta" class="hero-delta" hidden><span class="material-symbols" aria-hidden="true">trending_up</span> <span id="hero-delta-text"></span></span>
             <div class="signal-meta">
               <span>עדכון אחרון</span>
               <time id="updated-at">טוען נתונים…</time>
@@ -65,120 +80,261 @@
         </div>
       </section>
 
-      <section class="shell metrics-wrap" aria-label="מדדים מרכזיים">
-        <dl class="metrics" id="metrics">
+      <section class="shell section-pad" id="about" aria-labelledby="about-title">
+        <div class="section-heading">
           <div>
-            <dt>Otzaria</dt>
-            <dd id="metric-otzaria">—</dd>
-            <span>הורדות גרסאות</span>
+            <p class="section-kicker">לפני שמורידים</p>
+            <h2 id="about-title">מה זה אוצריא?</h2>
+            <p>מאגר תורני רחב וחינמי לחלוטין, עם ממשק מודרני ומהיר: אלפי ספרי קודש מכל מקצועות התורה — מקרא, משנה ותלמוד, מדרש הלכה ואגדה, מוסר חסידות וקבלה, תפילה שירה ופיוט, ודקדוק לשון הקודש ותולדות עם ישראל, במקום אחד.</p>
           </div>
-          <div>
-            <dt>sivan22</dt>
-            <dd id="metric-sivan">—</dd>
-            <span>הורדות גרסאות</span>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">auto_stories</span>
+            <h3>מאגר עצום</h3>
+            <p>אלפי ספרי קודש זמינים לקריאה ולימוד, מכל מקצועות התורה.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">verified</span>
+            <h3>דיוק מקסימלי</h3>
+            <p>מערכת בקרת איכות מתקדמת שומרת על טקסטים מדויקים ואמינים.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">search</span>
+            <h3>חיפוש מתקדם</h3>
+            <p>מצאו כל פסוק, מאמר או מושג בקלות, בכל רחבי הספרייה.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">edit_note</span>
+            <h3>עריכה משותפת</h3>
+            <p>ספרים רבים נוספו ותוקנו על ידי הקהילה, בשיתוף פעולה מתמשך.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">devices</span>
+            <h3>פלטפורמות מרובות</h3>
+            <p>עובד על Windows, Linux, Android, iOS ו־macOS — אותה חוויה בכל מכשיר.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">palette</span>
+            <h3>ממשק מודרני</h3>
+            <p>עיצוב נקי ופשוט, עם תמיכה במצב כהה ובהתאמה אישית מלאה.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">description</span>
+            <h3>פורמטים מגוונים</h3>
+            <p>תמיכה בקבצי TXT, DOCX ו־PDF, לצד ספריית הליבה של אוצריא.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">volunteer_activism</span>
+            <h3>חינם לחלוטין</h3>
+            <p>התוכנה חינמית לחלוטין, ותישאר כזו לעד.</p>
+          </article>
+        </div>
+        <p class="about-more">
+          <span class="material-symbols" aria-hidden="true">add_circle</span>
+          וגם: לוח שנה תורני, מעקב אחר קצב הלימוד, כתיבת הערות אישיות וסימניות, ועבודה נוחה גם ללא חיבור לאינטרנט.
+          <a href="https://otzaria.org" target="_blank" rel="noopener noreferrer">כל הפרטים באתר הרשמי ↗</a>
+        </p>
+      </section>
+
+      <section class="shell quick-stats" aria-label="מדדים מרכזיים">
+        <dl class="stat-grid" id="metrics">
+          <div class="stat-card">
+            <span class="stat-icon material-symbols" aria-hidden="true">apps</span>
+            <dt>הורדות האפליקציה</dt>
+            <dd id="metric-app">—</dd>
+            <span class="stat-note" id="metric-app-note">כל גרסאות התוכנה, מ־2023 ועד היום</span>
           </div>
-          <div>
-            <dt>ספרייה מלאה</dt>
+          <div class="stat-card">
+            <span class="stat-icon material-symbols" aria-hidden="true">menu_book</span>
+            <dt>ספריית הספרים</dt>
             <dd id="metric-library">—</dd>
-            <span>קובצי seforim.db.zst</span>
+            <span class="stat-note">קובץ הספרייה המלאה</span>
           </div>
-          <div>
+          <div class="stat-card">
+            <span class="stat-icon material-symbols" aria-hidden="true">sync_alt</span>
             <dt>עדכוני דלתא</dt>
             <dd id="metric-delta">—</dd>
-            <span>קובצי patch דחוסים</span>
+            <span class="stat-note">קובצי עדכון מצטברים</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon material-symbols" aria-hidden="true">history</span>
+            <dt>גרסאות שפורסמו</dt>
+            <dd id="metric-releases">—</dd>
+            <span class="stat-note">מאז תחילת הפרויקט</span>
           </div>
         </dl>
       </section>
 
-      <section class="shell dashboard-section" id="timeline" aria-labelledby="timeline-title">
-        <div class="section-heading">
-          <div>
-            <p class="section-kicker">המגמה, לא ערימת מספרים</p>
-            <h2 id="timeline-title">ציר הזמן של ההורדות</h2>
-            <p>עברו בין הורדות חדשות שנמדדו בפועל, מונים מצטברים וגרסאות על פי יום הפרסום.</p>
-          </div>
-          <div class="range-control" role="group" aria-label="טווח זמן">
-            <button type="button" data-range="30">30 יום</button>
-            <button type="button" data-range="90">90 יום</button>
-            <button type="button" data-range="all" class="active" aria-pressed="true">הכול</button>
-          </div>
-        </div>
-
-        <div class="chart-panel">
-          <div class="chart-toolbar">
-            <div class="mode-control" role="group" aria-label="סוג הגרף">
-              <button type="button" data-mode="daily">חדשות ביום</button>
-              <button type="button" data-mode="cumulative">מצטבר</button>
-              <button type="button" data-mode="releases" class="active" aria-pressed="true">לפי גרסה</button>
-            </div>
-            <p id="chart-summary" aria-live="polite">טוען את סדרת הזמן…</p>
-          </div>
-
-          <div class="source-control" role="group" aria-label="סינון מקור">
-            <button type="button" data-source="all" class="active" aria-pressed="true"><i class="key-all" aria-hidden="true"></i> הכול</button>
-            <button type="button" data-source="otzaria"><i class="key-otzaria" aria-hidden="true"></i> Otzaria</button>
-            <button type="button" data-source="sivan22"><i class="key-sivan" aria-hidden="true"></i> sivan22</button>
-            <button type="button" data-source="library"><i class="key-library" aria-hidden="true"></i> ספרייה</button>
-            <button type="button" data-source="delta"><i class="key-delta" aria-hidden="true"></i> דלתא</button>
-          </div>
-
-          <div class="chart-stage">
-            <canvas id="downloads-chart" role="img" aria-label="גרף נתוני הורדות לאורך זמן"></canvas>
-            <div id="chart-empty" class="chart-empty" hidden>
-              <strong>כאן יופיע קצב ההורדות היומי</strong>
-              <span>נדרשים לפחות שני Snapshots מימים שונים. האיסוף האוטומטי כבר מכין את הנקודה הבאה.</span>
+      <section class="download-section section-pad" id="download" aria-labelledby="download-title">
+        <div class="shell">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">מותקן תוך פחות מדקה</p>
+              <h2 id="download-title">הורדת הגרסה האחרונה</h2>
+              <p id="download-version-line">טוען פרטי גרסה…</p>
             </div>
           </div>
-          <p class="chart-note" id="chart-note">כל נקודה מייצגת גרסה בתאריך הפרסום שלה; גובה הנקודה הוא מונה ההורדות הנוכחי של קובצי הגרסה.</p>
+
+          <p class="os-banner" id="os-banner" hidden>
+            <span><span class="material-symbols" aria-hidden="true">tips_and_updates</span><span id="os-banner-text"></span></span>
+            <a class="btn btn-small btn-outlined" href="https://otzaria.org" target="_blank" rel="noopener noreferrer">אודות כל הפלטפורמות <span class="material-symbols" aria-hidden="true">open_in_new</span></a>
+          </p>
+
+          <div class="download-grid" id="download-grid" aria-busy="true"></div>
+
+          <p class="download-note">
+            <span class="material-symbols" aria-hidden="true">info</span>
+            כל קובץ מגיע ישירות מ־GitHub Releases של אוצריא. גרסאות ל־iOS מופצות רק דרך האתר הרשמי.
+            <a href="data/latest.json" target="_blank" rel="noopener noreferrer">לצפייה בנתונים הגולמיים</a>
+          </p>
         </div>
       </section>
 
-      <section class="shell split-section" aria-label="חלוקת ההורדות">
-        <div class="breakdown-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="section-kicker">חלוקה מהירה</p>
-              <h2>מאין הורידו?</h2>
-            </div>
-            <span id="breakdown-total">—</span>
+      <section class="shell section-pad" aria-labelledby="why-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">למה יש בכלל צורך בלוח כזה</p>
+            <h2 id="why-title">מה מיוחד בלוח הזה?</h2>
+            <p>אוצריא היא תוכנה חינמית ומתפתחת כל הזמן, אבל דף ה־Releases הרגיל ב־GitHub לא נועד לספר את הסיפור המלא. הלוח הזה נבנה כדי להשלים את החסר.</p>
           </div>
-          <div id="breakdown-bars" class="breakdown-bars"></div>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">schedule</span>
+            <h3>מתעדכן כל יום לבד</h3>
+            <p>איסוף אוטומטי רץ מדי לילה, קורא את כל עמודי ה־API ושומר תמונת מצב חדשה — בלי שאף אחד צריך ללחוץ על כפתור.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">history</span>
+            <h3>כל הגרסאות, מאז ומעולם</h3>
+            <p>מאות גרסאות מכל תקופות הפיתוח של אוצריא, כולל כאלה שכבר נעלמו מהעמוד הרשמי — כל אחת עם קובצי ההתקנה שלה.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">tune</span>
+            <h3>מסונן למה שרלוונטי לכם</h3>
+            <p>בחרו מערכת הפעלה, סוג קובץ או טווח תאריכים, וקבלו בדיוק את מה שאתם מחפשים — בלי לסנן ידנית מאות שורות.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">verified</span>
+            <h3>שקוף מקצה לקצה</h3>
+            <p>כל מספר כאן ניתן לבדיקה: הקוד שאוסף את הנתונים פתוח, והקובץ הגולמי שמזין את הלוח זמין לצפייה בלחיצה אחת.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">visibility_off</span>
+            <h3>בלי מעקב אחריכם</h3>
+            <p>אין כאן חשבונות, עוגיות מעקב או אנליטיקס. הלוח רק מציג נתונים ציבוריים — הוא לא אוסף שום דבר עליכם.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon material-symbols" aria-hidden="true">devices</span>
+            <h3>לכל מערכת הפעלה</h3>
+            <p>Windows, macOS, Android ו־Linux מקבלים כרטיס משלהם בסקשן ההורדה, עם הקובץ הכי מתאים תמיד למעלה.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="shell section-pad" id="stats" aria-labelledby="stats-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">המגמה, לא ערימת מספרים</p>
+            <h2 id="stats-title">סטטיסטיקות הורדה</h2>
+            <p>הורדות חדשות שנמדדו בפועל, מונים מצטברים, וגרסאות על פי יום הפרסום.</p>
+          </div>
+          <div class="chip-row" role="group" aria-label="טווח זמן">
+            <button type="button" class="chip" data-range="7" aria-pressed="false">שבוע</button>
+            <button type="button" class="chip" data-range="30" aria-pressed="false">30 יום</button>
+            <button type="button" class="chip" data-range="90" aria-pressed="false">90 יום</button>
+            <button type="button" class="chip" data-range="182" aria-pressed="false">חצי שנה</button>
+            <button type="button" class="chip" data-range="365" aria-pressed="false">שנה</button>
+            <button type="button" class="chip active" data-range="all" aria-pressed="true">הכול</button>
+          </div>
         </div>
 
-        <aside class="truth-panel">
-          <span class="truth-index">01</span>
-          <p class="section-kicker">דיוק לפני רושם</p>
-          <h2>מהו “ציר זמן אמיתי”?</h2>
-          <p>GitHub מציג רק מונה נוכחי לכל קובץ. לכן איננו ממציאים עבר: שומרים את המונה פעם ביום, ומהיום השני מחשבים כמה הורדות חדשות נוספו.</p>
-          <a href="#method">למתודולוגיה המלאה <span aria-hidden="true">←</span></a>
-        </aside>
+        <div class="stats-grid">
+          <div class="panel">
+            <div class="chart-toolbar">
+              <div class="segmented" role="group" aria-label="סוג הגרף">
+                <button type="button" data-mode="daily"><span class="material-symbols" aria-hidden="true">today</span>חדשות ביום</button>
+                <button type="button" data-mode="cumulative"><span class="material-symbols" aria-hidden="true">trending_up</span>מצטבר</button>
+                <button type="button" data-mode="releases" class="active" aria-pressed="true"><span class="material-symbols" aria-hidden="true">new_releases</span>לפי גרסה</button>
+              </div>
+              <p id="chart-summary" aria-live="polite">טוען את סדרת הזמן…</p>
+            </div>
+
+            <div class="chip-row chart-source-filter" id="chart-source-filter" role="group" aria-label="סינון מקור">
+              <button type="button" class="chip active" data-source="all" aria-pressed="true"><span class="dot dot-all"></span> הכול</button>
+              <button type="button" class="chip" data-source="app" aria-pressed="false"><span class="dot dot-app"></span> אפליקציה</button>
+              <button type="button" class="chip" data-source="library" aria-pressed="false"><span class="dot dot-library"></span> ספרייה</button>
+              <button type="button" class="chip" data-source="delta" aria-pressed="false"><span class="dot dot-delta"></span> דלתא</button>
+            </div>
+
+            <div class="chart-stage">
+              <canvas id="downloads-chart" role="img" aria-label="גרף נתוני הורדות לאורך זמן"></canvas>
+              <div id="chart-empty" class="chart-empty" hidden>
+                <strong>כאן יופיע קצב ההורדות היומי</strong>
+                <span>נדרשים לפחות שני Snapshots מימים שונים. האיסוף האוטומטי כבר מכין את הנקודה הבאה.</span>
+              </div>
+            </div>
+            <p class="chart-note" id="chart-note">כל נקודה מייצגת גרסה בתאריך הפרסום שלה; גובה הנקודה הוא מונה ההורדות הנוכחי של קובצי הגרסה.</p>
+          </div>
+
+          <div class="panel donut-wrap">
+            <div class="donut-heading">
+              <p class="section-kicker">לפי מערכת הפעלה</p>
+              <p class="donut-subtitle">שיוך על סמך שם הקובץ שפורסם, לכלל הגרסאות</p>
+            </div>
+            <div class="donut-stage">
+              <canvas id="os-chart" role="img" aria-label="גרף התפלגות הורדות לפי מערכת הפעלה"></canvas>
+            </div>
+            <div class="donut-legend" id="os-legend"></div>
+          </div>
+        </div>
       </section>
 
       <section class="releases-section" id="releases" aria-labelledby="releases-title">
         <div class="shell">
-          <div class="section-heading releases-heading">
+          <div class="section-heading">
             <div>
               <p class="section-kicker">מוצאים גרסה בשניות</p>
-              <h2 id="releases-title">גרסאות וקבצים</h2>
-              <p>חיפוש, סינון ופתיחת פרטים לפי הצורך — בלי גלילה אינסופית.</p>
+              <h2 id="releases-title">כל הגרסאות</h2>
+              <p>חיפוש וסינון לפי סוג קובץ, מערכת הפעלה, סוג גרסה וערוץ פיתוח — בלי גלילה אינסופית.</p>
             </div>
             <p class="result-count" id="release-count" aria-live="polite">טוען…</p>
           </div>
 
           <div class="release-tools">
             <label class="search-field">
-              <span>חיפוש גרסה או קובץ</span>
-              <input id="release-search" type="search" placeholder="למשל 0.9.95 או windows" autocomplete="off">
+              <span class="material-symbols" aria-hidden="true">search</span>
+              <input id="release-search" type="search" placeholder="חיפוש גרסה או קובץ, למשל 0.9.95 או windows" autocomplete="off">
             </label>
-            <label class="select-field">
-              <span>מקור</span>
-              <select id="release-source">
-                <option value="all">כל המקורות</option>
-                <option value="otzaria">Otzaria</option>
-                <option value="sivan22">sivan22</option>
-                <option value="seforim">ספרייה ודלתאות</option>
-              </select>
-            </label>
+          </div>
+
+          <div class="filter-groups">
+            <div class="chip-row" id="release-type-filter" role="group" aria-label="סוג">
+              <button type="button" class="chip active" data-type="all" aria-pressed="true">הכול</button>
+              <button type="button" class="chip" data-type="app" aria-pressed="false"><span class="material-symbols" aria-hidden="true">apps</span> אפליקציה</button>
+              <button type="button" class="chip" data-type="library" aria-pressed="false"><span class="material-symbols" aria-hidden="true">menu_book</span> ספרייה ודלתאות</button>
+            </div>
+            <div class="chip-row" id="release-os-filter" role="group" aria-label="מערכת הפעלה">
+              <button type="button" class="chip active" data-os="all" aria-pressed="true">כל המערכות</button>
+              <button type="button" class="chip" data-os="windows" aria-pressed="false"><span class="material-symbols" aria-hidden="true">desktop_windows</span> Windows</button>
+              <button type="button" class="chip" data-os="macos" aria-pressed="false"><span class="material-symbols" aria-hidden="true">laptop_mac</span> macOS</button>
+              <button type="button" class="chip" data-os="android" aria-pressed="false"><span class="material-symbols" aria-hidden="true">phone_android</span> Android</button>
+              <button type="button" class="chip" data-os="linux" aria-pressed="false"><span class="material-symbols" aria-hidden="true">computer</span> Linux</button>
+            </div>
+            <div class="chip-row" id="release-variant-filter" role="group" aria-label="סוג גרסה">
+              <button type="button" class="chip active" data-variant="all" aria-pressed="true">כל הגרסאות</button>
+              <button type="button" class="chip" data-variant="mobile" aria-pressed="false"><span class="material-symbols" aria-hidden="true">phone_android</span> ניידת</button>
+              <button type="button" class="chip" data-variant="regular" aria-pressed="false"><span class="material-symbols" aria-hidden="true">bolt</span> רגילה</button>
+              <button type="button" class="chip" data-variant="full" aria-pressed="false"><span class="material-symbols" aria-hidden="true">inventory_2</span> מלאה (עם כל הרכיבים)</button>
+            </div>
+            <div class="chip-row" id="release-channel-filter" role="group" aria-label="ערוץ גרסה">
+              <button type="button" class="chip active" data-channel="all" aria-pressed="true">כל הערוצים</button>
+              <button type="button" class="chip" data-channel="stable" aria-pressed="false"><span class="material-symbols" aria-hidden="true">verified</span> יציבה</button>
+              <button type="button" class="chip" data-channel="dev" aria-pressed="false"><span class="material-symbols" aria-hidden="true">construction</span> פיתוח</button>
+              <button type="button" class="chip" data-channel="pr" aria-pressed="false"><span class="material-symbols" aria-hidden="true">rate_review</span> בדיקת PR</button>
+              <button type="button" class="chip" data-channel="early" aria-pressed="false"><span class="material-symbols" aria-hidden="true">science</span> גרסה מוקדמת</button>
+            </div>
           </div>
 
           <div id="release-list" class="release-list" aria-busy="true"></div>
@@ -186,37 +342,72 @@
         </div>
       </section>
 
-      <section class="shell method-section" id="method" aria-labelledby="method-title">
-        <div class="method-heading">
-          <p class="section-kicker">שקוף וניתן לבדיקה</p>
-          <h2 id="method-title">איך הנתונים נאספים?</h2>
+      <section class="method-section section-pad" id="method" aria-labelledby="method-title">
+        <div class="shell method-grid">
+          <div class="method-heading">
+            <p class="section-kicker">שקוף וניתן לבדיקה</p>
+            <h2 id="method-title">איך הנתונים נאספים?</h2>
+            <p>הלוח הזה הוא פרויקט קהילתי בלתי־רשמי — הוא לא מופעל על ידי צוות אוצריא, אלא קורא מידע ציבורי בלבד מ־GitHub Releases ומציג אותו בצורה נוחה. כך זה עובד, שלב אחר שלב:</p>
+            <div class="data-links">
+              <a class="btn btn-small btn-outlined" href="data/latest.json" target="_blank" rel="noopener noreferrer"><span class="material-symbols" aria-hidden="true">data_object</span> נתונים גולמיים</a>
+              <a class="btn btn-small btn-outlined" href="https://github.com/Otzaria" target="_blank" rel="noopener noreferrer"><span class="material-symbols" aria-hidden="true">code</span> קוד המקור</a>
+            </div>
+          </div>
+          <div>
+            <ol class="method-steps">
+              <li><span>1</span><div><strong>קוראים את כל ה־Releases</strong><p>המעקב עובר על כל היסטוריית הפרסום של אוצריא ב־GitHub, כולל כל עמודי ה־API, ומצרף אותה לקו זמן אחד.</p></div></li>
+              <li><span>2</span><div><strong>שומרים Snapshot יומי</strong><p>כל קובץ מזוהה לפי Asset ID יציב, כדי ששינוי בשם לא ייצור הורדה מדומה.</p></div></li>
+              <li><span>3</span><div><strong>מציגים רק הפרשים חיוביים</strong><p>מחיקה או החלפה של קובץ לא נרשמות כהורדות שליליות. קובץ חדש מתחיל להימדד מן ה־Snapshot הראשון שלו.</p></div></li>
+            </ol>
+          </div>
         </div>
-        <ol class="method-steps">
-          <li><span>1</span><div><strong>קוראים את כל ה־Releases</strong><p>מ־sivan22, מהמאגר הנוכחי של Otzaria ומ־SeforimLibrary — כולל כל עמודי ה־API.</p></div></li>
-          <li><span>2</span><div><strong>שומרים Snapshot יומי</strong><p>כל קובץ מזוהה לפי Asset ID יציב, כדי ששינוי בשם לא ייצור הורדה מדומה.</p></div></li>
-          <li><span>3</span><div><strong>מציגים רק הפרשים חיוביים</strong><p>מחיקה או החלפה של קובץ לא נרשמות כהורדות שליליות. קובץ חדש מתחיל להימדד מן ה־Snapshot הראשון שלו.</p></div></li>
-        </ol>
       </section>
     </main>
 
     <footer>
-      <div class="shell footer-row">
-        <p>נתונים פתוחים מתוך GitHub · נבנה עבור קהילת אוצריא</p>
-        <a href="https://github.com/Otzaria" target="_blank" rel="noopener noreferrer">Otzaria ב־GitHub <span aria-hidden="true">↗</span></a>
+      <div class="shell footer-grid">
+        <div class="footer-about">
+          <a class="footer-brand" href="https://otzaria.org" target="_blank" rel="noopener noreferrer">
+            <img src="https://otzaria.org/logo.svg" alt="" width="30" height="30">
+            <span>אוצריא</span>
+          </a>
+          <p>לוח נתונים קהילתי ובלתי־רשמי למעקב אחר הורדות אוצריא. הפרויקט אינו מופעל בידי צוות אוצריא הרשמי, ומתבסס כולו על נתונים ציבוריים מ־GitHub.</p>
+        </div>
+        <nav class="footer-col" aria-label="קישורי אוצריא">
+          <h4>אתר אוצריא</h4>
+          <a href="https://otzaria.org/library" target="_blank" rel="noopener noreferrer">ספריית אוצריא</a>
+          <a href="https://otzaria.org/plugins" target="_blank" rel="noopener noreferrer">תוספים</a>
+          <a href="https://otzaria.org/docs" target="_blank" rel="noopener noreferrer">מדריכים</a>
+          <a href="https://otzaria.org/faq" target="_blank" rel="noopener noreferrer">שאלות נפוצות</a>
+          <a href="https://otzaria.org/donate" target="_blank" rel="noopener noreferrer">תרומות</a>
+          <a href="https://otzaria.org/forum" target="_blank" rel="noopener noreferrer">פורום</a>
+        </nav>
+        <nav class="footer-col" aria-label="קישורי הלוח">
+          <h4>הלוח הזה</h4>
+          <a href="https://github.com/Otzaria" target="_blank" rel="noopener noreferrer">GitHub של אוצריא</a>
+          <a href="data/latest.json" target="_blank" rel="noopener noreferrer">נתונים גולמיים</a>
+          <a href="LICENSE" target="_blank" rel="noopener noreferrer">רישיון (MIT)</a>
+        </nav>
+      </div>
+      <div class="footer-banner">
+        <p><span class="material-symbols" aria-hidden="true">favorite</span> פרויקט קהילתי, פתוח ושקוף — בלי מטרות רווח, בלי פרסומות, ותמיד יישאר כך.</p>
+      </div>
+      <div class="shell footer-bottom">
+        <p>הנתונים מתפרסמים בפומבי דרך GitHub API · מתעדכן אוטומטית מדי יום</p>
       </div>
     </footer>
 
     <template id="release-template">
       <details class="release-item">
         <summary>
-          <span class="release-source-mark" aria-hidden="true"></span>
+          <span class="release-source-mark" aria-hidden="true"><span class="material-symbols"></span></span>
           <span class="release-main">
             <span class="release-title"></span>
             <span class="release-subtitle"></span>
           </span>
           <span class="release-date"></span>
           <span class="release-downloads"></span>
-          <span class="release-chevron" aria-hidden="true">⌄</span>
+          <span class="release-chevron material-symbols" aria-hidden="true">expand_more</span>
         </summary>
         <div class="release-details">
           <div class="release-links"></div>
@@ -224,5 +415,7 @@
         </div>
       </details>
     </template>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
   </body>
 </html>

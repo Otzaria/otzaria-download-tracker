@@ -18,6 +18,6 @@
   document.documentElement.dataset.theme = resolved;
   document.querySelector("#theme-color")?.setAttribute(
     "content",
-    resolved === "dark" ? "#2e282d" : "#f3e6da",
+    resolved === "dark" ? "#2c2731" : "#f3e6da",
   );
 })();

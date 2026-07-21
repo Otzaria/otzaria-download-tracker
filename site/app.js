@@ -931,6 +931,14 @@ async function init() {
   bindScrollSpy();
   try {
     [state.latest, state.timeseries] = await loadData();
+    // The collector always writes a real (possibly empty) assets array, but
+    // normalize defensively in case latest.json is ever hand-edited, served
+    // stale/truncated, or produced by a future pipeline change.
+    if (Array.isArray(state.latest?.releases)) {
+      state.latest.releases.forEach((release) => {
+        if (!Array.isArray(release.assets)) release.assets = [];
+      });
+    }
     renderMetrics();
     renderDownloadGrid();
     renderOsChart();

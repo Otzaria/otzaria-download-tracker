@@ -129,7 +129,7 @@ function classifyOS(filename) {
   if (name.includes("android") || name.endsWith(".apk")) return "android";
   if (name.includes("iphone") || name.includes("ipad") || name.includes("ios")) return "ios";
   if (name.includes("windows") || name.endsWith(".exe") || name.endsWith(".msix")) return "windows";
-  if (name.includes("macos") || name.endsWith(".dmg")) return "macos";
+  if (name.includes("macos") || name.includes("mac") || name.endsWith(".dmg")) return "macos";
   if (name.includes("linux") || name.endsWith(".deb") || name.endsWith(".rpm") || name.includes("appimage")) return "linux";
   return "other";
 }

@@ -51,7 +51,8 @@
   --on-error-container: #410002;
 
   --chart-all: #805610;
-  --chart-app: #805610;
+  --chart-sivan22: #59628f;
+  --chart-otzaria: #805610;
   --chart-library: #9a5d00;
   --chart-delta: #9c4133;
   --chart-windows: #2f6fed;
@@ -115,7 +116,8 @@
   --on-error-container: #ffdad6;
 
   --chart-all: #ebb5ed;
-  --chart-app: #ebb5ed;
+  --chart-sivan22: #bdc5ff;
+  --chart-otzaria: #ebb5ed;
   --chart-library: #ffb95f;
   --chart-delta: #ffb4a8;
   --chart-windows: #a9c7ff;
@@ -512,8 +514,12 @@ select:focus-visible {
   background: var(--chart-all);
 }
 
-.chart-source-filter .dot-app {
-  background: var(--chart-app);
+.chart-source-filter .dot-sivan22 {
+  background: var(--chart-sivan22);
+}
+
+.chart-source-filter .dot-otzaria {
+  background: var(--chart-otzaria);
 }
 
 .chart-source-filter .dot-library {
@@ -719,7 +725,7 @@ select:focus-visible {
 
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
 }
 
@@ -1403,6 +1409,16 @@ select:focus-visible {
   border-block: 1px solid var(--line);
 }
 
+/* Skip layout and paint work for the data-heavy sections until they approach
+   the viewport. JS separately defers their network and chart work. */
+#stats,
+#releases,
+#method,
+footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
 .method-grid {
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
@@ -1626,8 +1642,26 @@ footer {
     --shell: min(100% - 24px, 1180px);
   }
 
+  .header-row {
+    min-height: auto;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding-block: 8px;
+  }
+
+  .brand {
+    order: 1;
+  }
+
+  .header-actions {
+    order: 2;
+    margin-inline-start: auto;
+  }
+
   .main-nav {
-    max-width: 46vw;
+    width: 100%;
+    max-width: none;
+    order: 3;
     overflow-x: auto;
     scrollbar-width: none;
   }

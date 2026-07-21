@@ -26,6 +26,7 @@ from typing import Any, Iterable
 API_ROOT = "https://api.github.com"
 SCHEMA_VERSION = 1
 TRACKED_CATEGORIES = ("app", "library", "delta")
+APP_SOURCES = ("otzaria", "sivan22")
 
 
 @dataclass(frozen=True)
@@ -202,6 +203,43 @@ def calculate_totals(releases: Iterable[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def release_channel(release: dict[str, Any]) -> str:
+    """Classify a release using the naming convention, not only GitHub's flag."""
+    text = f"{release.get('tag', '')} {release.get('name', '')}".casefold()
+    if re.search(r"\balpha\b|\bbeta\b", text):
+        return "early"
+    if re.search(r"\bpr[\s#-]*\d+\b", text):
+        return "pr"
+    if re.search(r"preview from|\bdev\b|development build", text):
+        return "dev"
+    return "stable"
+
+
+def build_overview(latest: dict[str, Any]) -> dict[str, Any]:
+    """Build the small, above-the-fold payload used before the explorer loads."""
+    app_releases = [
+        release
+        for release in latest.get("releases", [])
+        if release.get("source") in APP_SOURCES
+    ]
+    stable_releases = [
+        release
+        for release in app_releases
+        if not release.get("prerelease") and release_channel(release) == "stable"
+    ]
+    preferred = [release for release in stable_releases if release.get("source") == "otzaria"]
+    featured_release = (preferred or stable_releases or [None])[0]
+
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "collected_at": latest["collected_at"],
+        "notice_he": latest.get("notice_he", ""),
+        "sources": latest.get("sources", []),
+        "summary": latest["summary"],
+        "featured_release": featured_release,
+    }
+
+
 def build_snapshot(latest: dict[str, Any], date: str) -> dict[str, Any]:
     # Compact tuple layout: [download_count, category]. The source is encoded in
     # the key. Daily snapshots are retained indefinitely, so avoiding repeated
@@ -348,6 +386,7 @@ def collect(output_dir: Path, readme_path: Path) -> dict[str, Any]:
     timeseries_path = output_dir / "timeseries.json"
     timeseries = update_timeseries(timeseries_path, snapshot, changes)
     write_json(output_dir / "latest.json", latest)
+    write_json(output_dir / "overview.json", build_overview(latest))
     write_json(history_dir / f"{date}.json", snapshot, compact=True)
     write_json(timeseries_path, timeseries)
     update_readme(readme_path, latest, timeseries)

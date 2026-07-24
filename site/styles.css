@@ -899,9 +899,15 @@ select:focus-visible {
   font-weight: 650;
 }
 
+.os-banner-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .os-banner .material-symbols {
-  margin-inline-end: 8px;
-  vertical-align: -4px;
+  font-size: 1.3rem;
+  flex-shrink: 0;
 }
 
 .download-grid {

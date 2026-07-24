@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "collected_at": "2026-07-23T03:48:53Z",
+  "collected_at": "2026-07-24T03:48:21Z",
   "notice_he": "Y-PLONI/otzaria הועבר אל Otzaria/otzaria ואינו נספר כמקור נפרד.",
   "sources": [
     {
@@ -22,23 +22,23 @@
       "repository": "Otzaria/SeforimLibrary",
       "label_he": "ספריית הספרים",
       "url": "https://github.com/Otzaria/SeforimLibrary/releases",
-      "release_count": 15
+      "release_count": 16
     }
   ],
   "summary": {
-    "tracked_downloads": 112432,
+    "tracked_downloads": 113057,
     "by_source": {
-      "sivan22": 49495,
-      "otzaria": 58359,
-      "seforim": 4578
+      "sivan22": 49500,
+      "otzaria": 58562,
+      "seforim": 4995
     },
     "by_category": {
-      "app": 107854,
-      "library": 4407,
-      "delta": 171
+      "app": 108062,
+      "library": 4639,
+      "delta": 356
     },
-    "release_count": 445,
-    "asset_count": 2685
+    "release_count": 446,
+    "asset_count": 2688
   },
   "featured_release": {
     "id": 302958435,
@@ -98,7 +98,7 @@
         "id": 384374289,
         "name": "otzaria-linux-full.tar.gz",
         "category": "app",
-        "downloads": 56,
+        "downloads": 58,
         "size": 2128765724,
         "content_type": "application/gzip",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-linux-full.tar.gz"
@@ -107,7 +107,7 @@
         "id": 384374258,
         "name": "otzaria-0.9.88-linux.deb",
         "category": "app",
-        "downloads": 47,
+        "downloads": 48,
         "size": 36720180,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-0.9.88-linux.deb"
@@ -125,12 +125,12 @@
         "id": 384374257,
         "name": "otzaria-0.9.88-1.x86_64.rpm",
         "category": "app",
-        "downloads": 16,
+        "downloads": 17,
         "size": 37880720,
         "content_type": "application/x-redhat-package-manager",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-0.9.88-1.x86_64.rpm"
       }
     ],
-    "downloads": 2812
+    "downloads": 2816
   }
 }

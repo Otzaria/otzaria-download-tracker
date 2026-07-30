@@ -8,7 +8,6 @@
 - גרסאות האפליקציה ב־[`Otzaria/otzaria`](https://github.com/Otzaria/otzaria/releases)
 - הספרייה המלאה ועדכוני הדלתא ב־[`Otzaria/SeforimLibrary`](https://github.com/Otzaria/SeforimLibrary/releases)
 
-> `Y-PLONI/otzaria` אינו מקור רביעי: GitHub מפנה אותו אל `Otzaria/otzaria`, ולכן ספירה שלו בנפרד הייתה מכפילה את אותם הנתונים.
 
 הממשק משתמש באותה ערכת צבעים של אפליקציית אוצריא: seed חום עמוק (`#2C1B02`) במצב בהיר ו־seed סגול (`#9C27B0`) במצב כהה. ברירת המחדל באתר היא התאמה אוטומטית למערכת, וניתן לבחור ידנית בהיר, מערכת או כהה.
 

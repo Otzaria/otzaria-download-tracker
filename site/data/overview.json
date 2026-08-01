@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "collected_at": "2026-07-31T03:55:02Z",
+  "collected_at": "2026-08-01T03:54:52Z",
   "notice_he": "Y-PLONI/otzaria הועבר אל Otzaria/otzaria ואינו נספר כמקור נפרד.",
   "sources": [
     {
@@ -22,23 +22,23 @@
       "repository": "Otzaria/SeforimLibrary",
       "label_he": "ספריית הספרים",
       "url": "https://github.com/Otzaria/SeforimLibrary/releases",
-      "release_count": 18
+      "release_count": 19
     }
   ],
   "summary": {
-    "tracked_downloads": 117118,
+    "tracked_downloads": 117522,
     "by_source": {
-      "sivan22": 49528,
-      "otzaria": 60488,
-      "seforim": 7102
+      "sivan22": 49532,
+      "otzaria": 60679,
+      "seforim": 7311
     },
     "by_category": {
-      "app": 110016,
-      "library": 5720,
-      "delta": 1382
+      "app": 110211,
+      "library": 5827,
+      "delta": 1484
     },
-    "release_count": 449,
-    "asset_count": 2704
+    "release_count": 450,
+    "asset_count": 2708
   },
   "featured_release": {
     "id": 302958435,
@@ -53,7 +53,7 @@
         "id": 384374266,
         "name": "otzaria-0.9.88-windows-full.exe",
         "category": "app",
-        "downloads": 1404,
+        "downloads": 1405,
         "size": 1649481761,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-0.9.88-windows-full.exe"
@@ -71,10 +71,19 @@
         "id": 384374277,
         "name": "otzaria-windows.zip",
         "category": "app",
-        "downloads": 222,
+        "downloads": 223,
         "size": 37551728,
         "content_type": "application/zip",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-windows.zip"
+      },
+      {
+        "id": 384374289,
+        "name": "otzaria-linux-full.tar.gz",
+        "category": "app",
+        "downloads": 79,
+        "size": 2128765724,
+        "content_type": "application/gzip",
+        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-linux-full.tar.gz"
       },
       {
         "id": 384374235,
@@ -84,15 +93,6 @@
         "size": 158440662,
         "content_type": "application/vnd.android.package-archive",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/app-release.apk"
-      },
-      {
-        "id": 384374289,
-        "name": "otzaria-linux-full.tar.gz",
-        "category": "app",
-        "downloads": 75,
-        "size": 2128765724,
-        "content_type": "application/gzip",
-        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-linux-full.tar.gz"
       },
       {
         "id": 384374276,
@@ -107,7 +107,7 @@
         "id": 384374258,
         "name": "otzaria-0.9.88-linux.deb",
         "category": "app",
-        "downloads": 59,
+        "downloads": 64,
         "size": 36720180,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-0.9.88-linux.deb"
@@ -131,6 +131,6 @@
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-0.9.88-1.x86_64.rpm"
       }
     ],
-    "downloads": 2854
+    "downloads": 2865
   }
 }

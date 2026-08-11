@@ -678,6 +678,36 @@
           "delta": 243
         }
       }
+    },
+    {
+      "date": "2026-08-11",
+      "collected_at": "2026-08-11T02:30:50Z",
+      "totals": {
+        "tracked_downloads": 123993,
+        "by_source": {
+          "sivan22": 49558,
+          "otzaria": 63660,
+          "seforim": 10775
+        },
+        "by_category": {
+          "app": 113218,
+          "library": 7242,
+          "delta": 3533
+        }
+      },
+      "changes": {
+        "tracked_downloads": 898,
+        "by_source": {
+          "sivan22": 3,
+          "otzaria": 321,
+          "seforim": 574
+        },
+        "by_category": {
+          "app": 324,
+          "library": 205,
+          "delta": 369
+        }
+      }
     }
   ]
 }

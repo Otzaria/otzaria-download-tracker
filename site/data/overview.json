@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "collected_at": "2026-08-16T01:59:30Z",
+  "collected_at": "2026-08-17T01:57:27Z",
   "notice_he": "Y-PLONI/otzaria הועבר אל Otzaria/otzaria ואינו נספר כמקור נפרד.",
   "sources": [
     {
@@ -26,16 +26,16 @@
     }
   ],
   "summary": {
-    "tracked_downloads": 126882,
+    "tracked_downloads": 127639,
     "by_source": {
-      "sivan22": 49575,
-      "otzaria": 64711,
-      "seforim": 12596
+      "sivan22": 49580,
+      "otzaria": 65001,
+      "seforim": 13058
     },
     "by_category": {
-      "app": 114286,
-      "library": 7811,
-      "delta": 4785
+      "app": 114581,
+      "library": 7942,
+      "delta": 5116
     },
     "release_count": 454,
     "asset_count": 2716

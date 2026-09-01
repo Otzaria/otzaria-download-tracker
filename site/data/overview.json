@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "collected_at": "2026-08-31T05:44:54Z",
+  "collected_at": "2026-09-01T05:17:54Z",
   "notice_he": "Y-PLONI/otzaria הועבר אל Otzaria/otzaria ואינו נספר כמקור נפרד.",
   "sources": [
     {
@@ -22,23 +22,23 @@
       "repository": "Otzaria/SeforimLibrary",
       "label_he": "ספריית הספרים",
       "url": "https://github.com/Otzaria/SeforimLibrary/releases",
-      "release_count": 33
+      "release_count": 36
     }
   ],
   "summary": {
-    "tracked_downloads": 135123,
+    "tracked_downloads": 135835,
     "by_source": {
-      "sivan22": 49642,
-      "otzaria": 67772,
-      "seforim": 17709
+      "sivan22": 49645,
+      "otzaria": 67998,
+      "seforim": 18192
     },
     "by_category": {
-      "app": 117414,
-      "library": 9752,
-      "delta": 7957
+      "app": 117643,
+      "library": 9894,
+      "delta": 8298
     },
-    "release_count": 464,
-    "asset_count": 2726
+    "release_count": 467,
+    "asset_count": 2728
   },
   "featured_release": {
     "id": 302958435,
@@ -89,7 +89,7 @@
         "id": 384374235,
         "name": "app-release.apk",
         "category": "app",
-        "downloads": 79,
+        "downloads": 80,
         "size": 158440662,
         "content_type": "application/vnd.android.package-archive",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/app-release.apk"
@@ -98,7 +98,7 @@
         "id": 384374276,
         "name": "otzaria-android-full.zip",
         "category": "app",
-        "downloads": 75,
+        "downloads": 79,
         "size": 1617550654,
         "content_type": "application/zip",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-android-full.zip"
@@ -131,6 +131,6 @@
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-0.9.88-1.x86_64.rpm"
       }
     ],
-    "downloads": 2906
+    "downloads": 2911
   }
 }

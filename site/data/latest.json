@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "collected_at": "2026-09-03T04:39:17Z",
+  "collected_at": "2026-09-04T04:41:24Z",
   "notice_he": "Y-PLONI/otzaria הועבר אל Otzaria/otzaria ואינו נספר כמקור נפרד.",
   "sources": [
     {
@@ -22,25 +22,196 @@
       "repository": "Otzaria/SeforimLibrary",
       "label_he": "ספריית הספרים",
       "url": "https://github.com/Otzaria/SeforimLibrary/releases",
-      "release_count": 37
+      "release_count": 40
     }
   ],
   "summary": {
-    "tracked_downloads": 136891,
+    "tracked_downloads": 137563,
     "by_source": {
-      "sivan22": 49652,
-      "otzaria": 68394,
-      "seforim": 18845
+      "sivan22": 49658,
+      "otzaria": 68647,
+      "seforim": 19258
     },
     "by_category": {
-      "app": 118046,
-      "library": 10140,
-      "delta": 8705
+      "app": 118305,
+      "library": 10300,
+      "delta": 8958
     },
-    "release_count": 468,
-    "asset_count": 2728
+    "release_count": 471,
+    "asset_count": 2733
   },
   "releases": [
+    {
+      "id": 382456461,
+      "source": "seforim",
+      "tag": "pipeline-result-run-33825096860-1",
+      "name": "Immutable Seforim pipeline result 33825096860:1",
+      "published_at": "2026-09-04T03:18:23Z",
+      "prerelease": true,
+      "url": "https://github.com/Otzaria/SeforimLibrary/releases/tag/pipeline-result-run-33825096860-1",
+      "assets": [
+        {
+          "id": 543714192,
+          "name": "pipeline-result.json",
+          "category": "auxiliary",
+          "downloads": 2,
+          "size": 3012,
+          "content_type": "application/json",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/pipeline-result-run-33825096860-1/pipeline-result.json"
+        },
+        {
+          "id": 543714277,
+          "name": "pipeline-result.sha256",
+          "category": "auxiliary",
+          "downloads": 2,
+          "size": 65,
+          "content_type": "application/octet-stream",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/pipeline-result-run-33825096860-1/pipeline-result.sha256"
+        }
+      ],
+      "downloads": 0
+    },
+    {
+      "id": 382447100,
+      "source": "seforim",
+      "tag": "v25-20260904011803",
+      "name": "v25-20260904011803",
+      "published_at": "2026-09-04T03:18:16Z",
+      "prerelease": true,
+      "url": "https://github.com/Otzaria/SeforimLibrary/releases/tag/v25-20260904011803",
+      "assets": [
+        {
+          "id": 543684462,
+          "name": "build_provenance.json",
+          "category": "auxiliary",
+          "downloads": 1,
+          "size": 3399,
+          "content_type": "application/json",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/build_provenance.json"
+        },
+        {
+          "id": 543691679,
+          "name": "patch-v17-v25.db.zst.manifest.json",
+          "category": "auxiliary",
+          "downloads": 1,
+          "size": 639,
+          "content_type": "application/json",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/patch-v17-v25.db.zst.manifest.json"
+        },
+        {
+          "id": 543693049,
+          "name": "patch-v21-v25.db.zst.manifest.json",
+          "category": "auxiliary",
+          "downloads": 1,
+          "size": 639,
+          "content_type": "application/json",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/patch-v21-v25.db.zst.manifest.json"
+        },
+        {
+          "id": 543694102,
+          "name": "patch-v23-v25.db.zst.manifest.json",
+          "category": "auxiliary",
+          "downloads": 1,
+          "size": 639,
+          "content_type": "application/json",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/patch-v23-v25.db.zst.manifest.json"
+        },
+        {
+          "id": 543694171,
+          "name": "patch-v24-v25.db.zst",
+          "category": "delta",
+          "downloads": 1,
+          "size": 121453959,
+          "content_type": "application/zstd",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/patch-v24-v25.db.zst"
+        },
+        {
+          "id": 543694936,
+          "name": "patch-v24-v25.db.zst.manifest.json",
+          "category": "auxiliary",
+          "downloads": 1,
+          "size": 639,
+          "content_type": "application/json",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/patch-v24-v25.db.zst.manifest.json"
+        },
+        {
+          "id": 543702454,
+          "name": "seforim.db.zst",
+          "category": "library",
+          "downloads": 1,
+          "size": 1398038408,
+          "content_type": "application/zstd",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/seforim.db.zst"
+        },
+        {
+          "id": 543684525,
+          "name": "lines_snapshot.db.zst",
+          "category": "auxiliary",
+          "downloads": 0,
+          "size": 870296187,
+          "content_type": "application/zstd",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/lines_snapshot.db.zst"
+        },
+        {
+          "id": 543690486,
+          "name": "patch-v17-v25.db.zst",
+          "category": "delta",
+          "downloads": 0,
+          "size": 181179537,
+          "content_type": "application/zstd",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/patch-v17-v25.db.zst"
+        },
+        {
+          "id": 543691720,
+          "name": "patch-v21-v25.db.zst",
+          "category": "delta",
+          "downloads": 0,
+          "size": 159723478,
+          "content_type": "application/zstd",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/patch-v21-v25.db.zst"
+        },
+        {
+          "id": 543693164,
+          "name": "patch-v23-v25.db.zst",
+          "category": "delta",
+          "downloads": 0,
+          "size": 145023582,
+          "content_type": "application/zstd",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/patch-v23-v25.db.zst"
+        },
+        {
+          "id": 543694973,
+          "name": "seforim.db.buildstate",
+          "category": "auxiliary",
+          "downloads": 0,
+          "size": 1031311360,
+          "content_type": "application/octet-stream",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v25-20260904011803/seforim.db.buildstate"
+        }
+      ],
+      "downloads": 2
+    },
+    {
+      "id": 382392710,
+      "source": "seforim",
+      "tag": "lines-snapshot-sha256-fae4d160c5b1725b9602a5ba05395303e21dcc7aab3634742d4caf4c14e0fb19",
+      "name": "Immutable Linker snapshot fae4d160c5b1725b9602a5ba05395303e21dcc7aab3634742d4caf4c14e0fb19",
+      "published_at": "2026-09-03T23:45:54Z",
+      "prerelease": true,
+      "url": "https://github.com/Otzaria/SeforimLibrary/releases/tag/lines-snapshot-sha256-fae4d160c5b1725b9602a5ba05395303e21dcc7aab3634742d4caf4c14e0fb19",
+      "assets": [
+        {
+          "id": 543495534,
+          "name": "lines_snapshot.db.zst",
+          "category": "auxiliary",
+          "downloads": 2,
+          "size": 870296187,
+          "content_type": "application/zstd",
+          "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/lines-snapshot-sha256-fae4d160c5b1725b9602a5ba05395303e21dcc7aab3634742d4caf4c14e0fb19/lines_snapshot.db.zst"
+        }
+      ],
+      "downloads": 0
+    },
     {
       "id": 380816515,
       "source": "seforim",
@@ -54,7 +225,7 @@
           "id": 540127506,
           "name": "lines_snapshot.db.zst",
           "category": "auxiliary",
-          "downloads": 7,
+          "downloads": 10,
           "size": 870310796,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/lines-snapshot-sha256-5bf2424b821f4221c5e9e14834cf86070b1b939cbb8a89773d6aaa680c86a36f/lines_snapshot.db.zst"
@@ -75,7 +246,7 @@
           "id": 538193877,
           "name": "patch-v23-v24.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 9,
+          "downloads": 11,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/patch-v23-v24-sha256-ad1f7ddeafab1b99adebf9ec8b5d27019d75c673b8ea41a0ead88387a1b3e34d/patch-v23-v24.db.zst.manifest.json"
@@ -105,7 +276,7 @@
           "id": 538053713,
           "name": "pipeline-result.json",
           "category": "auxiliary",
-          "downloads": 1,
+          "downloads": 2,
           "size": 1980,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/pipeline-result-run-33389998063-1/pipeline-result.json"
@@ -135,7 +306,7 @@
           "id": 538040753,
           "name": "seforim.db.zst",
           "category": "library",
-          "downloads": 9,
+          "downloads": 12,
           "size": 1351797995,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v24-20260831120814/seforim.db.zst"
@@ -144,7 +315,7 @@
           "id": 538024778,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 5,
+          "downloads": 8,
           "size": 2367,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v24-20260831120814/build_provenance.json"
@@ -153,7 +324,7 @@
           "id": 538033029,
           "name": "seforim.db.buildstate",
           "category": "auxiliary",
-          "downloads": 3,
+          "downloads": 5,
           "size": 1026121728,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v24-20260831120814/seforim.db.buildstate"
@@ -168,7 +339,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v24-20260831120814/lines_snapshot.db.zst"
         }
       ],
-      "downloads": 9
+      "downloads": 12
     },
     {
       "id": 379249870,
@@ -276,7 +447,7 @@
           "id": 534796963,
           "name": "patch-v15-v23.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 2683,
+          "downloads": 3288,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/patch-v15-v23.db.zst.manifest.json"
@@ -285,7 +456,7 @@
           "id": 534797356,
           "name": "patch-v19-v23.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 2663,
+          "downloads": 3265,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/patch-v19-v23.db.zst.manifest.json"
@@ -294,7 +465,7 @@
           "id": 534797747,
           "name": "patch-v21-v23.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 2655,
+          "downloads": 3255,
           "size": 610,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/patch-v21-v23.db.zst.manifest.json"
@@ -303,7 +474,7 @@
           "id": 534798039,
           "name": "patch-v22-v23.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 2648,
+          "downloads": 3247,
           "size": 609,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/patch-v22-v23.db.zst.manifest.json"
@@ -312,7 +483,7 @@
           "id": 534804935,
           "name": "seforim.db.zst",
           "category": "library",
-          "downloads": 651,
+          "downloads": 799,
           "size": 1373487294,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/seforim.db.zst"
@@ -321,7 +492,7 @@
           "id": 534797907,
           "name": "patch-v22-v23.db.zst",
           "category": "delta",
-          "downloads": 473,
+          "downloads": 507,
           "size": 8503129,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/patch-v22-v23.db.zst"
@@ -330,7 +501,7 @@
           "id": 534797527,
           "name": "patch-v21-v23.db.zst",
           "category": "delta",
-          "downloads": 157,
+          "downloads": 186,
           "size": 15032646,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/patch-v21-v23.db.zst"
@@ -339,7 +510,7 @@
           "id": 534797058,
           "name": "patch-v19-v23.db.zst",
           "category": "delta",
-          "downloads": 143,
+          "downloads": 170,
           "size": 34241928,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/patch-v19-v23.db.zst"
@@ -348,7 +519,7 @@
           "id": 534796717,
           "name": "patch-v15-v23.db.zst",
           "category": "delta",
-          "downloads": 64,
+          "downloads": 79,
           "size": 43067770,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/patch-v15-v23.db.zst"
@@ -357,7 +528,7 @@
           "id": 534791207,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 19,
+          "downloads": 22,
           "size": 3394,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/build_provenance.json"
@@ -381,7 +552,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v23-20260829032606/lines_snapshot.db.zst"
         }
       ],
-      "downloads": 1488
+      "downloads": 1741
     },
     {
       "id": 378614559,
@@ -468,7 +639,7 @@
           "id": 524078245,
           "name": "patch-v14-v22.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 5989,
+          "downloads": 6583,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/patch-v14-v22.db.zst.manifest.json"
@@ -477,7 +648,7 @@
           "id": 524078341,
           "name": "patch-v18-v22.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 5973,
+          "downloads": 6566,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/patch-v18-v22.db.zst.manifest.json"
@@ -486,7 +657,7 @@
           "id": 524078408,
           "name": "patch-v20-v22.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 5956,
+          "downloads": 6548,
           "size": 610,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/patch-v20-v22.db.zst.manifest.json"
@@ -495,7 +666,7 @@
           "id": 524078458,
           "name": "patch-v21-v22.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 5946,
+          "downloads": 6537,
           "size": 609,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/patch-v21-v22.db.zst.manifest.json"
@@ -513,7 +684,7 @@
           "id": 524078419,
           "name": "patch-v21-v22.db.zst",
           "category": "delta",
-          "downloads": 579,
+          "downloads": 584,
           "size": 6826052,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/patch-v21-v22.db.zst"
@@ -522,7 +693,7 @@
           "id": 524078273,
           "name": "patch-v18-v22.db.zst",
           "category": "delta",
-          "downloads": 221,
+          "downloads": 226,
           "size": 29648217,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/patch-v18-v22.db.zst"
@@ -531,7 +702,7 @@
           "id": 524078158,
           "name": "patch-v14-v22.db.zst",
           "category": "delta",
-          "downloads": 137,
+          "downloads": 141,
           "size": 38622335,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/patch-v14-v22.db.zst"
@@ -540,7 +711,7 @@
           "id": 524078357,
           "name": "patch-v20-v22.db.zst",
           "category": "delta",
-          "downloads": 132,
+          "downloads": 137,
           "size": 13615192,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/patch-v20-v22.db.zst"
@@ -549,7 +720,7 @@
           "id": 524077246,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 33,
+          "downloads": 36,
           "size": 3321,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/build_provenance.json"
@@ -573,7 +744,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v22-20260821152805/lines_snapshot.db.zst"
         }
       ],
-      "downloads": 1884
+      "downloads": 1903
     },
     {
       "id": 373944884,
@@ -639,7 +810,7 @@
           "id": 514181849,
           "name": "patch-v17-v21.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 9386,
+          "downloads": 9973,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v21-20260814060554/patch-v17-v21.db.zst.manifest.json"
@@ -648,7 +819,7 @@
           "id": 514181914,
           "name": "patch-v19-v21.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 9369,
+          "downloads": 9956,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v21-20260814060554/patch-v19-v21.db.zst.manifest.json"
@@ -657,7 +828,7 @@
           "id": 514181984,
           "name": "patch-v20-v21.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 9357,
+          "downloads": 9942,
           "size": 609,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v21-20260814060554/patch-v20-v21.db.zst.manifest.json"
@@ -666,7 +837,7 @@
           "id": 514182950,
           "name": "seforim.db.zst",
           "category": "library",
-          "downloads": 964,
+          "downloads": 966,
           "size": 1548130475,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v21-20260814060554/seforim.db.zst"
@@ -675,7 +846,7 @@
           "id": 514181960,
           "name": "patch-v20-v21.db.zst",
           "category": "delta",
-          "downloads": 535,
+          "downloads": 544,
           "size": 6819366,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v21-20260814060554/patch-v20-v21.db.zst"
@@ -684,7 +855,7 @@
           "id": 514181861,
           "name": "patch-v19-v21.db.zst",
           "category": "delta",
-          "downloads": 302,
+          "downloads": 307,
           "size": 22857456,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v21-20260814060554/patch-v19-v21.db.zst"
@@ -693,7 +864,7 @@
           "id": 514181739,
           "name": "patch-v17-v21.db.zst",
           "category": "delta",
-          "downloads": 218,
+          "downloads": 226,
           "size": 23701534,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v21-20260814060554/patch-v17-v21.db.zst"
@@ -702,7 +873,7 @@
           "id": 514180586,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 39,
+          "downloads": 42,
           "size": 3064,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v21-20260814060554/build_provenance.json"
@@ -726,7 +897,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v21-20260814060554/lines_snapshot.db.zst"
         }
       ],
-      "downloads": 2019
+      "downloads": 2043
     },
     {
       "id": 370320196,
@@ -762,7 +933,7 @@
           "id": 505305688,
           "name": "patch-v16-v20.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 12675,
+          "downloads": 13257,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v20-20260807110905/patch-v16-v20.db.zst.manifest.json"
@@ -771,7 +942,7 @@
           "id": 505305773,
           "name": "patch-v18-v20.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 12644,
+          "downloads": 13226,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v20-20260807110905/patch-v18-v20.db.zst.manifest.json"
@@ -780,7 +951,7 @@
           "id": 505305878,
           "name": "patch-v19-v20.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 12617,
+          "downloads": 13199,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v20-20260807110905/patch-v19-v20.db.zst.manifest.json"
@@ -789,7 +960,7 @@
           "id": 505306824,
           "name": "seforim.db.zst",
           "category": "library",
-          "downloads": 888,
+          "downloads": 889,
           "size": 1547243670,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v20-20260807110905/seforim.db.zst"
@@ -798,7 +969,7 @@
           "id": 505305827,
           "name": "patch-v19-v20.db.zst",
           "category": "delta",
-          "downloads": 482,
+          "downloads": 487,
           "size": 19374632,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v20-20260807110905/patch-v19-v20.db.zst"
@@ -807,7 +978,7 @@
           "id": 505305721,
           "name": "patch-v18-v20.db.zst",
           "category": "delta",
-          "downloads": 379,
+          "downloads": 384,
           "size": 19370803,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v20-20260807110905/patch-v18-v20.db.zst"
@@ -816,7 +987,7 @@
           "id": 505305645,
           "name": "patch-v16-v20.db.zst",
           "category": "delta",
-          "downloads": 250,
+          "downloads": 255,
           "size": 21460084,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v20-20260807110905/patch-v16-v20.db.zst"
@@ -825,7 +996,7 @@
           "id": 505304649,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 41,
+          "downloads": 44,
           "size": 3065,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v20-20260807110905/build_provenance.json"
@@ -849,7 +1020,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v20-20260807110905/lines_snapshot.db.zst"
         }
       ],
-      "downloads": 1999
+      "downloads": 2015
     },
     {
       "id": 363100591,
@@ -864,7 +1035,7 @@
           "id": 496744157,
           "name": "patch-v15-v19.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 16154,
+          "downloads": 16735,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v19-20260731105446/patch-v15-v19.db.zst.manifest.json"
@@ -873,7 +1044,7 @@
           "id": 496744246,
           "name": "patch-v17-v19.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 16108,
+          "downloads": 16690,
           "size": 610,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v19-20260731105446/patch-v17-v19.db.zst.manifest.json"
@@ -882,7 +1053,7 @@
           "id": 496744346,
           "name": "patch-v18-v19.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 16076,
+          "downloads": 16658,
           "size": 606,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v19-20260731105446/patch-v18-v19.db.zst.manifest.json"
@@ -891,7 +1062,7 @@
           "id": 496744290,
           "name": "patch-v18-v19.db.zst",
           "category": "delta",
-          "downloads": 1109,
+          "downloads": 1140,
           "size": 123061,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v19-20260731105446/patch-v18-v19.db.zst"
@@ -909,7 +1080,7 @@
           "id": 496744189,
           "name": "patch-v17-v19.db.zst",
           "category": "delta",
-          "downloads": 266,
+          "downloads": 271,
           "size": 10001752,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v19-20260731105446/patch-v17-v19.db.zst"
@@ -918,7 +1089,7 @@
           "id": 496744101,
           "name": "patch-v15-v19.db.zst",
           "category": "delta",
-          "downloads": 179,
+          "downloads": 184,
           "size": 19820509,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v19-20260731105446/patch-v15-v19.db.zst"
@@ -927,7 +1098,7 @@
           "id": 496743185,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 42,
+          "downloads": 45,
           "size": 3063,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v19-20260731105446/build_provenance.json"
@@ -951,7 +1122,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v19-20260731105446/seforim.db.buildstate"
         }
       ],
-      "downloads": 2535
+      "downloads": 2576
     },
     {
       "id": 361336910,
@@ -966,7 +1137,7 @@
           "id": 493120923,
           "name": "otzaria-0.9.96-windows.exe",
           "category": "app",
-          "downloads": 3898,
+          "downloads": 4014,
           "size": 31734969,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.96%2B736/otzaria-0.9.96-windows.exe"
@@ -975,7 +1146,7 @@
           "id": 493120955,
           "name": "otzaria-0.9.96-windows-full.exe",
           "category": "app",
-          "downloads": 3092,
+          "downloads": 3193,
           "size": 2114350952,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.96%2B736/otzaria-0.9.96-windows-full.exe"
@@ -984,7 +1155,7 @@
           "id": 493120999,
           "name": "otzaria-windows.zip",
           "category": "app",
-          "downloads": 409,
+          "downloads": 413,
           "size": 40922014,
           "content_type": "application/zip",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.96%2B736/otzaria-windows.zip"
@@ -993,7 +1164,7 @@
           "id": 493120996,
           "name": "otzaria-android-full.zip",
           "category": "app",
-          "downloads": 180,
+          "downloads": 192,
           "size": 2109189808,
           "content_type": "application/zip",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.96%2B736/otzaria-android-full.zip"
@@ -1011,7 +1182,7 @@
           "id": 493120998,
           "name": "otzaria-macos.dmg",
           "category": "app",
-          "downloads": 93,
+          "downloads": 94,
           "size": 73225189,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.96%2B736/otzaria-macos.dmg"
@@ -1020,7 +1191,7 @@
           "id": 493120970,
           "name": "otzaria-0.9.96+90960-linux.deb",
           "category": "app",
-          "downloads": 50,
+          "downloads": 53,
           "size": 92473328,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.96%2B736/otzaria-0.9.96%2B90960-linux.deb"
@@ -1029,7 +1200,7 @@
           "id": 493120997,
           "name": "otzaria-macos.zip",
           "category": "app",
-          "downloads": 50,
+          "downloads": 52,
           "size": 73452542,
           "content_type": "application/zip",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.96%2B736/otzaria-macos.zip"
@@ -1044,7 +1215,7 @@
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.96%2B736/otzaria-0.9.96%2B90960-90960.x86_64.rpm"
         }
       ],
-      "downloads": 7930
+      "downloads": 8169
     },
     {
       "id": 361261302,
@@ -1059,7 +1230,7 @@
           "id": 492992310,
           "name": "patch-v14-v18.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 17622,
+          "downloads": 18201,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v18-20260728123527/patch-v14-v18.db.zst.manifest.json"
@@ -1068,7 +1239,7 @@
           "id": 492992396,
           "name": "patch-v16-v18.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 17594,
+          "downloads": 18173,
           "size": 610,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v18-20260728123527/patch-v16-v18.db.zst.manifest.json"
@@ -1077,7 +1248,7 @@
           "id": 492992489,
           "name": "patch-v17-v18.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 17545,
+          "downloads": 18123,
           "size": 609,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v18-20260728123527/patch-v17-v18.db.zst.manifest.json"
@@ -1086,7 +1257,7 @@
           "id": 492992256,
           "name": "patch-v14-v18.db.zst",
           "category": "delta",
-          "downloads": 482,
+          "downloads": 486,
           "size": 20258675,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v18-20260728123527/patch-v14-v18.db.zst"
@@ -1104,7 +1275,7 @@
           "id": 492992435,
           "name": "patch-v17-v18.db.zst",
           "category": "delta",
-          "downloads": 293,
+          "downloads": 297,
           "size": 9887749,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v18-20260728123527/patch-v17-v18.db.zst"
@@ -1113,7 +1284,7 @@
           "id": 492992345,
           "name": "patch-v16-v18.db.zst",
           "category": "delta",
-          "downloads": 190,
+          "downloads": 194,
           "size": 14045164,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v18-20260728123527/patch-v16-v18.db.zst"
@@ -1122,7 +1293,7 @@
           "id": 492991231,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 42,
+          "downloads": 45,
           "size": 3064,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v18-20260728123527/build_provenance.json"
@@ -1146,7 +1317,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v18-20260728123527/lines_snapshot.db.zst"
         }
       ],
-      "downloads": 1435
+      "downloads": 1447
     },
     {
       "id": 359888570,
@@ -1161,7 +1332,7 @@
           "id": 489878797,
           "name": "patch-v15-v17.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 18584,
+          "downloads": 19162,
           "size": 611,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v17-20260725215227/patch-v15-v17.db.zst.manifest.json"
@@ -1170,7 +1341,7 @@
           "id": 489878836,
           "name": "patch-v16-v17.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 18559,
+          "downloads": 19136,
           "size": 609,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v17-20260725215227/patch-v16-v17.db.zst.manifest.json"
@@ -1179,7 +1350,7 @@
           "id": 489878814,
           "name": "patch-v16-v17.db.zst",
           "category": "delta",
-          "downloads": 499,
+          "downloads": 509,
           "size": 4161102,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v17-20260725215227/patch-v16-v17.db.zst"
@@ -1188,7 +1359,7 @@
           "id": 489879329,
           "name": "seforim.db.zst",
           "category": "library",
-          "downloads": 416,
+          "downloads": 418,
           "size": 1544345982,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v17-20260725215227/seforim.db.zst"
@@ -1197,7 +1368,7 @@
           "id": 489878790,
           "name": "patch-v15-v17.db.zst",
           "category": "delta",
-          "downloads": 255,
+          "downloads": 259,
           "size": 18747331,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v17-20260725215227/patch-v15-v17.db.zst"
@@ -1206,7 +1377,7 @@
           "id": 489878506,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 51,
+          "downloads": 54,
           "size": 2806,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v17-20260725215227/build_provenance.json"
@@ -1230,7 +1401,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v17-20260725215227/lines_snapshot.db.zst"
         }
       ],
-      "downloads": 1170
+      "downloads": 1186
     },
     {
       "id": 358605325,
@@ -1245,7 +1416,7 @@
           "id": 487060027,
           "name": "patch-v14-v16.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 19512,
+          "downloads": 20087,
           "size": 610,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v16-20260723080937/patch-v14-v16.db.zst.manifest.json"
@@ -1254,7 +1425,7 @@
           "id": 487060145,
           "name": "patch-v15-v16.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 19510,
+          "downloads": 20085,
           "size": 610,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v16-20260723080937/patch-v15-v16.db.zst.manifest.json"
@@ -1263,7 +1434,7 @@
           "id": 487059960,
           "name": "patch-v14-v16.db.zst",
           "category": "delta",
-          "downloads": 746,
+          "downloads": 750,
           "size": 15231636,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v16-20260723080937/patch-v14-v16.db.zst"
@@ -1281,7 +1452,7 @@
           "id": 487060068,
           "name": "patch-v15-v16.db.zst",
           "category": "delta",
-          "downloads": 240,
+          "downloads": 244,
           "size": 14605740,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v16-20260723080937/patch-v15-v16.db.zst"
@@ -1290,7 +1461,7 @@
           "id": 487058952,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 53,
+          "downloads": 56,
           "size": 2807,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v16-20260723080937/build_provenance.json"
@@ -1314,7 +1485,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v16-20260723080937/lines_snapshot.db.zst"
         }
       ],
-      "downloads": 1412
+      "downloads": 1420
     },
     {
       "id": 357758912,
@@ -1329,7 +1500,7 @@
           "id": 485446496,
           "name": "patch-v14-v15.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 20009,
+          "downloads": 20584,
           "size": 607,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v15-20260722011300/patch-v14-v15.db.zst.manifest.json"
@@ -1347,7 +1518,7 @@
           "id": 485446452,
           "name": "patch-v14-v15.db.zst",
           "category": "delta",
-          "downloads": 265,
+          "downloads": 281,
           "size": 682879,
           "content_type": "application/zstd",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v15-20260722011300/patch-v14-v15.db.zst"
@@ -1356,7 +1527,7 @@
           "id": 485445539,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 57,
+          "downloads": 60,
           "size": 2548,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v15-20260722011300/build_provenance.json"
@@ -1380,7 +1551,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v15-20260722011300/lines_snapshot.db.zst"
         }
       ],
-      "downloads": 602
+      "downloads": 618
     },
     {
       "id": 356423309,
@@ -1404,7 +1575,7 @@
           "id": 482691832,
           "name": "build_provenance.json",
           "category": "auxiliary",
-          "downloads": 67,
+          "downloads": 70,
           "size": 1479,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v14-20260719174439/build_provenance.json"
@@ -1572,7 +1743,7 @@
           "id": 468528294,
           "name": "seforim.db.zst",
           "category": "library",
-          "downloads": 47,
+          "downloads": 50,
           "size": 1458970781,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v9-20260706195857/seforim.db.zst"
@@ -1587,7 +1758,7 @@
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v9-20260706195857/seforim.db.buildstate"
         }
       ],
-      "downloads": 47
+      "downloads": 50
     },
     {
       "id": 349552510,
@@ -1662,7 +1833,7 @@
           "id": 464629045,
           "name": "patch-v2-v6.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 26887,
+          "downloads": 27452,
           "size": 607,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v6-20260702173941/patch-v2-v6.db.zst.manifest.json"
@@ -1671,7 +1842,7 @@
           "id": 464629037,
           "name": "patch-v4-v6.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 26814,
+          "downloads": 27378,
           "size": 607,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v6-20260702173941/patch-v4-v6.db.zst.manifest.json"
@@ -1680,7 +1851,7 @@
           "id": 464629044,
           "name": "patch-v5-v6.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 26787,
+          "downloads": 27350,
           "size": 605,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v6-20260702173941/patch-v5-v6.db.zst.manifest.json"
@@ -1812,7 +1983,7 @@
           "id": 463214245,
           "name": "patch-v1-v5.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 27154,
+          "downloads": 27718,
           "size": 607,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v5-20260701110442/patch-v1-v5.db.zst.manifest.json"
@@ -1821,7 +1992,7 @@
           "id": 463214244,
           "name": "patch-v3-v5.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 27138,
+          "downloads": 27701,
           "size": 607,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v5-20260701110442/patch-v3-v5.db.zst.manifest.json"
@@ -1830,7 +2001,7 @@
           "id": 463214247,
           "name": "patch-v4-v5.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 27101,
+          "downloads": 27664,
           "size": 606,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v5-20260701110442/patch-v4-v5.db.zst.manifest.json"
@@ -1896,7 +2067,7 @@
           "id": 461874685,
           "name": "patch-v2-v4.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 27049,
+          "downloads": 27612,
           "size": 607,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v4-20260630045331/patch-v2-v4.db.zst.manifest.json"
@@ -1905,7 +2076,7 @@
           "id": 461874683,
           "name": "patch-v3-v4.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 26993,
+          "downloads": 27555,
           "size": 607,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v4-20260630045331/patch-v3-v4.db.zst.manifest.json"
@@ -1962,7 +2133,7 @@
           "id": 458823022,
           "name": "patch-v1-v3.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 27004,
+          "downloads": 27566,
           "size": 605,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v3-20260626155508/patch-v1-v3.db.zst.manifest.json"
@@ -1971,7 +2142,7 @@
           "id": 458823024,
           "name": "patch-v2-v3.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 26960,
+          "downloads": 27520,
           "size": 605,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v3-20260626155508/patch-v2-v3.db.zst.manifest.json"
@@ -2028,7 +2199,7 @@
           "id": 458461532,
           "name": "patch-v1-v2.db.zst.manifest.json",
           "category": "auxiliary",
-          "downloads": 26924,
+          "downloads": 27481,
           "size": 604,
           "content_type": "application/json",
           "download_url": "https://github.com/Otzaria/SeforimLibrary/releases/download/v2-20260626072852/patch-v1-v2.db.zst.manifest.json"
@@ -2208,7 +2379,7 @@
           "id": 445388118,
           "name": "otzaria-0.9.94-windows.exe",
           "category": "app",
-          "downloads": 301,
+          "downloads": 302,
           "size": 30072032,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.94%2B683/otzaria-0.9.94-windows.exe"
@@ -2295,7 +2466,7 @@
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.94%2B683/otzaria-macos.zip"
         }
       ],
-      "downloads": 829
+      "downloads": 830
     },
     {
       "id": 329250121,
@@ -2310,7 +2481,7 @@
           "id": 430007471,
           "name": "otzaria-0.9.93-windows-full.exe",
           "category": "app",
-          "downloads": 2066,
+          "downloads": 2074,
           "size": 1622158710,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.93%2B674/otzaria-0.9.93-windows-full.exe"
@@ -2319,7 +2490,7 @@
           "id": 430007472,
           "name": "otzaria-0.9.93-windows.exe",
           "category": "app",
-          "downloads": 1423,
+          "downloads": 1425,
           "size": 29869952,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.93%2B674/otzaria-0.9.93-windows.exe"
@@ -2328,7 +2499,7 @@
           "id": 430007537,
           "name": "otzaria-windows.zip",
           "category": "app",
-          "downloads": 348,
+          "downloads": 350,
           "size": 37470994,
           "content_type": "application/zip",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.93%2B674/otzaria-windows.zip"
@@ -2355,7 +2526,7 @@
           "id": 430007538,
           "name": "app-release.apk",
           "category": "app",
-          "downloads": 114,
+          "downloads": 115,
           "size": 76503705,
           "content_type": "application/vnd.android.package-archive",
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.93%2B674/app-release.apk"
@@ -2379,7 +2550,7 @@
           "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.93%2B674/otzaria-macos-full.zip"
         }
       ],
-      "downloads": 4522
+      "downloads": 4535
     },
     {
       "id": 324535615,
@@ -26135,7 +26306,7 @@
           "id": 293525776,
           "name": "otzaria-0.9.53-windows.exe",
           "category": "app",
-          "downloads": 591,
+          "downloads": 592,
           "size": 24218857,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Sivan22/otzaria/releases/download/0.9.53-pr-715-146/otzaria-0.9.53-windows.exe"
@@ -26168,7 +26339,7 @@
           "download_url": "https://github.com/Sivan22/otzaria/releases/download/0.9.53-pr-715-146/otzaria-linux-raw.zip"
         }
       ],
-      "downloads": 1054
+      "downloads": 1055
     },
     {
       "id": 247389181,
@@ -29933,7 +30104,7 @@
           "id": 271358463,
           "name": "otzaria-0.2.7-windows.exe",
           "category": "app",
-          "downloads": 652,
+          "downloads": 654,
           "size": 21455281,
           "content_type": "application/octet-stream",
           "download_url": "https://github.com/Sivan22/otzaria/releases/download/0.2.7/otzaria-0.2.7-windows.exe"
@@ -29966,7 +30137,7 @@
           "download_url": "https://github.com/Sivan22/otzaria/releases/download/0.2.7/otzaria-linux-raw.zip"
         }
       ],
-      "downloads": 789
+      "downloads": 791
     },
     {
       "id": 229636631,
@@ -30497,7 +30668,7 @@
           "id": 207125386,
           "name": "otzaria-0.2.3-windows.exe",
           "category": "app",
-          "downloads": 26478,
+          "downloads": 26480,
           "size": 1056594941,
           "content_type": "application/x-msdownload",
           "download_url": "https://github.com/Sivan22/otzaria/releases/download/0.2.3/otzaria-0.2.3-windows.exe"
@@ -30515,7 +30686,7 @@
           "id": 207005629,
           "name": "otzaria-0.2.3.apk",
           "category": "app",
-          "downloads": 1328,
+          "downloads": 1329,
           "size": 116136956,
           "content_type": "application/vnd.android.package-archive",
           "download_url": "https://github.com/Sivan22/otzaria/releases/download/0.2.3/otzaria-0.2.3.apk"
@@ -30530,7 +30701,7 @@
           "download_url": "https://github.com/Sivan22/otzaria/releases/download/0.2.3/otzaria-macos.zip.zip"
         }
       ],
-      "downloads": 30556
+      "downloads": 30559
     },
     {
       "id": 174027672,

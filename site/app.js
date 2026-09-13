@@ -524,6 +524,15 @@ function renderOsChart() {
 
 /* ---------- Timeline chart ---------- */
 
+/** The range chips (week/30 days/.../all) need a "now" reference point. The
+ * timeseries has its own latest snapshot date; releases are keyed off the
+ * collection run instead, since a release can be newer than the last
+ * snapshot on the very day it's collected. */
+function rangeCutoff(referenceDate) {
+  if (state.range === "all" || !Number.isFinite(referenceDate)) return null;
+  return referenceDate - Number(state.range) * 86400000;
+}
+
 function releaseDatasets() {
   const configurations = [
     { key: "sivan22", category: "app", match: (release) => release.source === "sivan22" },
@@ -531,6 +540,8 @@ function releaseDatasets() {
     { key: "library", category: "library", match: (release) => release.source === "seforim" },
     { key: "delta", category: "delta", match: (release) => release.source === "seforim" },
   ];
+
+  const cutoff = rangeCutoff(Date.parse(state.latest.collected_at));
 
   return configurations
     .filter((config) => state.source === "all" || state.source === config.key)
@@ -544,7 +555,7 @@ function releaseDatasets() {
           name: release.name,
           tag: release.tag,
         }))
-        .filter((point) => Number.isFinite(point.x) && point.y > 0)
+        .filter((point) => Number.isFinite(point.x) && point.y > 0 && (cutoff === null || point.x >= cutoff))
         .sort((a, b) => a.x - b.x),
       borderColor: palette[config.key],
       backgroundColor: palette[config.key],
@@ -556,9 +567,9 @@ function releaseDatasets() {
 
 function filteredTimePoints() {
   const points = state.timeseries.points || [];
-  if (state.range === "all" || !points.length) return points;
-  const latestDate = Date.parse(points.at(-1).date);
-  const cutoff = latestDate - Number(state.range) * 86400000;
+  if (!points.length) return points;
+  const cutoff = rangeCutoff(Date.parse(points.at(-1).date));
+  if (cutoff === null) return points;
   return points.filter((point) => Date.parse(point.date) >= cutoff);
 }
 

@@ -355,13 +355,16 @@ def update_readme(path: Path, latest: dict[str, Any], timeseries: dict[str, Any]
     block = f"""{start_marker}
 ## תמונת מצב
 
-| מדד | ערך |
+שלוש משפחות מדידה נפרדות — מתקיני התוכנה, קובץ הספרייה המלא ועדכוני הדלתא. אלה יחידות מדידה שונות ואין לסכם אותן למספר אחד.
+
+| משפחת מדידה | ערך |
 |---|---:|
-| כלל ההורדות המצטברות המוצגות | **{format_number(summary['tracked_downloads'])}** |
-| גרסאות `Sivan22/otzaria` | {format_number(summary['by_source']['sivan22'])} |
-| גרסאות `Otzaria/otzaria` | {format_number(summary['by_source']['otzaria'])} |
-| הספרייה המלאה | {format_number(summary['by_category']['library'])} |
-| עדכוני דלתא | {format_number(summary['by_category']['delta'])} |
+| **הורדות התוכנה** (שני המאגרים יחד) | **{format_number(summary['by_category']['app'])}** |
+| ↳ מתוכן במאגר הקודם `Sivan22/otzaria` | {format_number(summary['by_source']['sivan22'])} |
+| ↳ מתוכן במאגר הנוכחי `Otzaria/otzaria` | {format_number(summary['by_source']['otzaria'])} |
+| הספרייה המלאה (קובץ הספרים) | {format_number(summary['by_category']['library'])} |
+| עדכוני ספרייה (דלתא) | {format_number(summary['by_category']['delta'])} |
+| סך כל הקבצים שנמדדו (שלוש המשפחות יחד) | {format_number(summary['tracked_downloads'])} |
 | הורדות חדשות שנצפו מאז תחילת המעקב | {format_number(observed)} |
 
 עדכון אחרון: `{collected}`. לתצוגה האינטראקטיבית המלאה יש להפעיל GitHub Pages.

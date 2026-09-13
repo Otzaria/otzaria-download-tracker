@@ -1,20 +1,43 @@
 "use strict";
 
-const numberFormat = new Intl.NumberFormat("he-IL");
-const compactFormat = new Intl.NumberFormat("he-IL", { notation: "compact", maximumFractionDigits: 1 });
-const dateFormat = new Intl.DateTimeFormat("he-IL", { day: "numeric", month: "short", year: "numeric" });
-const dateTimeFormat = new Intl.DateTimeFormat("he-IL", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-const relativeTimeFormat = new Intl.RelativeTimeFormat("he", { numeric: "auto" });
+// Every user-visible string lives in i18n.js; this file only ever asks for a
+// key. That keeps Hebrew and English in one place and makes it impossible for a
+// literal to sneak back into the rendering code.
+const I18n = window.I18n;
+const t = (key, params) => I18n.t(key, params);
+const isRTL = () => I18n.isRTL;
+
+// Number, date and relative-time formats all follow the active language and are
+// rebuilt whenever it changes.
+let numberFormat;
+let compactFormat;
+let dateFormat;
+let dateTimeFormat;
+let relativeTimeFormat;
+let percentFormat;
+
+function buildFormatters() {
+  const numberLocale = I18n.locale("number");
+  const dateLocale = I18n.locale("date");
+  numberFormat = new Intl.NumberFormat(numberLocale);
+  compactFormat = new Intl.NumberFormat(numberLocale, { notation: "compact", maximumFractionDigits: 1 });
+  dateFormat = new Intl.DateTimeFormat(dateLocale, { day: "numeric", month: "short", year: "numeric" });
+  dateTimeFormat = new Intl.DateTimeFormat(dateLocale, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  relativeTimeFormat = new Intl.RelativeTimeFormat(I18n.locale("relative"), { numeric: "auto" });
+  percentFormat = new Intl.NumberFormat(numberLocale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
+buildFormatters();
 
 const themeStorageKey = "otzaria-download-tracker-theme";
 const themeMedia = window.matchMedia("(prefers-color-scheme: dark)");
-const themeColorByMode = { light: "#f3e6da", dark: "#2c2731" };
+const themeColorByMode = { light: "#f3e6da", dark: "#000000" };
 
 const PLATFORMS = [
   { id: "windows", label: "Windows", icon: "desktop_windows" },
@@ -24,41 +47,16 @@ const PLATFORMS = [
   { id: "ios", label: "iOS", icon: "phone_iphone" },
 ];
 
-const labels = {
-  all: "כל המקורות",
-  sivan22: "Sivan22/otzaria",
-  otzaria: "Otzaria/otzaria",
-  library: "ספרייה מלאה",
-  delta: "עדכוני דלתא",
-};
-
-const sourceLabels = {
-  sivan22: "המאגר המקורי · Sivan22",
-  otzaria: "המאגר הנוכחי · Otzaria",
-  seforim: "ספריית הספרים",
-};
-
-const osLabels = {
-  windows: "Windows",
-  macos: "macOS",
-  android: "Android",
-  linux: "Linux",
-  ios: "iOS",
-  other: "אחר / קבצים ישנים",
-};
-
-const variantLabels = {
-  mobile: "נייד",
-  regular: "רגילה",
-  full: "מלאה",
-};
-
-const channelLabels = {
-  stable: "גרסה יציבה",
-  dev: "גרסת פיתוח",
-  pr: "בדיקת PR",
-  early: "גרסה מוקדמת",
-};
+// The three measurement families the whole UI is built around. "app" is the
+// software itself (both repositories together), and the two repository keys are
+// only an optional drill-down into that same family. Every label is resolved on
+// demand so a language switch needs no cached copy to be invalidated.
+const familyLabel = (key) => t(`family.${key}`);
+const categoryLabel = (key) => t(`category.${key}`);
+const sourceLabel = (key) => t(`source.${key}`);
+const osLabel = (key) => t(`os.${key}`);
+const variantLabel = (key) => t(`variant.${key}`);
+const channelLabel = (key) => t(`channel.${key}`);
 
 const state = {
   overview: null,
@@ -67,7 +65,7 @@ const state = {
   chart: null,
   osChart: null,
   mode: "releases",
-  source: "all",
+  source: "app",
   range: "all",
   releaseType: "all",
   releaseOS: "all",
@@ -78,6 +76,13 @@ const state = {
   latestPromise: null,
   timeseriesPromise: null,
   chartLibraryPromise: null,
+  historyPromises: {},
+  assetIndex: null,
+  releaseByAsset: null,
+  chartRenderToken: 0,
+  osFocus: null,
+  osRenderToken: 0,
+  rangeChipsVisible: false,
   statsReady: false,
   releasesReady: false,
 };
@@ -91,7 +96,7 @@ function cssColor(name) {
 
 function currentPalette() {
   return {
-    all: cssColor("--chart-all"),
+    app: cssColor("--chart-app"),
     sivan22: cssColor("--chart-sivan22"),
     otzaria: cssColor("--chart-otzaria"),
     library: cssColor("--chart-library"),
@@ -118,6 +123,13 @@ let palette = currentPalette();
 
 function formatNumber(value) {
   return numberFormat.format(Number(value) || 0);
+}
+
+/** Intl's Hebrew compact notation appends a right-to-left mark ("99.3K\u200f"),
+ * which reorders whatever is concatenated after it even inside an LTR box. A
+ * first-strong isolate keeps that mark from leaking into the surrounding text. */
+function formatCompact(value) {
+  return `\u2068${compactFormat.format(Number(value) || 0)}\u2069`;
 }
 
 function formatBytes(bytes) {
@@ -210,12 +222,23 @@ function isAppRelease(release) {
   return release.source === "otzaria" || release.source === "sivan22";
 }
 
+/** Per-release counters, split by family so a library release never reports its
+ * delta files as if they were the same kind of download. */
+function releaseDownloadParts(release) {
+  const categories = isAppRelease(release) ? ["app"] : ["library", "delta"];
+  return categories
+    .map((category) => ({ category, label: categoryLabel(category), value: releaseDownloads(release, category) }))
+    .filter((part) => part.value > 0);
+}
+
+/** Read one measurement family (or one repository drill-down) out of a
+ * timeseries point. Families come from by_category, the repository split from
+ * by_source; the two are never summed together. */
 function valueFor(point, source, section) {
   const group = point[section];
   if (!group) return null;
-  if (source === "all") return group.tracked_downloads;
-  if (source === "sivan22" || source === "otzaria") return group.by_source[source];
-  return group.by_category[source];
+  if (source === "sivan22" || source === "otzaria") return group.by_source?.[source] ?? null;
+  return group.by_category?.[source] ?? null;
 }
 
 function setButtonState(buttons, activeValue, attribute) {
@@ -279,9 +302,58 @@ function bindThemeControls() {
   }
 }
 
+/* ---------- Language ---------- */
+
+function syncLanguageButtons() {
+  $$("[data-lang-choice]").forEach((button) => {
+    const active = button.dataset.langChoice === I18n.language;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
+/** The one glyph on the page that carries a direction of its own: the arrow
+ * that points from the ranking towards the full list below it. */
+function syncDirectionalIcons() {
+  const arrow = $(".chart-all-arrow");
+  if (arrow) arrow.textContent = isRTL() ? "arrow_back" : "arrow_forward";
+}
+
+/** A language switch repaints the page in place: the static markup is already
+ * re-translated by i18n.js, so this rebuilds the locale-aware formatters and
+ * every fragment that JavaScript itself wrote, charts included — their options
+ * carry direction-dependent axes and tooltips, so both are recreated. */
+async function applyLanguageToUI() {
+  buildFormatters();
+  syncLanguageButtons();
+  syncDirectionalIcons();
+  if (state.overview) {
+    renderMetrics();
+    renderDownloadGrid();
+  }
+  if (state.timeseries) updateRecentChange();
+  if (state.statsReady) {
+    syncRangeChips();
+    await renderChart();
+    await renderOsChart();
+  }
+  if (state.releasesReady) renderReleases();
+}
+
+function bindLanguageControls() {
+  syncLanguageButtons();
+  syncDirectionalIcons();
+  I18n.onChange(() => {
+    applyLanguageToUI();
+  });
+  $$("[data-lang-choice]").forEach((button) =>
+    button.addEventListener("click", () => I18n.setLanguage(button.dataset.langChoice)),
+  );
+}
+
 function bindScrollSpy() {
   const navLinks = $$("#main-nav a");
-  const sections = ["about", "download", "stats", "releases", "method"]
+  const sections = ["stats", "download", "releases"]
     .map((id) => document.getElementById(id))
     .filter(Boolean);
   if (!navLinks.length || !sections.length || !("IntersectionObserver" in window)) return;
@@ -300,8 +372,12 @@ function bindScrollSpy() {
 
 function renderMetrics() {
   const summary = state.overview.summary;
-  $("#hero-total").textContent = formatNumber(summary.tracked_downloads);
+  // The headline is the software family only (summary.by_category.app), which is
+  // what people mean by "how many downloads does Otzaria have".
+  $("#hero-total").textContent = formatNumber(summary.by_category.app);
   $("#hero-total").classList.remove("loading-value");
+  $("#hero-library").textContent = formatNumber(summary.by_category.library);
+  $("#hero-delta-total").textContent = formatNumber(summary.by_category.delta);
 
   const deltaWrap = $("#hero-delta");
   deltaWrap.hidden = true;
@@ -312,11 +388,23 @@ function renderMetrics() {
   updatedElement.title = dateTimeFormat.format(updatedDate);
   updatedElement.textContent = relativeTime(updatedDate);
 
-  $("#metric-sivan22").textContent = compactFormat.format(summary.by_source.sivan22);
-  $("#metric-otzaria").textContent = compactFormat.format(summary.by_source.otzaria);
-  $("#metric-library").textContent = compactFormat.format(summary.by_category.library);
-  $("#metric-delta").textContent = compactFormat.format(summary.by_category.delta);
+  $("#metric-app").textContent = formatCompact(summary.by_category.app);
+  $("#metric-sivan22").textContent = formatCompact(summary.by_source.sivan22);
+  $("#metric-otzaria").textContent = formatCompact(summary.by_source.otzaria);
+  $("#metric-library").textContent = formatCompact(summary.by_category.library);
+  $("#metric-delta").textContent = formatCompact(summary.by_category.delta);
   $("#metric-releases").textContent = formatNumber(summary.release_count);
+
+  const scope = $("#hero-scope");
+  if (scope) {
+    // Explicit footnote: the grand total mixes installers with multi-gigabyte
+    // library files, so it is never the headline number.
+    scope.textContent = t("hero.scope", {
+      downloads: formatNumber(summary.tracked_downloads),
+      releases: formatNumber(summary.release_count),
+      assets: formatNumber(summary.asset_count),
+    });
+  }
 }
 
 /* ---------- Download section ---------- */
@@ -340,7 +428,7 @@ function buildPlatformCard(platform, current, detected) {
   if (platform.id === detected) {
     const tag = document.createElement("span");
     tag.className = "recommended-tag";
-    tag.textContent = "מומלץ עבורכם";
+    tag.textContent = t("download.recommended");
     card.append(tag);
   }
 
@@ -358,30 +446,39 @@ function buildPlatformCard(platform, current, detected) {
 
   if (!variants.length) {
     card.classList.add("is-unavailable");
-    meta.textContent = `לא פורסם קובץ עבור ${platform.label} בגרסה היציבה הנוכחית.`;
+    meta.textContent = t("download.unavailable", { platform: platform.label });
     const link = document.createElement("a");
     link.className = "btn btn-outlined";
     link.href = "#releases";
-    link.textContent = "חיפוש בגרסאות קודמות";
+    link.textContent = t("download.searchOlder");
     card.append(link);
     return card;
   }
 
   const primary = variants[0];
-  meta.textContent = `${variantLabels[classifyVariant(primary)]} · ${formatBytes(primary.size)} · ${formatNumber(primary.downloads)} הורדות לקובץ זה`;
+  meta.textContent = t("download.assetMeta", {
+    variant: variantLabel(classifyVariant(primary)),
+    size: formatBytes(primary.size),
+    count: formatNumber(primary.downloads),
+  });
 
   const button = document.createElement("a");
   button.className = "btn btn-filled";
   button.href = primary.download_url;
   button.rel = "noopener noreferrer";
-  button.innerHTML = 'הורדה <span class="material-symbols" aria-hidden="true">download</span>';
+  button.append(t("download.button"), " ");
+  const buttonIcon = document.createElement("span");
+  buttonIcon.className = "material-symbols";
+  buttonIcon.setAttribute("aria-hidden", "true");
+  buttonIcon.textContent = "download";
+  button.append(buttonIcon);
   card.append(button);
 
   if (variants.length > 1) {
     const details = document.createElement("details");
     details.className = "platform-more";
     const summary = document.createElement("summary");
-    summary.textContent = `אפשרויות נוספות (${variants.length - 1})`;
+    summary.textContent = t("download.moreOptions", { count: formatNumber(variants.length - 1) });
     const list = document.createElement("div");
     list.className = "platform-more-list";
     variants.slice(1).forEach((asset) => {
@@ -393,7 +490,7 @@ function buildPlatformCard(platform, current, detected) {
       const link = document.createElement("a");
       link.href = asset.download_url;
       link.rel = "noopener noreferrer";
-      link.textContent = `${variantLabels[classifyVariant(asset)]} · ${formatBytes(asset.size)} ↓`;
+      link.textContent = t("download.moreRow", { variant: variantLabel(classifyVariant(asset)), size: formatBytes(asset.size) });
       row.append(name, link);
       list.append(row);
     });
@@ -413,13 +510,16 @@ function renderDownloadGrid() {
   if (!current) {
     const empty = document.createElement("p");
     empty.className = "empty-releases";
-    empty.textContent = "לא נמצאה גרסה זמינה כרגע.";
+    empty.textContent = t("download.noRelease");
     container.append(empty);
     return;
   }
 
-  $("#download-version-line").textContent =
-    `גרסה ${current.tag} · פורסמה ${dateFormat.format(new Date(current.published_at))} · ${formatNumber(current.downloads)} הורדות עד כה`;
+  $("#download-version-line").textContent = t("download.versionLine", {
+    tag: current.tag,
+    date: dateFormat.format(new Date(current.published_at)),
+    count: formatNumber(releaseDownloads(current, "app")),
+  });
 
   const detected = detectPlatform();
   const banner = $("#os-banner");
@@ -427,7 +527,7 @@ function renderDownloadGrid() {
   if (detected && knownPlatform) {
     banner.hidden = false;
     const label = PLATFORMS.find((platform) => platform.id === detected)?.label || detected;
-    $("#os-banner-text").textContent = `זיהינו שאתם משתמשים ב־${label} · ההורדה המומלצת מסומנת למטה`;
+    $("#os-banner-text").textContent = t("download.osBanner", { platform: label });
   } else {
     banner.hidden = true;
   }
@@ -437,38 +537,311 @@ function renderDownloadGrid() {
 
 /* ---------- OS breakdown chart ---------- */
 
-function osTotals() {
-  const totals = { windows: 0, macos: 0, android: 0, linux: 0, ios: 0, other: 0 };
+const OS_KEYS = ["windows", "macos", "android", "linux", "ios", "other"];
+
+// The library and its delta patches are the very same bytes on every platform,
+// so an "operating system" breakdown of them would be an invented number.
+const osNotApplicableCopy = (source) => t(`os.notApplicable.${source}`);
+
+function emptyOsTotals() {
+  return Object.fromEntries(OS_KEYS.map((key) => [key, 0]));
+}
+
+/** Which measurement the donut can actually describe: only the software family
+ * has an operating system. Returns "app", one repository id, or null. */
+function osFamily() {
+  if (state.source === "library" || state.source === "delta") return null;
+  return state.source === "sivan22" || state.source === "otzaria" ? state.source : "app";
+}
+
+/** The donut follows the range chips only while they are really in play: while
+ * history is too short for any chip the row is hidden, and a silent range filter
+ * behind a hidden row would be a number nobody could explain. */
+function donutRange() {
+  return state.rangeChipsVisible ? state.range : "all";
+}
+
+/** Daily snapshots store counters per asset id only; the filename that reveals
+ * the platform lives in latest.json. This index joins the two. */
+function assetNameIndex() {
+  if (!state.assetIndex) {
+    const index = new Map();
+    state.latest.releases.forEach((release) => {
+      release.assets.forEach((asset) => index.set(`${release.source}:${asset.id}`, asset.name));
+    });
+    state.assetIndex = index;
+  }
+  return state.assetIndex;
+}
+
+function loadHistoryPoint(date) {
+  if (!state.historyPromises[date]) {
+    state.historyPromises[date] = fetchJson(`data/history/${date}.json`);
+  }
+  return state.historyPromises[date];
+}
+
+/** The snapshot dates needed for a range: every point inside it, plus the one
+ * before it, because a day's downloads are the difference against the previous
+ * snapshot. Mirrors filteredTimePoints so both panels cover the same days. */
+function historyDatesForRange(days) {
+  const dates = (state.timeseries?.points || []).map((point) => point.date).filter(Boolean);
+  if (dates.length < 2) return [];
+  const cutoff = Date.parse(dates.at(-1)) - Number(days) * 86400000;
+  const firstIndex = dates.findIndex((date) => Date.parse(date) >= cutoff);
+  if (firstIndex < 0) return [];
+  return dates.slice(Math.max(0, firstIndex - 1));
+}
+
+/** All-time totals: the cumulative counter GitHub reports for every asset today. */
+function osTotalsAllTime(family) {
+  const totals = emptyOsTotals();
   state.latest.releases.forEach((release) => {
     if (!isAppRelease(release)) return;
+    if (family !== "app" && release.source !== family) return;
     release.assets.forEach((asset) => {
       if (asset.category !== "app") return;
-      const os = classifyOS(asset.name);
-      totals[os] = (totals[os] || 0) + asset.downloads;
+      totals[classifyOS(asset.name)] += asset.downloads;
     });
   });
   return totals;
 }
 
-function renderOsChart() {
-  const totals = osTotals();
+/** Range totals: the same positive per-asset daily differences the collector
+ * uses, summed per platform. Summing this donut therefore reproduces exactly
+ * the "new downloads observed in this range" figure of the chart beside it. */
+async function osTotalsForRange(family, days) {
+  const dates = historyDatesForRange(days);
+  if (dates.length < 2) return null;
+  const snapshots = await Promise.all(dates.map(loadHistoryPoint));
+  const index = assetNameIndex();
+  const totals = emptyOsTotals();
+  for (let day = 1; day < snapshots.length; day += 1) {
+    const previous = snapshots[day - 1]?.assets || {};
+    const current = snapshots[day]?.assets || {};
+    Object.entries(current).forEach(([key, entry]) => {
+      const [downloads, category] = Array.isArray(entry) ? entry : [0, ""];
+      if (category !== "app") return;
+      if (family !== "app" && key.split(":")[0] !== family) return;
+      const gained = downloads - (previous[key]?.[0] ?? 0);
+      if (gained <= 0) return;
+      totals[classifyOS(index.get(key) || "")] += gained;
+    });
+  }
+  return totals;
+}
+
+/** Percentages in tenths, distributed by largest remainder so the legend always
+ * adds up to exactly 100.0% instead of 99.8% or 100.3%. */
+function percentShares(values) {
+  const total = values.reduce((sum, value) => sum + value, 0);
+  if (total <= 0) return values.map(() => 0);
+  const exact = values.map((value) => (value / total) * 1000);
+  const shares = exact.map((value) => Math.floor(value));
+  let remainder = 1000 - shares.reduce((sum, value) => sum + value, 0);
+  exact
+    .map((value, index) => ({ index, fraction: value - Math.floor(value) }))
+    .sort((left, right) => right.fraction - left.fraction)
+    .forEach((item) => {
+      if (remainder <= 0) return;
+      shares[item.index] += 1;
+      remainder -= 1;
+    });
+  return shares;
+}
+
+function formatShare(tenths) {
+  return `${percentFormat.format(tenths / 10)}%`;
+}
+
+function osSliceColors(keys) {
+  return keys.map((key) => {
+    const color = palette[key] || palette.other;
+    return state.osFocus && state.osFocus !== key ? hexToRgba(color, 0.2) : color;
+  });
+}
+
+/** A click on a slice or a legend row isolates that platform here and feeds the
+ * very same choice into the "all releases" filter below. */
+function toggleOsFocus(key) {
+  state.osFocus = state.osFocus === key ? null : key;
+  const hasChip = Boolean(state.osFocus && $(`[data-os="${state.osFocus}"]`));
+  const target = hasChip ? state.osFocus : "all";
+  if (state.releaseOS !== target) {
+    state.releaseOS = target;
+    state.releaseLimit = 8;
+    setButtonState($$("[data-os]"), state.releaseOS, "os");
+    refreshReleases();
+  }
+  if (!state.osFocus) {
+    showToast(t("toast.osFilterCleared"));
+  } else if (hasChip) {
+    showToast(t("toast.osFiltered", { os: osLabel(state.osFocus) }));
+  } else {
+    showToast(t("toast.osOther"));
+  }
+  renderOsChart();
+}
+
+function showOsMessage(text) {
+  if (state.osChart) {
+    state.osChart.destroy();
+    state.osChart = null;
+  }
+  $("#donut-stage").hidden = true;
+  $("#os-legend").replaceChildren();
+  $("#os-legend").hidden = true;
+  const empty = $("#os-empty");
+  empty.hidden = false;
+  empty.textContent = text;
+  $("#os-note").hidden = true;
+}
+
+function renderOsLegend(entries, shares, total) {
+  const legend = $("#os-legend");
+  legend.replaceChildren();
+  legend.hidden = false;
+  const detected = detectPlatform();
+
+  entries.forEach(([key, value], position) => {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "donut-legend-row";
+    row.dataset.osKey = key;
+    const isFocused = state.osFocus === key;
+    row.classList.toggle("is-focused", isFocused);
+    row.classList.toggle("is-dimmed", Boolean(state.osFocus) && !isFocused);
+    row.setAttribute("aria-pressed", String(isFocused));
+
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    dot.setAttribute("aria-hidden", "true");
+    dot.style.background = palette[key] || palette.other;
+
+    const label = document.createElement("span");
+    label.className = "label";
+    label.textContent = osLabel(key);
+    if (key === detected) {
+      const badge = document.createElement("span");
+      badge.className = "you-badge";
+      badge.textContent = t("donut.yourOs");
+      label.append(" ", badge);
+    }
+
+    const valueElement = document.createElement("span");
+    valueElement.className = "value";
+    valueElement.textContent = `${formatCompact(value)} · ${formatShare(shares[position])}`;
+
+    row.append(dot, label, valueElement);
+    row.setAttribute(
+      "aria-label",
+      t("donut.legendRowAria", {
+        os: osLabel(key),
+        count: formatNumber(value),
+        share: formatShare(shares[position]),
+      }) + (key === detected ? t("donut.legendRowYours") : ""),
+    );
+    row.title = t("donut.legendRowTitle", { os: osLabel(key), count: formatNumber(value) });
+    row.addEventListener("click", () => toggleOsFocus(key));
+    legend.append(row);
+  });
+
+  // A visible control total: the rows above must add up to this line exactly.
+  const sum = document.createElement("p");
+  sum.className = "donut-legend-total";
+  sum.textContent = t("donut.legendTotal", { count: formatNumber(total) });
+  legend.append(sum);
+}
+
+async function renderOsChart() {
+  const token = (state.osRenderToken += 1);
+  if (!state.latest) return;
+
+  const subtitle = $("#donut-subtitle");
+  const family = osFamily();
+  const range = donutRange();
+  const familyName = familyLabel(state.source);
+
+  if (!family) {
+    subtitle.textContent = t("donut.subtitle.sameFile", { family: familyName });
+    showOsMessage(osNotApplicableCopy(state.source));
+    return;
+  }
+
+  let totals = null;
+  let fallbackNote = "";
+  if (range === "all") {
+    totals = osTotalsAllTime(family);
+  } else {
+    subtitle.textContent = t("donut.subtitle.calculating", { family: familyName });
+    try {
+      totals = await osTotalsForRange(family, range);
+    } catch (_) {
+      totals = null;
+      fallbackNote = t("donut.fallback.snapshotError");
+    }
+    if (token !== state.osRenderToken) return;
+    if (!totals) {
+      totals = osTotalsAllTime(family);
+      fallbackNote = fallbackNote || t("donut.fallback.notEnough");
+    }
+  }
+
+  const rangeLabel = rangeChipLabel(range);
+  subtitle.textContent =
+    range === "all" || fallbackNote
+      ? t("donut.subtitle.allTime", { family: familyName })
+      : t("donut.subtitle.range", { family: familyName, range: rangeLabel });
+
   const entries = Object.entries(totals)
     .filter(([, value]) => value > 0)
-    .sort((a, b) => b[1] - a[1]);
-  const total = entries.reduce((sum, [, value]) => sum + value, 0) || 1;
+    .sort((left, right) => right[1] - left[1]);
+
+  if (!entries.length) {
+    showOsMessage(
+      range === "all"
+        ? t("donut.empty.allTime", { family: familyName })
+        : t("donut.empty.range", { family: familyName, range: rangeLabel }),
+    );
+    return;
+  }
+
+  const total = entries.reduce((sum, [, value]) => sum + value, 0);
+  const shares = percentShares(entries.map(([, value]) => value));
+  const keys = entries.map(([key]) => key);
+
+  $("#donut-stage").hidden = false;
+  $("#os-empty").hidden = true;
 
   if (state.osChart) state.osChart.destroy();
   const canvas = $("#os-chart");
+  canvas.setAttribute(
+    "aria-label",
+    t("donut.canvasAriaData", {
+      family: familyName,
+      breakdown: entries
+        .map(([key, value], position) =>
+          t("donut.canvasEntry", {
+            os: osLabel(key),
+            share: formatShare(shares[position]),
+            count: formatNumber(value),
+          }),
+        )
+        .join(", "),
+    }),
+  );
+
   state.osChart = new Chart(canvas, {
     type: "doughnut",
     data: {
-      labels: entries.map(([key]) => osLabels[key]),
+      labels: keys.map((key) => osLabel(key)),
       datasets: [
         {
           data: entries.map(([, value]) => value),
-          backgroundColor: entries.map(([key]) => palette[key] || palette.other),
+          backgroundColor: osSliceColors(keys),
           borderColor: cssColor("--card-background"),
           borderWidth: 2,
+          offset: keys.map((key) => (state.osFocus === key ? 10 : 0)),
         },
       ],
     },
@@ -476,12 +849,20 @@ function renderOsChart() {
       responsive: true,
       maintainAspectRatio: false,
       cutout: "68%",
-      animation: { duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 500 },
+      animation: { duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 300 },
+      onClick: (_event, elements) => {
+        if (!elements.length) return;
+        toggleOsFocus(keys[elements[0].index]);
+      },
+      onHover: (event, elements) => {
+        const target = event.native?.target;
+        if (target) target.style.cursor = elements.length ? "pointer" : "default";
+      },
       plugins: {
         legend: { display: false },
         tooltip: {
-          rtl: true,
-          textDirection: "rtl",
+          rtl: isRTL(),
+          textDirection: I18n.dir,
           backgroundColor: cssColor("--surface-container-highest"),
           titleColor: cssColor("--on-surface"),
           bodyColor: cssColor("--on-surface"),
@@ -489,69 +870,83 @@ function renderOsChart() {
           borderWidth: 1,
           padding: 10,
           callbacks: {
-            label: (context) => ` ${formatNumber(context.raw)} הורדות`,
+            label: (context) =>
+              t("donut.tooltip", { count: formatNumber(context.raw), share: formatShare(shares[context.dataIndex]) }),
+            afterLabel: () => t("donut.tooltipHint"),
           },
         },
       },
     },
   });
 
-  const legend = $("#os-legend");
-  legend.replaceChildren();
-  if (!entries.length) {
-    const empty = document.createElement("p");
-    empty.className = "empty-releases";
-    empty.textContent = "אין עדיין נתונים לפילוח.";
-    legend.append(empty);
-    return;
+  const center = $("#os-total");
+  center.replaceChildren();
+  const centerValue = document.createElement("strong");
+  centerValue.textContent = formatCompact(total);
+  const centerLabel = document.createElement("span");
+  centerLabel.textContent = range === "all" || fallbackNote ? t("donut.centerAll") : t("donut.centerRange");
+  center.append(centerValue, centerLabel);
+
+  renderOsLegend(entries, shares, total);
+
+  const note = $("#os-note");
+  const notes = [];
+  if (fallbackNote) notes.push(fallbackNote);
+  if (range === "all") {
+    // The cumulative counters predate the daily collection, so this donut is
+    // deliberately larger than the "new downloads" figure of the chart beside it.
+    const firstDate = state.timeseries?.points?.[0]?.date;
+    notes.push(
+      firstDate
+        ? t("donut.note.allTimeSince", { date: dateFormat.format(new Date(firstDate)) })
+        : t("donut.note.allTime"),
+    );
   }
-  entries.forEach(([key, value]) => {
-    const row = document.createElement("div");
-    row.className = "donut-legend-row";
-    const dot = document.createElement("span");
-    dot.className = "dot";
-    dot.style.background = palette[key] || palette.other;
-    const label = document.createElement("span");
-    label.className = "label";
-    label.textContent = osLabels[key];
-    const valueElement = document.createElement("span");
-    valueElement.className = "value";
-    valueElement.textContent = `${compactFormat.format(value)} · ${Math.round((value / total) * 100)}%`;
-    row.append(dot, label, valueElement);
-    legend.append(row);
-  });
+  if (totals.other > 0) {
+    notes.push(t("donut.note.other"));
+  }
+  notes.push(t("donut.note.filename"));
+  note.textContent = notes.join(" ");
+  note.hidden = false;
 }
 
 /* ---------- Timeline chart ---------- */
 
-function releaseDatasets() {
-  const configurations = [
-    { key: "sivan22", category: "app", match: (release) => release.source === "sivan22" },
-    { key: "otzaria", category: "app", match: (release) => release.source === "otzaria" },
-    { key: "library", category: "library", match: (release) => release.source === "seforim" },
-    { key: "delta", category: "delta", match: (release) => release.source === "seforim" },
-  ];
+// The daily snapshot history is still short (collection started on 2026-07-19),
+// so a 7/30/90/182/365 day chip would slice exactly the same points as "all" and
+// look broken when clicked. A chip for N days is therefore shown only once the
+// collected points span more than N/2 days, and the whole row is hidden when only
+// "all" would remain. The chips return on their own as history grows, and they
+// now apply to every mode — including the release ranking, where a range turns a
+// cumulative, age-biased ordering into a genuine "what is being downloaded now".
+function syncRangeChips() {
+  const row = $("#range-filter");
+  state.rangeChipsVisible = false;
+  if (!row) return;
 
-  return configurations
-    .filter((config) => state.source === "all" || state.source === config.key)
-    .map((config) => ({
-      label: labels[config.key],
-      data: state.latest.releases
-        .filter(config.match)
-        .map((release) => ({
-          x: Date.parse(release.published_at),
-          y: releaseDownloads(release, config.category),
-          name: release.name,
-          tag: release.tag,
-        }))
-        .filter((point) => Number.isFinite(point.x) && point.y > 0)
-        .sort((a, b) => a.x - b.x),
-      borderColor: palette[config.key],
-      backgroundColor: palette[config.key],
-      pointRadius: 4,
-      pointHoverRadius: 7,
-      showLine: false,
-    }));
+  const chips = $$("[data-range]", row);
+  const points = state.timeseries?.points || [];
+  const firstDate = Date.parse(points[0]?.date ?? "");
+  const lastDate = Date.parse(points.at(-1)?.date ?? "");
+  const spanDays =
+    Number.isFinite(firstDate) && Number.isFinite(lastDate) ? (lastDate - firstDate) / 86400000 : 0;
+
+  let usableRanges = 0;
+  chips.forEach((chip) => {
+    if (chip.dataset.range === "all") return;
+    const usable = spanDays > Number(chip.dataset.range) / 2;
+    chip.hidden = !usable;
+    if (usable) usableRanges += 1;
+  });
+
+  row.hidden = usableRanges === 0;
+  state.rangeChipsVisible = !row.hidden;
+
+  const activeChip = chips.find((chip) => chip.dataset.range === state.range);
+  if (activeChip && activeChip.hidden) {
+    state.range = "all";
+    setButtonState(chips, state.range, "range");
+  }
 }
 
 function filteredTimePoints() {
@@ -570,7 +965,7 @@ function timeDataset() {
   }));
   return [
     {
-      label: labels[state.source],
+      label: familyLabel(state.source),
       data,
       borderColor: palette[state.source],
       backgroundColor: hexToRgba(palette[state.source], 0.12),
@@ -587,38 +982,453 @@ function timeDataset() {
   ];
 }
 
-function chartSummary(datasets) {
-  if (state.mode === "releases") {
-    const points = datasets.reduce((sum, dataset) => sum + dataset.data.length, 0);
-    return `${formatNumber(points)} נקודות גרסה · ${labels[state.source]}`;
-  }
+function timeChartSummary() {
+  const family = familyLabel(state.source);
   const points = filteredTimePoints();
   if (state.mode === "daily") {
     const total = points.reduce((sum, point) => sum + (valueFor(point, state.source, "changes") || 0), 0);
-    return `${formatNumber(total)} הורדות חדשות שנצפו בטווח`;
+    return t("chart.summary.daily", { count: formatNumber(total), family });
   }
   const last = points.at(-1);
-  return last ? `${formatNumber(valueFor(last, state.source, "totals"))} הורדות מצטברות` : "אין נתונים בטווח";
+  return last
+    ? t("chart.summary.cumulative", { count: formatNumber(valueFor(last, state.source, "totals")), family })
+    : t("chart.summary.empty");
 }
 
-function renderChart() {
-  if (state.chart) state.chart.destroy();
+/** A small legend so a multi-series chart (the two software repositories) is
+ * readable without hovering; single-series charts already have the active chip. */
+function renderChartLegend(entries) {
+  const legend = $("#chart-legend");
+  if (!legend) return;
+  legend.replaceChildren();
+  legend.hidden = entries.length < 2;
+  if (legend.hidden) return;
+  entries.forEach((entry) => {
+    const row = document.createElement("span");
+    row.className = "chart-legend-row";
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    dot.style.background = entry.color;
+    const label = document.createElement("span");
+    label.textContent = entry.label;
+    row.append(dot, label);
+    legend.append(row);
+  });
+}
+
+function reduceMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function destroyChart() {
+  if (state.chart) {
+    state.chart.destroy();
+    state.chart = null;
+  }
+}
+
+function showChartEmpty(title, detail) {
+  destroyChart();
+  const empty = $("#chart-empty");
+  empty.replaceChildren();
+  const heading = document.createElement("strong");
+  heading.textContent = title;
+  const text = document.createElement("span");
+  text.textContent = detail;
+  empty.append(heading, text);
+  empty.hidden = false;
+  $("#downloads-chart").hidden = true;
+}
+
+/* ---------- Release ranking ---------- */
+
+// How many bars the ranking draws. Fifteen rows still leave every bar thick
+// enough to compare by length and every caption readable without rotation.
+const TOP_RELEASES = 15;
+
+// The software family keeps its two repositories apart — same software, two
+// chapters of its history — so every bar stays attributable to one repository.
+const rankingConfigurations = [
+  { key: "sivan22", family: "app", category: "app", match: (release) => release.source === "sivan22" },
+  { key: "otzaria", family: "app", category: "app", match: (release) => release.source === "otzaria" },
+  { key: "library", family: "library", category: "library", match: (release) => release.source === "seforim" },
+  { key: "delta", family: "delta", category: "delta", match: (release) => release.source === "seforim" },
+];
+
+function activeRankingConfigurations() {
+  return rankingConfigurations.filter((config) => state.source === config.key || state.source === config.family);
+}
+
+/** A short, still unique caption for the category axis. Library and delta tags
+ * carry a full timestamp ("v27-20260906092829") that would swallow the axis, so
+ * only their sequence number is kept. */
+function releaseAxisLabel(release) {
+  return release.source === "seforim" ? release.tag.split("-")[0] : release.tag;
+}
+
+function rankingRow(release, config, value) {
+  return {
+    value,
+    colorKey: config.key,
+    axisLabel: releaseAxisLabel(release),
+    name: release.name,
+    tag: release.tag,
+    publishedAt: release.published_at,
+  };
+}
+
+/** All-time ranking: the cumulative counter GitHub reports for every asset of
+ * the release today. */
+function allTimeRankingRows() {
+  const rows = [];
+  activeRankingConfigurations().forEach((config) => {
+    state.latest.releases.filter(config.match).forEach((release) => {
+      const value = releaseDownloads(release, config.category);
+      if (value > 0) rows.push(rankingRow(release, config, value));
+    });
+  });
+  return rows.sort((left, right) => right.value - left.value);
+}
+
+/** Daily snapshots key every counter by asset id only; this joins those ids back
+ * to the release that published them. */
+function assetReleaseIndex() {
+  if (!state.releaseByAsset) {
+    const index = new Map();
+    state.latest.releases.forEach((release) => {
+      release.assets.forEach((asset) => index.set(`${release.source}:${asset.id}`, release));
+    });
+    state.releaseByAsset = index;
+  }
+  return state.releaseByAsset;
+}
+
+/** Range ranking: the same positive per-asset daily differences the collector
+ * records, grouped by the release each asset belongs to. Unlike the cumulative
+ * counters this ordering carries no age bias at all — every release is measured
+ * over exactly the same days. Snapshots are fetched lazily and cached, and are
+ * the very files the donut beside it already loads for the same range. */
+async function rangeRankingRows(days) {
+  const dates = historyDatesForRange(days);
+  if (dates.length < 2) return null;
+  const snapshots = await Promise.all(dates.map(loadHistoryPoint));
+  const index = assetReleaseIndex();
+  const configs = activeRankingConfigurations();
+  const rows = new Map();
+  for (let day = 1; day < snapshots.length; day += 1) {
+    const previous = snapshots[day - 1]?.assets || {};
+    const current = snapshots[day]?.assets || {};
+    Object.entries(current).forEach(([key, entry]) => {
+      const [downloads, category] = Array.isArray(entry) ? entry : [0, ""];
+      const gained = downloads - (previous[key]?.[0] ?? 0);
+      if (gained <= 0) return;
+      const release = index.get(key);
+      if (!release) return;
+      const config = configs.find((item) => item.category === category && item.match(release));
+      if (!config) return;
+      const rowKey = `${config.key}|${release.source}|${release.tag}`;
+      const existing = rows.get(rowKey);
+      if (existing) existing.value += gained;
+      else rows.set(rowKey, rankingRow(release, config, gained));
+    });
+  }
+  return [...rows.values()].sort((left, right) => right.value - left.value);
+}
+
+function rangeChipLabel(range) {
+  return $(`[data-range="${range}"]`)?.textContent?.trim() || t("range.daysFallback", { count: range });
+}
+
+/** Reaching one specific release is the job of the full list below, which
+ * already has a search box — so a bar simply hands that list the tag. */
+function focusReleaseInList(row) {
+  const input = $("#release-search");
+  state.releaseSearch = row.tag;
+  if (input) input.value = row.tag;
+  state.releaseLimit = 8;
+  // The list has filters of its own that could hide the very release just
+  // clicked; the family filters are reset so the result is never empty.
+  state.releaseType = "all";
+  state.releaseVariant = "all";
+  state.releaseChannel = "all";
+  setButtonState($$("[data-type]"), state.releaseType, "type");
+  setButtonState($$("[data-variant]"), state.releaseVariant, "variant");
+  setButtonState($$("[data-channel]"), state.releaseChannel, "channel");
+  refreshReleases();
+  document.getElementById("releases")?.scrollIntoView({
+    behavior: reduceMotion() ? "auto" : "smooth",
+    block: "start",
+  });
+  showToast(t("toast.releaseFiltered", { tag: row.tag }));
+}
+
+function bindRankingLink() {
+  const link = $("#chart-all-releases");
+  if (!link) return;
+  link.addEventListener("click", () => {
+    // Hand the list the same family the ranking is showing, so "all N releases"
+    // really means the N that were just ranked.
+    const target = state.source === "delta" ? "library" : state.source;
+    state.releaseSearch = "";
+    const input = $("#release-search");
+    if (input) input.value = "";
+    state.releaseLimit = 8;
+    state.releaseType = target;
+    setButtonState($$("[data-type]"), state.releaseType, "type");
+    refreshReleases();
+  });
+}
+
+function rankingScopeWord(rangeActive) {
+  return rangeActive ? t("ranking.scope.new") : t("ranking.scope.all");
+}
+
+async function renderReleaseRanking(token) {
+  const family = familyLabel(state.source);
+  const summary = $("#chart-summary");
+  const note = $("#chart-note");
+  const link = $("#chart-all-releases");
+  // The chips are only honoured while they are really on screen; a silent range
+  // filter behind a hidden row would be a number nobody could explain.
+  const range = state.rangeChipsVisible ? state.range : "all";
+
+  let rows = null;
+  let fallbackNote = "";
+  if (range === "all") {
+    rows = allTimeRankingRows();
+  } else {
+    summary.textContent = t("ranking.calculating", { range: rangeChipLabel(range) });
+    try {
+      rows = await rangeRankingRows(range);
+    } catch (_) {
+      rows = null;
+      fallbackNote = t("ranking.fallback.snapshotError");
+    }
+    if (token !== state.chartRenderToken) return;
+    if (!rows) {
+      rows = allTimeRankingRows();
+      fallbackNote = fallbackNote || t("ranking.fallback.notEnough");
+    }
+  }
+
+  const rangeActive = range !== "all" && !fallbackNote;
+  const rangeLabel = rangeActive ? rangeChipLabel(range) : "";
+  const scope = rankingScopeWord(rangeActive);
+
+  if (link) {
+    link.hidden = !rows.length;
+    $("#chart-all-releases-text").textContent = rangeActive
+      ? t("ranking.allLink.range", { count: formatNumber(rows.length), range: rangeLabel })
+      : t("ranking.allLink.family", { count: formatNumber(rows.length), family });
+  }
+
+  if (!rows.length) {
+    summary.textContent = rangeActive
+      ? t("ranking.summary.emptyRange", { scope, range: rangeLabel, family })
+      : t("ranking.summary.emptyAll", { family });
+    renderChartLegend([]);
+    note.textContent = rangeActive
+      ? t("ranking.note.emptyRange", { family, range: rangeLabel })
+      : t("ranking.note.emptyAll", { family });
+    showChartEmpty(
+      t("ranking.empty.title"),
+      rangeActive
+        ? t("ranking.empty.detailRange", { family, range: rangeLabel })
+        : t("ranking.note.emptyAll", { family }),
+    );
+    return;
+  }
+
+  const shown = rows.slice(0, TOP_RELEASES);
+  const total = rows.reduce((sum, row) => sum + row.value, 0);
+  const shownTotal = shown.reduce((sum, row) => sum + row.value, 0);
+  // Exact tenths by largest remainder, the same rule the donut legend uses.
+  const shownShare = formatShare(percentShares([shownTotal, total - shownTotal])[0]);
+  const top = shown[0];
+
+  summary.textContent =
+    t("ranking.summary.lead", { tag: top.axisLabel, count: formatNumber(top.value), scope }) +
+    (shown.length > 1
+      ? t("ranking.summary.top", {
+          count: formatNumber(shown.length),
+          share: shownShare,
+          total: formatNumber(total),
+        })
+      : t("ranking.summary.single", { total: formatNumber(total) })) +
+    t("ranking.summary.family", { family }) +
+    (rangeActive ? t("ranking.summary.range", { range: rangeLabel }) : "");
+
+  const usedKeys = [...new Set(shown.map((row) => row.colorKey))];
+  renderChartLegend(usedKeys.map((key) => ({ label: familyLabel(key), color: palette[key] })));
+
+  const notes = [];
+  if (fallbackNote) notes.push(fallbackNote);
+  if (rangeActive) {
+    notes.push(t("ranking.note.range", { range: rangeLabel }));
+  } else {
+    notes.push(t("chart.note.allTime"));
+    if (state.rangeChipsVisible) notes.push(t("ranking.note.pickRange"));
+  }
+  notes.push(t("ranking.note.click"));
+  note.textContent = notes.join(" ");
+
   const canvas = $("#downloads-chart");
   const empty = $("#chart-empty");
-  const isReleaseMode = state.mode === "releases";
-  const datasets = isReleaseMode ? releaseDatasets() : timeDataset();
+  empty.hidden = true;
+  canvas.hidden = false;
+  canvas.setAttribute(
+    "aria-label",
+    t("ranking.aria.base", { count: formatNumber(shown.length), family, scope }) +
+      (rangeActive ? t("ranking.aria.range", { range: rangeLabel }) : t("ranking.aria.allTime")) +
+      ": " +
+      shown.map((row, position) => `${position + 1}. ${row.axisLabel} — ${formatNumber(row.value)}`).join(", "),
+  );
+
+  destroyChart();
+
+  const textColor = cssColor("--on-surface");
+  // The number rides at the end of each bar, so the ranking is fully readable
+  // without a tooltip — the tooltip only adds the release name and its date.
+  const valueLabels = {
+    id: "rankingValueLabels",
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const bars = chart.getDatasetMeta(0).data;
+      ctx.save();
+      ctx.font = "600 12px Rubik, system-ui, sans-serif";
+      ctx.fillStyle = textColor;
+      ctx.textBaseline = "middle";
+      bars.forEach((bar, position) => {
+        // The value axis is reversed in RTL, so the bar tip sits left of its
+        // base there and right of it in LTR; the label simply follows the tip
+        // whichever way the bar grows, which makes it direction-agnostic.
+        const direction = bar.x <= bar.base ? -1 : 1;
+        ctx.textAlign = direction < 0 ? "right" : "left";
+        ctx.fillText(formatNumber(shown[position].value), bar.x + direction * 8, bar.y);
+      });
+      ctx.restore();
+    },
+  };
+
+  state.chart = new Chart(canvas, {
+    type: "bar",
+    plugins: [valueLabels],
+    data: {
+      labels: shown.map((row) => row.axisLabel),
+      datasets: [
+        {
+          label: scope,
+          data: shown.map((row) => row.value),
+          backgroundColor: shown.map((row) => palette[row.colorKey]),
+          hoverBackgroundColor: shown.map((row) => palette[row.colorKey]),
+          borderRadius: 4,
+          borderSkipped: false,
+          maxBarThickness: 26,
+          categoryPercentage: 0.88,
+          barPercentage: 0.86,
+        },
+      ],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: reduceMotion() ? 0 : 300 },
+      interaction: { mode: "index", axis: "y", intersect: false },
+      // Head-room for the value label that rides past the tip of each bar: in
+      // RTL the bars grow leftwards, in LTR rightwards.
+      layout: { padding: isRTL() ? { left: 8, right: 4 } : { left: 4, right: 8 } },
+      onClick: (_event, elements) => {
+        if (!elements.length) return;
+        focusReleaseInList(shown[elements[0].index]);
+      },
+      onHover: (event, elements) => {
+        const target = event.native?.target;
+        if (target) target.style.cursor = elements.length ? "pointer" : "default";
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          rtl: isRTL(),
+          textDirection: I18n.dir,
+          backgroundColor: cssColor("--surface-container-highest"),
+          titleColor: textColor,
+          bodyColor: textColor,
+          borderColor: cssColor("--outline-variant"),
+          borderWidth: 1,
+          padding: 12,
+          titleFont: { family: "Rubik", size: 12 },
+          bodyFont: { family: "Rubik", size: 12 },
+          callbacks: {
+            title: (items) => (items.length ? shown[items[0].dataIndex].name : ""),
+            label: (context) => t("ranking.tooltip.label", { scope, count: formatNumber(shown[context.dataIndex].value) }),
+            afterLabel(context) {
+              const row = shown[context.dataIndex];
+              const published = row.publishedAt ? dateFormat.format(new Date(row.publishedAt)) : t("common.noDate");
+              return t("ranking.tooltip.after", { tag: row.tag, published });
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          // The value axis starts at the inline start of the stage: the right
+          // edge in Hebrew, the left edge in English.
+          reverse: isRTL(),
+          suggestedMax: Math.ceil(top.value * 1.16),
+          border: { display: false },
+          grid: { color: hexToRgba(cssColor("--outline"), 0.18) },
+          ticks: {
+            color: cssColor("--on-surface-variant"),
+            maxTicksLimit: 5,
+            callback: (value) => compactFormat.format(value),
+          },
+        },
+        y: {
+          // The category axis sits opposite the value axis, i.e. at the inline
+          // start of the stage in both directions.
+          position: isRTL() ? "right" : "left",
+          grid: { display: false },
+          border: { color: cssColor("--outline-variant") },
+          ticks: {
+            color: cssColor("--on-surface-variant"),
+            autoSkip: false,
+            font: { family: "Rubik", size: 12 },
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderTimeChart() {
+  const canvas = $("#downloads-chart");
+  const empty = $("#chart-empty");
+  const datasets = timeDataset();
   const hasData = state.mode !== "daily" || datasets.some((dataset) => dataset.data.some((point) => point.y !== null));
-  empty.hidden = hasData;
-  canvas.hidden = !hasData;
 
-  $("#chart-summary").textContent = chartSummary(datasets);
-  $("#chart-note").textContent = isReleaseMode
-    ? "כל נקודה מייצגת גרסה בתאריך הפרסום שלה; גובה הנקודה הוא מונה ההורדות הנוכחי של קובצי הגרסה."
-    : state.mode === "daily"
-      ? "הערך היומי הוא ההפרש החיובי בין שני Snapshots עוקבים. ביום הראשון אין עדיין הפרש להצגה."
-      : "המונה המצטבר הוא תמונת המצב שנשמרה בכל יום. מחיקת Release עלולה להקטין מונה נוכחי, אך אינה הופכת להורדות שליליות.";
+  $("#chart-summary").textContent = timeChartSummary();
+  renderChartLegend(
+    datasets.filter((dataset) => dataset.data.length).map((dataset) => ({ label: dataset.label, color: dataset.borderColor })),
+  );
+  $("#chart-note").textContent = state.mode === "daily" ? t("chart.note.daily") : t("chart.note.cumulative");
 
-  if (!hasData) return;
+  if (!hasData) {
+    showChartEmpty(t("chart.empty.title"), t("chart.empty.detail"));
+    return;
+  }
+
+  destroyChart();
+  empty.hidden = true;
+  canvas.hidden = false;
+  canvas.setAttribute(
+    "aria-label",
+    t("chart.aria.time", {
+      mode: state.mode === "daily" ? t("chart.aria.daily") : t("chart.aria.cumulative"),
+      family: familyLabel(state.source),
+    }),
+  );
 
   state.chart = new Chart(canvas, {
     type: "line",
@@ -626,14 +1436,14 @@ function renderChart() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      animation: { duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 500 },
+      animation: { duration: reduceMotion() ? 0 : 300 },
       parsing: false,
       interaction: { mode: "nearest", axis: "x", intersect: false },
       plugins: {
         legend: { display: false },
         tooltip: {
-          rtl: true,
-          textDirection: "rtl",
+          rtl: isRTL(),
+          textDirection: I18n.dir,
           backgroundColor: cssColor("--surface-container-highest"),
           titleColor: cssColor("--on-surface"),
           bodyColor: cssColor("--on-surface"),
@@ -643,19 +1453,8 @@ function renderChart() {
           titleFont: { family: "Rubik", size: 12 },
           bodyFont: { family: "Rubik", size: 12 },
           callbacks: {
-            title(items) {
-              if (!items.length) return "";
-              const point = items[0].raw;
-              return isReleaseMode ? point.name : dateFormat.format(new Date(point.x));
-            },
-            label(context) {
-              const point = context.raw;
-              const prefix = isReleaseMode ? context.dataset.label : "הורדות";
-              return ` ${prefix}: ${formatNumber(point.y)}`;
-            },
-            afterLabel(context) {
-              return isReleaseMode ? ` תגית: ${context.raw.tag}` : "";
-            },
+            title: (items) => (items.length ? dateFormat.format(new Date(items[0].raw.x)) : ""),
+            label: (context) => t("chart.tooltip.downloads", { count: formatNumber(context.raw.y) }),
           },
         },
       },
@@ -684,18 +1483,31 @@ function renderChart() {
   });
 }
 
+async function renderChart() {
+  const token = (state.chartRenderToken += 1);
+  const isRanking = state.mode === "releases";
+  $(".chart-stage")?.classList.toggle("is-ranking", isRanking);
+  const actions = $("#chart-actions");
+  if (actions) actions.hidden = !isRanking;
+  if (isRanking) {
+    await renderReleaseRanking(token);
+    return;
+  }
+  renderTimeChart();
+}
+
 /* ---------- Releases list ---------- */
 
 function releaseKind(release) {
   if (release.source === "seforim") {
     const hasLibrary = release.assets.some((asset) => asset.category === "library");
     const hasDelta = release.assets.some((asset) => asset.category === "delta");
-    if (hasLibrary && hasDelta) return "ספרייה ועדכון דלתא";
-    if (hasLibrary) return "ספריית הספרים המלאה";
-    if (hasDelta) return "עדכון דלתא";
-    return "קובצי ספרייה";
+    if (hasLibrary && hasDelta) return t("releaseKind.libraryAndDelta");
+    if (hasLibrary) return t("releaseKind.library");
+    if (hasDelta) return t("releaseKind.delta");
+    return t("releaseKind.other");
   }
-  return channelLabels[classifyChannel(release)];
+  return channelLabel(classifyChannel(release));
 }
 
 function renderReleaseItem(release) {
@@ -704,28 +1516,56 @@ function renderReleaseItem(release) {
   details.dataset.source = release.source;
   $(".release-source-mark .material-symbols", fragment).textContent = release.source === "seforim" ? "menu_book" : "apps";
   $(".release-title", fragment).textContent = release.name;
-  $(".release-subtitle", fragment).textContent = `${sourceLabels[release.source]} · ${releaseKind(release)} · ${release.tag}`;
-  $(".release-date", fragment).textContent = release.published_at ? dateFormat.format(new Date(release.published_at)) : "ללא תאריך";
-  $(".release-downloads", fragment).textContent = formatNumber(release.downloads);
+  $(".release-subtitle", fragment).textContent = t("release.subtitle", {
+    source: sourceLabel(release.source),
+    kind: releaseKind(release),
+    tag: release.tag,
+  });
+  $(".release-date", fragment).textContent = release.published_at
+    ? dateFormat.format(new Date(release.published_at))
+    : t("common.noDate");
+
+  const downloadsCell = $(".release-downloads", fragment);
+  downloadsCell.replaceChildren();
+  const parts = releaseDownloadParts(release);
+  if (!parts.length) {
+    downloadsCell.textContent = "—";
+  } else {
+    parts.forEach((part) => {
+      const row = document.createElement("span");
+      row.className = "release-downloads-row";
+      const value = document.createElement("span");
+      value.className = "release-downloads-value";
+      value.textContent = formatNumber(part.value);
+      const unit = document.createElement("span");
+      unit.className = "release-downloads-unit";
+      unit.textContent = part.label;
+      row.append(value, unit);
+      downloadsCell.append(row);
+    });
+  }
+  downloadsCell.title = parts
+    .map((part) => t("release.downloadsTitle", { label: part.label, count: formatNumber(part.value) }))
+    .join(" · ");
 
   const links = $(".release-links", fragment);
   const releaseLink = document.createElement("a");
   releaseLink.href = release.url;
   releaseLink.target = "_blank";
   releaseLink.rel = "noopener noreferrer";
-  releaseLink.textContent = "עמוד הגרסה ב־GitHub ↗";
+  releaseLink.textContent = t("release.githubPage");
   links.append(releaseLink);
 
   const copyButton = document.createElement("button");
   copyButton.type = "button";
   copyButton.className = "link-button";
-  copyButton.textContent = "העתקת קישור";
+  copyButton.textContent = t("release.copyLink");
   copyButton.addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(release.url);
-      showToast("הקישור הועתק ללוח");
+      showToast(t("toast.linkCopied"));
     } catch (_) {
-      showToast("לא ניתן היה להעתיק את הקישור");
+      showToast(t("toast.linkCopyFailed"));
     }
   });
   links.append(copyButton);
@@ -745,7 +1585,7 @@ function renderReleaseItem(release) {
     link.href = asset.download_url;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
-    link.textContent = "הורדה ↗";
+    link.textContent = t("release.assetDownload");
     row.append(name, meta, link);
     assets.append(row);
   });
@@ -753,18 +1593,23 @@ function renderReleaseItem(release) {
   if (!visibleAssets.length) {
     const empty = document.createElement("p");
     empty.className = "empty-releases";
-    empty.textContent = "לגרסה זו אין קבצים הנכללים במדדים הראשיים.";
+    empty.textContent = t("release.noAssets");
     assets.append(empty);
   }
   return fragment;
 }
 
 function filteredReleases() {
-  const query = state.releaseSearch.trim().toLocaleLowerCase("he");
+  const collation = I18n.locale("collation");
+  const query = state.releaseSearch.trim().toLocaleLowerCase(collation);
   return state.latest.releases.filter((release) => {
     const typeMatches =
       state.releaseType === "all" ||
-      (state.releaseType === "library" ? release.source === "seforim" : release.source === state.releaseType);
+      (state.releaseType === "app"
+        ? isAppRelease(release)
+        : state.releaseType === "library"
+          ? release.source === "seforim"
+          : release.source === state.releaseType);
     if (!typeMatches) return false;
 
     if (state.releaseOS !== "all") {
@@ -786,7 +1631,7 @@ function filteredReleases() {
     if (!query) return true;
     const haystack = [release.name, release.tag, ...release.assets.map((asset) => asset.name)]
       .join(" ")
-      .toLocaleLowerCase("he");
+      .toLocaleLowerCase(collation);
     return haystack.includes(query);
   });
 }
@@ -801,16 +1646,20 @@ function renderReleases() {
   if (!visible.length) {
     const empty = document.createElement("p");
     empty.className = "empty-releases";
-    empty.textContent = "לא נמצאו גרסאות המתאימות לסינון.";
+    empty.textContent = t("release.noMatches");
     list.append(empty);
   } else {
     visible.forEach((release) => list.append(renderReleaseItem(release)));
   }
 
-  $("#release-count").textContent = `${formatNumber(releases.length)} גרסאות נמצאו`;
+  $("#release-count").textContent = t("release.count", { count: formatNumber(releases.length) });
   const loadMore = $("#load-more");
   loadMore.hidden = releases.length <= state.releaseLimit;
-  if (!loadMore.hidden) loadMore.textContent = `הצג עוד ${formatNumber(Math.min(8, releases.length - state.releaseLimit))} גרסאות`;
+  if (!loadMore.hidden) {
+    loadMore.textContent = t("release.loadMore", {
+      count: formatNumber(Math.min(8, releases.length - state.releaseLimit)),
+    });
+  }
 }
 
 /* ---------- Controls ---------- */
@@ -854,6 +1703,8 @@ function bindControls() {
       state.releaseOS = button.dataset.os;
       state.releaseLimit = 8;
       setButtonState($$("[data-os]"), state.releaseOS, "os");
+      state.osFocus = state.releaseOS === "all" ? null : state.releaseOS;
+      if (state.statsReady) renderOsChart();
       await refreshReleases();
     }),
   );
@@ -888,6 +1739,8 @@ function bindControls() {
     $("#release-search")?.focus();
   });
 
+  bindRankingLink();
+
   $("#load-more").addEventListener("click", async () => {
     await ensureReleasesReady();
     state.releaseLimit += 8;
@@ -897,7 +1750,7 @@ function bindControls() {
 
 async function fetchJson(path) {
   const response = await fetch(path, { cache: "no-cache" });
-  if (!response.ok) throw new Error(`טעינת ${path} נכשלה (${response.status})`);
+  if (!response.ok) throw new Error(t("error.fetchFailed", { path, status: response.status }));
   return response.json();
 }
 
@@ -934,7 +1787,7 @@ function loadChartLibrary() {
       script.async = true;
       script.crossOrigin = "anonymous";
       script.addEventListener("load", () => resolve(window.Chart), { once: true });
-      script.addEventListener("error", () => reject(new Error("ספריית התרשימים לא נטענה")), { once: true });
+      script.addEventListener("error", () => reject(new Error(t("error.chartLibrary"))), { once: true });
       document.head.append(script);
     });
   }
@@ -943,25 +1796,28 @@ function loadChartLibrary() {
 
 function updateRecentChange() {
   const last = state.timeseries?.points?.at(-1);
-  const recentChange = last?.changes?.tracked_downloads || 0;
+  // The badge sits next to the software headline, so it must count the software
+  // family only — not the mixed tracked_downloads total.
+  const recentChange = last?.changes?.by_category?.app || 0;
   const deltaWrap = $("#hero-delta");
   deltaWrap.hidden = recentChange <= 0;
   if (recentChange > 0) {
-    $("#hero-delta-text").textContent = `+${formatNumber(recentChange)} מהסריקה היומית האחרונה`;
+    $("#hero-delta-text").textContent = t("hero.deltaText", { count: formatNumber(recentChange) });
   }
 }
 
 async function ensureStatsReady() {
   if (state.statsReady) return;
   const summary = $("#chart-summary");
-  summary.textContent = "טוען תרשימים…";
+  summary.textContent = t("chart.loading");
   try {
     await Promise.all([loadLatest(), loadTimeseries(), loadChartLibrary()]);
     state.statsReady = true;
     $("#stats").setAttribute("aria-busy", "false");
     updateRecentChange();
-    renderOsChart();
-    renderChart();
+    syncRangeChips();
+    await renderChart();
+    await renderOsChart();
   } catch (error) {
     $("#stats").setAttribute("aria-busy", "false");
     summary.textContent = error.message;
@@ -973,7 +1829,9 @@ async function refreshStats() {
     await ensureStatsReady();
     return;
   }
-  renderChart();
+  syncRangeChips();
+  await renderChart();
+  await renderOsChart();
 }
 
 async function ensureReleasesReady() {
@@ -1018,6 +1876,7 @@ function initLazyContent() {
 }
 
 async function init() {
+  bindLanguageControls();
   bindThemeControls();
   bindControls();
   bindScrollSpy();
@@ -1035,16 +1894,20 @@ async function init() {
     const title = document.createElement("strong");
     const detail = document.createElement("p");
     if (window.location.protocol === "file:") {
-      title.textContent = "פתיחה ישירה מהקובץ לא תומכת בטעינת נתונים";
-      detail.textContent =
-        "הדפדפן חוסם בקשות fetch לקבצים מקומיים (file://) מסיבות אבטחה. כדי לבדוק את האתר במחשב, הריצו שרת מקומי מתוך תיקיית site, למשל: python3 -m http.server ואז פתחו http://localhost:8000. באתר החי, לאחר פרסום ל־GitHub Pages, הטעינה תעבוד כרגיל.";
+      // The static copy carries its own keys so the panel follows a later
+      // language switch just like the rest of the page.
+      title.dataset.i18n = "error.fileProtocol.title";
+      title.textContent = t("error.fileProtocol.title");
+      detail.dataset.i18n = "error.fileProtocol.detail";
+      detail.textContent = t("error.fileProtocol.detail");
     } else {
-      title.textContent = "לא הצלחנו לטעון את הנתונים";
+      title.dataset.i18n = "error.load.title";
+      title.textContent = t("error.load.title");
       detail.textContent = error.message;
     }
     message.append(title, detail);
     $("#main-content").prepend(message);
-    $("#chart-summary").textContent = "הנתונים אינם זמינים";
+    $("#chart-summary").textContent = t("error.unavailable");
     $("#download-grid").setAttribute("aria-busy", "false");
   }
 }

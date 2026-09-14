@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "collected_at": "2026-09-13T04:56:12Z",
+  "collected_at": "2026-09-14T05:04:25Z",
   "notice_he": "Y-PLONI/otzaria הועבר אל Otzaria/otzaria ואינו נספר כמקור נפרד.",
   "sources": [
     {
@@ -15,7 +15,7 @@
       "repository": "Otzaria/otzaria",
       "label_he": "גרסאות Otzaria",
       "url": "https://github.com/Otzaria/otzaria/releases",
-      "release_count": 396
+      "release_count": 397
     },
     {
       "id": "seforim",
@@ -26,19 +26,19 @@
     }
   ],
   "summary": {
-    "tracked_downloads": 144696,
+    "tracked_downloads": 145331,
     "by_source": {
-      "sivan22": 49669,
-      "otzaria": 71334,
-      "seforim": 23693
+      "sivan22": 49671,
+      "otzaria": 71521,
+      "seforim": 24139
     },
     "by_category": {
-      "app": 121003,
-      "library": 11559,
-      "delta": 12134
+      "app": 121192,
+      "library": 11651,
+      "delta": 12488
     },
-    "release_count": 483,
-    "asset_count": 2774
+    "release_count": 484,
+    "asset_count": 2797
   },
   "featured_release": {
     "id": 302958435,

@@ -1998,6 +1998,36 @@
           "delta": 272
         }
       }
+    },
+    {
+      "date": "2026-09-24",
+      "collected_at": "2026-09-24T05:00:36Z",
+      "totals": {
+        "tracked_downloads": 152992,
+        "by_source": {
+          "sivan22": 49697,
+          "otzaria": 74652,
+          "seforim": 28643
+        },
+        "by_category": {
+          "app": 124349,
+          "library": 13488,
+          "delta": 15155
+        }
+      },
+      "changes": {
+        "tracked_downloads": 795,
+        "by_source": {
+          "sivan22": 2,
+          "otzaria": 369,
+          "seforim": 424
+        },
+        "by_category": {
+          "app": 371,
+          "library": 214,
+          "delta": 210
+        }
+      }
     }
   ]
 }

@@ -38,6 +38,9 @@ jobs:
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional. GitHub keeps traffic for 14 days only and serves it only
+          # to tokens with push access to each repository in TRAFFIC_REPOSITORIES.
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
         run: python3 scripts/collect_downloads.py
 
       - name: Commit new data
@@ -45,7 +48,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md site/data
+          git add README.md site/data archive
           if git diff --cached --quiet; then
             echo "No data changes to commit."
           else

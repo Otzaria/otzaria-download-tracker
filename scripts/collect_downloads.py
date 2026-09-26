@@ -27,6 +27,10 @@ API_ROOT = "https://api.github.com"
 SCHEMA_VERSION = 1
 TRACKED_CATEGORIES = ("app", "library", "delta")
 APP_SOURCES = ("otzaria", "sivan22")
+ARCHIVE_SCHEMA_VERSION = 1
+# Build/CI by-products and checksums are downloaded by pipelines, not people.
+CHECKSUM_PATTERN = re.compile(r"\.(sha256|sig)$")
+DELTA_MANIFEST_PATTERN = re.compile(r"patch-.+\.db\.zst\.manifest\.json")
 
 
 @dataclass(frozen=True)
@@ -41,6 +45,24 @@ SOURCES = (
     Source("sivan22", "Sivan22/otzaria", "גרסאות sivan22", "app"),
     Source("otzaria", "Otzaria/otzaria", "גרסאות Otzaria", "app"),
     Source("seforim", "Otzaria/SeforimLibrary", "ספריית הספרים", "library"),
+)
+
+# Repositories whose release files the app downloads at runtime. They are kept in
+# the archive only and never enter the site's headline totals.
+EXTRA_SOURCES = (
+    Source("hb_catalog", "Otzaria/otzar-HB_catalog", "קטלוג חיצוני", "catalog"),
+    Source("magic_dictionary", "Otzaria/SeforimMagicIndexer", "מילון מורפולוגי", "dictionary"),
+    Source("biographies", "Otzaria/ta-shma-to-otzaria", "ביוגרפיות", "biographies"),
+    Source("offline_updater", "Otzaria/Otzaria_Offline_update", "עדכון אופליין", "offline_updater"),
+)
+
+# GitHub keeps traffic numbers for 14 days only, so they are archived daily.
+# Reading them needs push access, hence a dedicated TRAFFIC_TOKEN secret.
+TRAFFIC_REPOSITORIES = (
+    "Otzaria/otzaria",
+    "Sivan22/otzaria",
+    "Otzaria/otzaria-library",
+    "Otzaria/Otzaria_Offline_update",
 )
 
 
@@ -315,6 +337,327 @@ def update_timeseries(
     return {"schema_version": SCHEMA_VERSION, "points": points}
 
 
+def archive_category(source: Source, filename: str) -> str | None:
+    """Category of a release file worth archiving, or None for pipeline by-products."""
+    normalized = filename.casefold()
+    if source.kind in ("app", "library"):
+        category = asset_category(source, filename)
+        if category in TRACKED_CATEGORIES:
+            return category
+        # The updater fetches one manifest per installed base version before it
+        # decides whether to patch, so these count update checks per version.
+        if DELTA_MANIFEST_PATTERN.fullmatch(normalized):
+            return "update_check"
+        return None
+    if CHECKSUM_PATTERN.search(normalized):
+        return None
+    if normalized == "version.txt":
+        return "update_check"
+    return source.kind
+
+
+def archive_records(source: Source, releases: Iterable[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Normalize raw API releases (or compacted latest.json releases) per asset key."""
+    records: dict[str, dict[str, Any]] = {}
+    for release in releases:
+        if release.get("draft"):
+            continue
+        release_key = f"{source.id}:{safe_number(release.get('id'))}"
+        release_meta = {
+            "repository": source.repository,
+            "tag": str(release.get("tag_name") or release.get("tag") or ""),
+            "name": str(release.get("name") or ""),
+            "prerelease": bool(release.get("prerelease")),
+            "published_at": release.get("published_at") or release.get("created_at"),
+        }
+        for asset in release.get("assets") or []:
+            name = str(asset.get("name") or "")
+            category = archive_category(source, name)
+            if category is None:
+                continue
+            downloads = asset.get("download_count", asset.get("downloads"))
+            records[f"{source.id}:{safe_number(asset.get('id'))}"] = {
+                "downloads": safe_number(downloads),
+                "release_key": release_key,
+                "release": release_meta,
+                "asset": {
+                    "release": release_key,
+                    "name": name,
+                    "category": category,
+                    "size": safe_number(asset.get("size")),
+                    "created_at": asset.get("created_at"),
+                    "updated_at": asset.get("updated_at"),
+                },
+            }
+    return records
+
+
+def update_registry(
+    registry: dict[str, Any],
+    records: dict[str, dict[str, Any]],
+    fetched_sources: Iterable[str],
+    date: str,
+) -> dict[str, Any]:
+    """Keep every release/file ever seen, so deleted ones keep their names.
+
+    Only a source fetched successfully in this run can mark its entries removed.
+    """
+    releases = dict(registry.get("releases") or {})
+    assets = dict(registry.get("assets") or {})
+    seen_releases: set[str] = set()
+
+    for key, record in records.items():
+        release_key = record["release_key"]
+        seen_releases.add(release_key)
+        known_release = releases.get(release_key) or {}
+        releases[release_key] = {
+            **record["release"],
+            "first_seen": known_release.get("first_seen") or date,
+            "removed_on": None,
+        }
+        known_asset = assets.get(key) or {}
+        asset = dict(record["asset"])
+        # Backfilled entries have no timestamps; never erase ones already known.
+        for field in ("created_at", "updated_at"):
+            asset[field] = asset[field] or known_asset.get(field)
+        assets[key] = {**asset, "first_seen": known_asset.get("first_seen") or date, "removed_on": None}
+
+    fetched = set(fetched_sources)
+    for collection, seen in ((releases, seen_releases), (assets, set(records))):
+        for key, entry in collection.items():
+            if key.split(":", 1)[0] in fetched and key not in seen and not entry.get("removed_on"):
+                entry["removed_on"] = date
+
+    return {"schema_version": ARCHIVE_SCHEMA_VERSION, "releases": releases, "assets": assets}
+
+
+def build_archive_daily(
+    date: str,
+    collected_at: str,
+    records: dict[str, dict[str, Any]],
+    previous_counts: dict[str, int],
+    repositories: dict[str, dict[str, int]] | None = None,
+) -> dict[str, Any]:
+    """Counters the site history does not keep, plus signals that are lost later.
+
+    Tracked (app/library/delta) counters already live in site/data/history and
+    are not duplicated here; they are still checked for counter decreases.
+    """
+    assets = {
+        key: record["downloads"]
+        for key, record in records.items()
+        if record["asset"]["category"] not in TRACKED_CATEGORIES
+    }
+    decreases = {
+        key: [previous_counts[key], record["downloads"]]
+        for key, record in records.items()
+        if key in previous_counts and record["downloads"] < previous_counts[key]
+    }
+    daily: dict[str, Any] = {
+        "schema_version": ARCHIVE_SCHEMA_VERSION,
+        "date": date,
+        "collected_at": collected_at,
+        "assets": dict(sorted(assets.items())),
+    }
+    if repositories:
+        daily["repositories"] = repositories
+    if decreases:
+        daily["decreases"] = decreases
+    return daily
+
+
+def previous_archive_counts(
+    archive_dir: Path, previous_site_snapshot: dict[str, Any] | None, current_date: str
+) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    daily = previous_snapshot(archive_dir / "daily", current_date) if (archive_dir / "daily").exists() else None
+    if daily:
+        counts.update({key: safe_number(value) for key, value in (daily.get("assets") or {}).items()})
+    for key, entry in ((previous_site_snapshot or {}).get("assets") or {}).items():
+        if isinstance(entry, list) and entry:
+            counts[key] = safe_number(entry[0])
+    return counts
+
+
+def fetch_repository_stats(repositories: Iterable[str], token: str | None) -> dict[str, dict[str, int]]:
+    stats: dict[str, dict[str, int]] = {}
+    for repository in repositories:
+        try:
+            payload = fetch_json(f"{API_ROOT}/repos/{repository}", token)
+        except RuntimeError as error:
+            print(f"::warning::Skipping repository stats for {repository}: {error}", file=sys.stderr)
+            continue
+        stats[repository] = {
+            "stars": safe_number(payload.get("stargazers_count")),
+            "forks": safe_number(payload.get("forks_count")),
+            "watchers": safe_number(payload.get("subscribers_count")),
+        }
+    return stats
+
+
+def fetch_traffic(repository: str, token: str) -> dict[str, Any]:
+    base = f"{API_ROOT}/repos/{repository}/traffic"
+    return {
+        "views": fetch_json(f"{base}/views", token),
+        "clones": fetch_json(f"{base}/clones", token),
+        "referrers": fetch_json(f"{base}/popular/referrers", token),
+        "paths": fetch_json(f"{base}/popular/paths", token),
+    }
+
+
+def merge_traffic(existing: dict[str, Any], fetched: dict[str, Any], repository: str, date: str) -> dict[str, Any]:
+    """Merge one 14-day traffic window into the permanent per-repository record.
+
+    Daily views/clones are keyed by their own day: a later fetch always holds the
+    final value, so it replaces an earlier (possibly partial) one. Referrers and
+    paths are only offered as a 14-day aggregate, stored per collection date.
+    """
+    merged: dict[str, Any] = {"schema_version": ARCHIVE_SCHEMA_VERSION, "repository": repository}
+    for kind in ("views", "clones"):
+        days = dict(existing.get(kind) or {})
+        for item in (fetched.get(kind) or {}).get(kind) or []:
+            day = str(item.get("timestamp") or "")[:10]
+            if day:
+                days[day] = [safe_number(item.get("count")), safe_number(item.get("uniques"))]
+        merged[kind] = dict(sorted(days.items()))
+    for kind, field in (("referrers", "referrer"), ("paths", "path")):
+        windows = dict(existing.get(kind) or {})
+        windows[date] = [
+            [str(item.get(field) or ""), safe_number(item.get("count")), safe_number(item.get("uniques"))]
+            for item in fetched.get(kind) or []
+        ]
+        merged[kind] = dict(sorted(windows.items()))
+    return merged
+
+
+def archive_traffic(archive_dir: Path, date: str, token: str | None) -> None:
+    if not token:
+        print("::notice::TRAFFIC_TOKEN is not set; traffic (kept by GitHub for 14 days only) was not archived.")
+        return
+    for repository in TRAFFIC_REPOSITORIES:
+        try:
+            fetched = fetch_traffic(repository, token)
+        except RuntimeError as error:
+            print(f"::warning::Skipping traffic for {repository}: {error}", file=sys.stderr)
+            continue
+        path = archive_dir / "traffic" / f"{repository.replace('/', '__')}.json"
+        existing = read_json(path) if path.exists() else {}
+        write_json(path, merge_traffic(existing, fetched, repository, date))
+
+
+def registry_sort_key(key: str) -> tuple[str, int]:
+    source, _, identifier = key.partition(":")
+    return source, safe_number(identifier)
+
+
+def write_registry(path: Path, registry: dict[str, Any]) -> None:
+    """One entry per line: the daily diff then shows only what really changed."""
+    lines = ["{", f'  "schema_version": {registry["schema_version"]},']
+    sections = ("releases", "assets")
+    for index, section in enumerate(sections):
+        entries = sorted(registry[section].items(), key=lambda item: registry_sort_key(item[0]))
+        lines.append(f'  "{section}": {{')
+        for position, (key, value) in enumerate(entries):
+            comma = "," if position < len(entries) - 1 else ""
+            encoded = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+            lines.append(f"    {json.dumps(key)}: {encoded}{comma}")
+        lines.append("  }" + ("," if index < len(sections) - 1 else ""))
+    lines.append("}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    temporary.replace(path)
+
+
+def fetch_extra_sources(token: str | None) -> dict[str, list[dict[str, Any]]]:
+    """Extra repositories never block the site's collection; a failed one is skipped."""
+    raw: dict[str, list[dict[str, Any]]] = {}
+    for source in EXTRA_SOURCES:
+        try:
+            raw[source.id] = fetch_all_releases(source, token)
+        except RuntimeError as error:
+            print(f"::warning::Skipping {source.repository}: {error}", file=sys.stderr)
+    return raw
+
+
+def update_archive(
+    archive_dir: Path,
+    raw: dict[str, list[dict[str, Any]]],
+    extra_raw: dict[str, list[dict[str, Any]]],
+    previous_site_snapshot: dict[str, Any] | None,
+    date: str,
+    collected_at: str,
+    token: str | None,
+) -> None:
+    sources = {source.id: source for source in SOURCES + EXTRA_SOURCES}
+    records: dict[str, dict[str, Any]] = {}
+    for source_id, releases in {**raw, **extra_raw}.items():
+        records.update(archive_records(sources[source_id], releases))
+
+    registry_path = archive_dir / "registry.json"
+    registry = read_json(registry_path) if registry_path.exists() else {}
+    write_registry(registry_path, update_registry(registry, records, [*raw, *extra_raw], date))
+
+    previous_counts = previous_archive_counts(archive_dir, previous_site_snapshot, date)
+    repositories = fetch_repository_stats([source.repository for source in sources.values()], token)
+    daily = build_archive_daily(date, collected_at, records, previous_counts, repositories)
+    write_json(archive_dir / "daily" / f"{date}.json", daily, compact=True)
+
+    archive_traffic(archive_dir, date, os.getenv("TRAFFIC_TOKEN"))
+
+
+def backfill_archive_from_git(repository_root: Path, archive_dir: Path) -> int:
+    """One-off recovery: rebuild the registry and past update-check counters from
+    the committed history of latest.json, which held every release file daily."""
+    import subprocess
+
+    def git(*arguments: str) -> str:
+        return subprocess.run(
+            ["git", "-C", str(repository_root), *arguments], check=True, capture_output=True, text=True
+        ).stdout
+
+    commits = git("log", "--reverse", "--format=%H", "--", "site/data/latest.json").split()
+    by_date: dict[str, dict[str, Any]] = {}
+    for commit in commits:
+        latest = json.loads(git("show", f"{commit}:site/data/latest.json"))
+        by_date[str(latest["collected_at"])[:10]] = latest  # the last commit of a day wins
+
+    sources = {source.id: source for source in SOURCES}
+    registry: dict[str, Any] = {}
+    previous_counts: dict[str, int] = {}
+    written = 0
+    for date, latest in sorted(by_date.items()):
+        records: dict[str, dict[str, Any]] = {}
+        for source in SOURCES:
+            releases = [release for release in latest.get("releases", []) if release.get("source") == source.id]
+            records.update(archive_records(sources[source.id], releases))
+        registry = update_registry(registry, records, sources, date)
+        daily_path = archive_dir / "daily" / f"{date}.json"
+        if not daily_path.exists():
+            write_json(
+                daily_path,
+                build_archive_daily(date, latest["collected_at"], records, previous_counts),
+                compact=True,
+            )
+            written += 1
+        previous_counts = {key: record["downloads"] for key, record in records.items()}
+
+    registry_path = archive_dir / "registry.json"
+    if registry_path.exists():
+        # Keep what live runs already learned (timestamps, extra sources).
+        current = read_json(registry_path)
+        for section in ("releases", "assets"):
+            for key, entry in registry[section].items():
+                known = current[section].get(key)
+                if known:
+                    known["first_seen"] = min(known.get("first_seen") or date, entry["first_seen"])
+                else:
+                    current[section][key] = entry
+        registry = current
+    write_registry(registry_path, registry)
+    return written
+
+
 def read_json(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
@@ -374,10 +717,11 @@ def update_readme(path: Path, latest: dict[str, Any], timeseries: dict[str, Any]
     path.write_text(before + block + after, encoding="utf-8")
 
 
-def collect(output_dir: Path, readme_path: Path) -> dict[str, Any]:
+def collect(output_dir: Path, readme_path: Path, archive_dir: Path) -> dict[str, Any]:
     token = os.getenv("GITHUB_TOKEN")
     collected_at = utc_now()
     raw = {source.id: fetch_all_releases(source, token) for source in SOURCES}
+    extra_raw = fetch_extra_sources(token)
     latest = build_latest(raw, collected_at)
 
     history_dir = output_dir / "history"
@@ -393,6 +737,7 @@ def collect(output_dir: Path, readme_path: Path) -> dict[str, Any]:
     write_json(history_dir / f"{date}.json", snapshot, compact=True)
     write_json(timeseries_path, timeseries)
     update_readme(readme_path, latest, timeseries)
+    update_archive(archive_dir, raw, extra_raw, previous, date, latest["collected_at"], token)
     return latest
 
 
@@ -401,12 +746,22 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=root / "site" / "data")
     parser.add_argument("--readme", type=Path, default=root / "README.md")
+    parser.add_argument("--archive-dir", type=Path, default=root / "archive")
+    parser.add_argument(
+        "--backfill-archive",
+        action="store_true",
+        help="rebuild the archive from the git history of latest.json and exit",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
-    latest = collect(args.output_dir, args.readme)
+    if args.backfill_archive:
+        written = backfill_archive_from_git(Path(__file__).resolve().parents[1], args.archive_dir)
+        print(f"Backfilled {written} archive days from git history.")
+        return 0
+    latest = collect(args.output_dir, args.readme, args.archive_dir)
     print(
         f"Collected {latest['summary']['release_count']} releases and "
         f"{latest['summary']['tracked_downloads']:,} tracked downloads."

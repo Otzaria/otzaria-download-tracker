@@ -5,17 +5,24 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from scripts.collect_downloads import (
+    EXTRA_SOURCES,
     SOURCES,
     Source,
+    archive_category,
+    archive_records,
     asset_category,
+    build_archive_daily,
     build_latest,
     build_overview,
     build_snapshot,
     calculate_changes,
+    merge_traffic,
     previous_snapshot,
     release_channel,
+    update_registry,
     update_timeseries,
     write_json,
+    write_registry,
 )
 
 
@@ -116,6 +123,70 @@ class SnapshotTests(unittest.TestCase):
             result = previous_snapshot(history, "2026-07-19")
 
         self.assertEqual(result["date"], "2026-07-18")
+
+
+class ArchiveTests(unittest.TestCase):
+    seforim = SOURCES[2]
+    catalog = EXTRA_SOURCES[0]
+
+    def test_only_user_facing_files_are_archived(self):
+        self.assertEqual(archive_category(self.seforim, "seforim.db.zst"), "library")
+        self.assertEqual(archive_category(self.seforim, "patch-v4-v6.db.zst.manifest.json"), "update_check")
+        self.assertIsNone(archive_category(self.seforim, "seforim.db.buildstate.zst"))
+        self.assertIsNone(archive_category(self.seforim, "lines_snapshot.db.zst"))
+        self.assertEqual(archive_category(self.catalog, "version.txt"), "update_check")
+        self.assertEqual(archive_category(self.catalog, "otzar-HB_catalog.db.zst"), "catalog")
+        self.assertIsNone(archive_category(self.catalog, "biographies.sha256"))
+
+    def records(self, *assets):
+        raw = release(3, assets[0][0], assets[0][1], assets[0][2])
+        raw["assets"] = [release(3, *asset)["assets"][0] for asset in assets]
+        return archive_records(self.seforim, [raw])
+
+    def test_registry_keeps_removed_files_and_marks_the_day(self):
+        first = self.records((301, "seforim.db.zst", 5), (302, "patch-v1-v3.db.zst.manifest.json", 9))
+        registry = update_registry({}, first, ["seforim"], "2026-07-18")
+        registry = update_registry(registry, self.records((302, "patch-v1-v3.db.zst.manifest.json", 9)), ["seforim"], "2026-07-19")
+
+        removed = registry["assets"]["seforim:301"]
+        self.assertEqual(removed["name"], "seforim.db.zst")
+        self.assertEqual(removed["first_seen"], "2026-07-18")
+        self.assertEqual(removed["removed_on"], "2026-07-19")
+        self.assertIsNone(registry["assets"]["seforim:302"]["removed_on"])
+
+    def test_a_source_that_failed_to_fetch_marks_nothing_removed(self):
+        registry = update_registry({}, self.records((301, "seforim.db.zst", 5)), ["seforim"], "2026-07-18")
+        registry = update_registry(registry, {}, [], "2026-07-19")
+        self.assertIsNone(registry["assets"]["seforim:301"]["removed_on"])
+        self.assertIsNone(registry["releases"]["seforim:3"]["removed_on"])
+
+    def test_registry_round_trips_through_its_line_format(self):
+        registry = update_registry({}, self.records((301, "seforim.db.zst", 5)), ["seforim"], "2026-07-18")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "registry.json"
+            write_registry(path, registry)
+            self.assertEqual(json.loads(path.read_text(encoding="utf-8")), registry)
+
+    def test_daily_archive_skips_site_counters_and_records_decreases(self):
+        records = self.records((301, "seforim.db.zst", 4), (302, "patch-v1-v3.db.zst.manifest.json", 9))
+        daily = build_archive_daily("2026-07-19", "2026-07-19T00:17:00Z", records, {"seforim:301": 5})
+
+        self.assertEqual(daily["assets"], {"seforim:302": 9})
+        self.assertEqual(daily["decreases"], {"seforim:301": [5, 4]})
+
+    def test_traffic_days_are_replaced_and_windows_kept_per_date(self):
+        existing = {"views": {"2026-07-10": [1, 1], "2026-07-01": [7, 3]}, "referrers": {"2026-07-18": []}}
+        fetched = {
+            "views": {"views": [{"timestamp": "2026-07-10T00:00:00Z", "count": 9, "uniques": 4}]},
+            "clones": {"clones": []},
+            "referrers": [{"referrer": "google.com", "count": 3, "uniques": 2}],
+            "paths": [],
+        }
+        merged = merge_traffic(existing, fetched, "Otzaria/otzaria", "2026-07-19")
+
+        self.assertEqual(merged["views"], {"2026-07-01": [7, 3], "2026-07-10": [9, 4]})
+        self.assertEqual(merged["referrers"]["2026-07-19"], [["google.com", 3, 2]])
+        self.assertIn("2026-07-18", merged["referrers"])
 
 
 class SourceConfigurationTests(unittest.TestCase):

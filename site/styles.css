@@ -1046,9 +1046,15 @@ html[data-i18n-pending] body {
   font-weight: 600;
 }
 
+.os-banner-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .os-banner .material-symbols {
-  margin-inline-end: var(--space-2);
-  vertical-align: -4px;
+  font-size: 1.3rem;
+  flex-shrink: 0;
 }
 
 .download-grid {

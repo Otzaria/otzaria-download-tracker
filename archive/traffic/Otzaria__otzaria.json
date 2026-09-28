@@ -154,10 +154,99 @@
         1,
         1
       ]
+    ],
+    "2026-09-28": [
+      [
+        "github.com",
+        698,
+        93
+      ],
+      [
+        "Google",
+        38,
+        10
+      ],
+      [
+        "otzaria.org",
+        16,
+        12
+      ],
+      [
+        "claude.ai",
+        1,
+        1
+      ],
+      [
+        "my-email.co.il",
+        1,
+        1
+      ],
+      [
+        "raw.githack.com",
+        1,
+        1
+      ],
+      [
+        "search.brave.com",
+        1,
+        1
+      ]
     ]
   },
   "paths": {
     "2026-09-27": [
+      [
+        "/Otzaria/otzaria/issues",
+        539,
+        59
+      ],
+      [
+        "/Otzaria/otzaria/pulls",
+        342,
+        30
+      ],
+      [
+        "/Otzaria/otzaria",
+        249,
+        74
+      ],
+      [
+        "/Otzaria/otzaria/releases",
+        225,
+        110
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.97+789",
+        175,
+        120
+      ],
+      [
+        "/otzaria/otzaria",
+        98,
+        63
+      ],
+      [
+        "/Otzaria/otzaria/actions",
+        58,
+        20
+      ],
+      [
+        "/Otzaria/otzaria/issues/1448",
+        40,
+        11
+      ],
+      [
+        "/Otzaria/otzaria/pull/1270",
+        40,
+        9
+      ],
+      [
+        "/Otzaria/otzaria/issues/1338",
+        36,
+        7
+      ]
+    ],
+    "2026-09-28": [
       [
         "/Otzaria/otzaria/issues",
         539,

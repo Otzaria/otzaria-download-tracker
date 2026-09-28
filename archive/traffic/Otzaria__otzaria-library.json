@@ -129,10 +129,74 @@
         15,
         4
       ]
+    ],
+    "2026-09-28": [
+      [
+        "github.com",
+        117,
+        34
+      ],
+      [
+        "Google",
+        15,
+        4
+      ]
     ]
   },
   "paths": {
     "2026-09-27": [
+      [
+        "/Otzaria/otzaria-library",
+        108,
+        38
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        63,
+        14
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        27,
+        14
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/.claude/skills",
+        20,
+        17
+      ],
+      [
+        "/Otzaria/otzaria-library/issues/42",
+        19,
+        10
+      ],
+      [
+        "/Otzaria/otzaria-library/pulls",
+        19,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/issues/44",
+        17,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/issues/45",
+        14,
+        10
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        14,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/issues/32",
+        10,
+        5
+      ]
+    ],
+    "2026-09-28": [
       [
         "/Otzaria/otzaria-library",
         108,

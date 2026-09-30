@@ -57,6 +57,30 @@
     "2026-09-23": [
       93,
       10
+    ],
+    "2026-09-24": [
+      65,
+      7
+    ],
+    "2026-09-25": [
+      16,
+      4
+    ],
+    "2026-09-26": [
+      5,
+      2
+    ],
+    "2026-09-27": [
+      7,
+      4
+    ],
+    "2026-09-28": [
+      25,
+      5
+    ],
+    "2026-09-29": [
+      37,
+      4
     ]
   },
   "clones": {
@@ -115,6 +139,30 @@
     "2026-09-23": [
       148,
       24
+    ],
+    "2026-09-24": [
+      217,
+      33
+    ],
+    "2026-09-25": [
+      2,
+      1
+    ],
+    "2026-09-26": [
+      2,
+      2
+    ],
+    "2026-09-27": [
+      5,
+      4
+    ],
+    "2026-09-28": [
+      0,
+      0
+    ],
+    "2026-09-29": [
+      52,
+      12
     ]
   },
   "referrers": {
@@ -166,6 +214,23 @@
       [
         "Google",
         3,
+        1
+      ]
+    ],
+    "2026-09-30": [
+      [
+        "github.com",
+        77,
+        13
+      ],
+      [
+        "otzaria.org",
+        5,
+        4
+      ],
+      [
+        "Google",
+        4,
         1
       ]
     ]
@@ -325,6 +390,58 @@
         "/Otzaria/Otzaria_Offline_update/actions/runs/35697840960",
         4,
         1
+      ]
+    ],
+    "2026-09-30": [
+      [
+        "/Otzaria/Otzaria_Offline_update",
+        107,
+        22
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/issues",
+        54,
+        8
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/actions",
+        39,
+        1
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/issues/33",
+        24,
+        7
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/releases",
+        19,
+        12
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/issues/36",
+        14,
+        6
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/issues/28",
+        12,
+        4
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/actions/workflows/build-exe.yml",
+        9,
+        1
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/pulls",
+        8,
+        4
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/issues/32",
+        7,
+        4
       ]
     ]
   }

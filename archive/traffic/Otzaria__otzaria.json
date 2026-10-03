@@ -85,6 +85,10 @@
     "2026-09-30": [
       475,
       36
+    ],
+    "2026-10-01": [
+      486,
+      42
     ]
   },
   "clones": {
@@ -171,6 +175,10 @@
     "2026-09-30": [
       1946,
       123
+    ],
+    "2026-10-01": [
+      1476,
+      111
     ]
   },
   "referrers": {
@@ -374,6 +382,38 @@
         "otzaria.org",
         16,
         10
+      ],
+      [
+        "tora-forum.co.il",
+        2,
+        1
+      ],
+      [
+        "chatgpt.com",
+        1,
+        1
+      ],
+      [
+        "claude.ai",
+        1,
+        1
+      ]
+    ],
+    "2026-10-03": [
+      [
+        "github.com",
+        756,
+        104
+      ],
+      [
+        "Google",
+        20,
+        9
+      ],
+      [
+        "otzaria.org",
+        12,
+        8
       ],
       [
         "tora-forum.co.il",
@@ -703,6 +743,58 @@
         "/Otzaria/otzaria/tree/dev/docs/plugin-sdk",
         38,
         10
+      ]
+    ],
+    "2026-10-03": [
+      [
+        "/Otzaria/otzaria/pulls",
+        809,
+        37
+      ],
+      [
+        "/Otzaria/otzaria/issues",
+        633,
+        52
+      ],
+      [
+        "/Otzaria/otzaria",
+        268,
+        60
+      ],
+      [
+        "/Otzaria/otzaria/releases",
+        147,
+        88
+      ],
+      [
+        "/otzaria/otzaria",
+        106,
+        72
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.97+789",
+        78,
+        59
+      ],
+      [
+        "/Otzaria/otzaria/pull/1548",
+        72,
+        16
+      ],
+      [
+        "/Otzaria/otzaria/pull/1455",
+        47,
+        5
+      ],
+      [
+        "/Otzaria/otzaria/issues/1448",
+        45,
+        12
+      ],
+      [
+        "/Otzaria/otzaria/tree/dev/docs/plugin-sdk",
+        37,
+        11
       ]
     ]
   }

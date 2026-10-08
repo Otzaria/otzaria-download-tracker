@@ -3,6 +3,7 @@
   "releases": {
     "biographies:379706370": {"repository":"Otzaria/ta-shma-to-otzaria","tag":"bio-20260831-113627","name":"Biographies bio-20260831-113627","prerelease":false,"published_at":"2026-08-31T11:39:14Z","first_seen":"2026-09-27","removed_on":null},
     "biographies:379818849": {"repository":"Otzaria/ta-shma-to-otzaria","tag":"bio-20260831-142957","name":"Biographies bio-20260831-142957","prerelease":false,"published_at":"2026-08-31T14:29:59Z","first_seen":"2026-09-27","removed_on":null},
+    "biographies:405641820": {"repository":"Otzaria/ta-shma-to-otzaria","tag":"bio-20261007-102653","name":"Biographies bio-20261007-102653","prerelease":false,"published_at":"2026-10-07T10:26:55Z","first_seen":"2026-10-08","removed_on":null},
     "hb_catalog:380634787": {"repository":"Otzaria/otzar-HB_catalog","tag":"db-v9","name":"db-v9","prerelease":false,"published_at":"2026-09-01T15:46:48Z","first_seen":"2026-09-27","removed_on":null},
     "magic_dictionary:345020332": {"repository":"Otzaria/SeforimMagicIndexer","tag":"v0.3.0","name":"0.3.0","prerelease":false,"published_at":"2026-06-25T22:36:05Z","first_seen":"2026-09-27","removed_on":null},
     "magic_dictionary:403209217": {"repository":"Otzaria/SeforimMagicIndexer","tag":"v0.3.1","name":"v0.3.1","prerelease":false,"published_at":"2026-10-04T21:12:54Z","first_seen":"2026-10-05","removed_on":null},
@@ -518,6 +519,7 @@
   "assets": {
     "biographies:537902236": {"release":"biographies:379706370","name":"biographies.tsb","category":"biographies","size":399594,"created_at":"2026-08-31T11:39:13Z","updated_at":"2026-08-31T11:39:13Z","first_seen":"2026-09-27","removed_on":null},
     "biographies:538105336": {"release":"biographies:379818849","name":"biographies.tsb","category":"biographies","size":409206,"created_at":"2026-08-31T14:29:58Z","updated_at":"2026-08-31T14:29:59Z","first_seen":"2026-09-27","removed_on":null},
+    "biographies:618347567": {"release":"biographies:405641820","name":"biographies.tsb","category":"biographies","size":409450,"created_at":"2026-10-07T10:26:54Z","updated_at":"2026-10-07T10:26:54Z","first_seen":"2026-10-08","removed_on":null},
     "hb_catalog:539770600": {"release":"hb_catalog:380634787","name":"version.txt","category":"update_check","size":2,"created_at":"2026-09-01T15:46:46Z","updated_at":"2026-09-01T15:46:47Z","first_seen":"2026-09-27","removed_on":null},
     "hb_catalog:539770603": {"release":"hb_catalog:380634787","name":"otzar-HB_catalog.db.zst","category":"catalog","size":6049662,"created_at":"2026-09-01T15:46:46Z","updated_at":"2026-09-01T15:46:47Z","first_seen":"2026-09-27","removed_on":null},
     "magic_dictionary:458055169": {"release":"magic_dictionary:345020332","name":"lexical.db","category":"dictionary","size":57122816,"created_at":"2026-06-25T22:34:19Z","updated_at":"2026-06-25T22:35:08Z","first_seen":"2026-09-27","removed_on":null},

@@ -373,6 +373,18 @@
         12,
         7
       ]
+    ],
+    "2026-10-09": [
+      [
+        "github.com",
+        109,
+        44
+      ],
+      [
+        "Google",
+        12,
+        7
+      ]
     ]
   },
   "paths": {
@@ -949,6 +961,58 @@
       ]
     ],
     "2026-10-08": [
+      [
+        "/Otzaria/otzaria-library",
+        101,
+        46
+      ],
+      [
+        "/Otzaria/otzaria-library/pulls",
+        97,
+        11
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        74,
+        39
+      ],
+      [
+        "/Otzaria/otzaria-library/issues/45",
+        44,
+        23
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        42,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/commit/e17dc0fd69175468f7aadc426bc2c350c48ff5c2",
+        27,
+        26
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main",
+        22,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        18,
+        9
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/extraBooks",
+        18,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/commits/main",
+        17,
+        4
+      ]
+    ],
+    "2026-10-09": [
       [
         "/Otzaria/otzaria-library",
         101,

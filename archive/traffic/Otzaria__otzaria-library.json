@@ -113,6 +113,14 @@
     "2026-10-07": [
       293,
       17
+    ],
+    "2026-10-08": [
+      215,
+      17
+    ],
+    "2026-10-09": [
+      67,
+      7
     ]
   },
   "clones": {
@@ -227,6 +235,14 @@
     "2026-10-07": [
       2395,
       94
+    ],
+    "2026-10-08": [
+      15917,
+      132
+    ],
+    "2026-10-09": [
+      425,
+      65
     ]
   },
   "referrers": {
@@ -383,6 +399,18 @@
       [
         "Google",
         12,
+        7
+      ]
+    ],
+    "2026-10-10": [
+      [
+        "github.com",
+        123,
+        46
+      ],
+      [
+        "Google",
+        11,
         7
       ]
     ]
@@ -1062,6 +1090,58 @@
         "/Otzaria/otzaria-library/commits/main",
         17,
         4
+      ]
+    ],
+    "2026-10-10": [
+      [
+        "/Otzaria/otzaria-library/pulls",
+        137,
+        13
+      ],
+      [
+        "/Otzaria/otzaria-library",
+        106,
+        48
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        80,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        73,
+        37
+      ],
+      [
+        "/Otzaria/otzaria-library/issues/45",
+        43,
+        22
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        24,
+        9
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main",
+        22,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/actions/workflows/weekly-pipeline.yml",
+        20,
+        1
+      ],
+      [
+        "/Otzaria/otzaria-library/commits/main",
+        18,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/extraBooks",
+        17,
+        5
       ]
     ]
   }

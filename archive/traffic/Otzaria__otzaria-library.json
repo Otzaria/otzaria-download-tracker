@@ -413,6 +413,18 @@
         11,
         7
       ]
+    ],
+    "2026-10-11": [
+      [
+        "github.com",
+        123,
+        46
+      ],
+      [
+        "Google",
+        11,
+        7
+      ]
     ]
   },
   "paths": {
@@ -1093,6 +1105,58 @@
       ]
     ],
     "2026-10-10": [
+      [
+        "/Otzaria/otzaria-library/pulls",
+        137,
+        13
+      ],
+      [
+        "/Otzaria/otzaria-library",
+        106,
+        48
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        80,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        73,
+        37
+      ],
+      [
+        "/Otzaria/otzaria-library/issues/45",
+        43,
+        22
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        24,
+        9
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main",
+        22,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/actions/workflows/weekly-pipeline.yml",
+        20,
+        1
+      ],
+      [
+        "/Otzaria/otzaria-library/commits/main",
+        18,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/extraBooks",
+        17,
+        5
+      ]
+    ],
+    "2026-10-11": [
       [
         "/Otzaria/otzaria-library/pulls",
         137,

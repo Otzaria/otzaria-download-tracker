@@ -117,6 +117,14 @@
     "2026-10-08": [
       417,
       70
+    ],
+    "2026-10-09": [
+      348,
+      32
+    ],
+    "2026-10-10": [
+      296,
+      32
     ]
   },
   "clones": {
@@ -235,6 +243,14 @@
     "2026-10-08": [
       2334,
       194
+    ],
+    "2026-10-09": [
+      1814,
+      185
+    ],
+    "2026-10-10": [
+      642,
+      119
     ]
   },
   "referrers": {
@@ -728,6 +744,48 @@
       [
         "tora-forum.co.il",
         5,
+        4
+      ],
+      [
+        "claude.ai",
+        2,
+        2
+      ],
+      [
+        "web.telegram.org",
+        2,
+        1
+      ],
+      [
+        "chatgpt.com",
+        1,
+        1
+      ],
+      [
+        "github-wiki-see.page",
+        1,
+        1
+      ]
+    ],
+    "2026-10-11": [
+      [
+        "github.com",
+        1312,
+        168
+      ],
+      [
+        "Google",
+        63,
+        16
+      ],
+      [
+        "otzaria.org",
+        12,
+        10
+      ],
+      [
+        "tora-forum.co.il",
+        4,
         4
       ],
       [
@@ -1479,6 +1537,58 @@
         "/Otzaria/otzaria/pull/1548",
         73,
         17
+      ]
+    ],
+    "2026-10-11": [
+      [
+        "/Otzaria/otzaria/pulls",
+        1540,
+        62
+      ],
+      [
+        "/Otzaria/otzaria/issues",
+        1214,
+        84
+      ],
+      [
+        "/Otzaria/otzaria",
+        315,
+        93
+      ],
+      [
+        "/Otzaria/otzaria/releases",
+        285,
+        128
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.98+801",
+        218,
+        122
+      ],
+      [
+        "/Otzaria/otzaria/actions",
+        128,
+        31
+      ],
+      [
+        "/otzaria/otzaria",
+        112,
+        77
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.97+789",
+        87,
+        57
+      ],
+      [
+        "/Otzaria/otzaria/actions/runs/37292739072",
+        74,
+        29
+      ],
+      [
+        "/Otzaria/otzaria/pull/1596",
+        74,
+        14
       ]
     ]
   }

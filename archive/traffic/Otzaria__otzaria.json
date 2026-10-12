@@ -808,6 +808,48 @@
         1,
         1
       ]
+    ],
+    "2026-10-12": [
+      [
+        "github.com",
+        1312,
+        168
+      ],
+      [
+        "Google",
+        63,
+        16
+      ],
+      [
+        "otzaria.org",
+        12,
+        10
+      ],
+      [
+        "tora-forum.co.il",
+        4,
+        4
+      ],
+      [
+        "claude.ai",
+        2,
+        2
+      ],
+      [
+        "web.telegram.org",
+        2,
+        1
+      ],
+      [
+        "chatgpt.com",
+        1,
+        1
+      ],
+      [
+        "github-wiki-see.page",
+        1,
+        1
+      ]
     ]
   },
   "paths": {
@@ -1540,6 +1582,58 @@
       ]
     ],
     "2026-10-11": [
+      [
+        "/Otzaria/otzaria/pulls",
+        1540,
+        62
+      ],
+      [
+        "/Otzaria/otzaria/issues",
+        1214,
+        84
+      ],
+      [
+        "/Otzaria/otzaria",
+        315,
+        93
+      ],
+      [
+        "/Otzaria/otzaria/releases",
+        285,
+        128
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.98+801",
+        218,
+        122
+      ],
+      [
+        "/Otzaria/otzaria/actions",
+        128,
+        31
+      ],
+      [
+        "/otzaria/otzaria",
+        112,
+        77
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.97+789",
+        87,
+        57
+      ],
+      [
+        "/Otzaria/otzaria/actions/runs/37292739072",
+        74,
+        29
+      ],
+      [
+        "/Otzaria/otzaria/pull/1596",
+        74,
+        14
+      ]
+    ],
+    "2026-10-12": [
       [
         "/Otzaria/otzaria/pulls",
         1540,

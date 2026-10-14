@@ -129,6 +129,10 @@
     "2026-10-11": [
       471,
       24
+    ],
+    "2026-10-12": [
+      106,
+      16
     ]
   },
   "clones": {
@@ -259,6 +263,10 @@
     "2026-10-11": [
       4568,
       136
+    ],
+    "2026-10-12": [
+      6628,
+      127
     ]
   },
   "referrers": {
@@ -464,6 +472,18 @@
         "Google",
         9,
         6
+      ]
+    ],
+    "2026-10-14": [
+      [
+        "github.com",
+        157,
+        52
+      ],
+      [
+        "Google",
+        8,
+        5
       ]
     ]
   },
@@ -1345,6 +1365,58 @@
         "/Otzaria/otzaria-library/commits/main",
         20,
         6
+      ],
+      [
+        "/Otzaria/otzaria-library/actions/workflows/weekly-pipeline.yml",
+        20,
+        1
+      ]
+    ],
+    "2026-10-14": [
+      [
+        "/Otzaria/otzaria-library/pulls",
+        341,
+        14
+      ],
+      [
+        "/Otzaria/otzaria-library",
+        117,
+        49
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        81,
+        4
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        74,
+        37
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        39,
+        12
+      ],
+      [
+        "/Otzaria/otzaria-library/commits/main",
+        37,
+        7
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/66",
+        22,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main",
+        22,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/issues/45",
+        21,
+        15
       ],
       [
         "/Otzaria/otzaria-library/actions/workflows/weekly-pipeline.yml",

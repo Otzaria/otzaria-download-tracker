@@ -153,6 +153,10 @@
     "2026-10-17": [
       84,
       12
+    ],
+    "2026-10-18": [
+      83,
+      13
     ]
   },
   "clones": {
@@ -307,6 +311,10 @@
     "2026-10-17": [
       442,
       49
+    ],
+    "2026-10-18": [
+      2096,
+      60
     ]
   },
   "referrers": {
@@ -599,6 +607,33 @@
         "github.com",
         153,
         47
+      ],
+      [
+        "Google",
+        10,
+        6
+      ],
+      [
+        "Bing",
+        1,
+        1
+      ],
+      [
+        "otzaria.org",
+        1,
+        1
+      ],
+      [
+        "perplexity.ai",
+        1,
+        1
+      ]
+    ],
+    "2026-10-20": [
+      [
+        "github.com",
+        160,
+        45
       ],
       [
         "Google",
@@ -1817,6 +1852,58 @@
         "/Otzaria/otzaria-library/tree/main/MoreBooks/ספרים/אוצריא",
         19,
         6
+      ]
+    ],
+    "2026-10-20": [
+      [
+        "/Otzaria/otzaria-library/pulls",
+        393,
+        20
+      ],
+      [
+        "/Otzaria/otzaria-library",
+        104,
+        45
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        67,
+        4
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        53,
+        30
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        48,
+        13
+      ],
+      [
+        "/Otzaria/otzaria-library/commits/main",
+        32,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/192",
+        22,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/66",
+        22,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/206",
+        20,
+        2
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/127",
+        18,
+        5
       ]
     ]
   }

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "collected_at": "2026-10-20T01:00:07Z",
+  "collected_at": "2026-10-21T01:00:06Z",
   "notice_he": "Y-PLONI/otzaria הועבר אל Otzaria/otzaria ואינו נספר כמקור נפרד.",
   "sources": [
     {
@@ -26,16 +26,16 @@
     }
   ],
   "summary": {
-    "tracked_downloads": 172032,
+    "tracked_downloads": 172857,
     "by_source": {
-      "sivan22": 49794,
-      "otzaria": 86905,
-      "seforim": 35333
+      "sivan22": 49806,
+      "otzaria": 87583,
+      "seforim": 35468
     },
     "by_category": {
-      "app": 136699,
-      "library": 15070,
-      "delta": 20263
+      "app": 137389,
+      "library": 15072,
+      "delta": 20396
     },
     "release_count": 502,
     "asset_count": 2858
@@ -62,7 +62,7 @@
         "id": 384374268,
         "name": "otzaria-0.9.88-windows.exe",
         "category": "app",
-        "downloads": 909,
+        "downloads": 910,
         "size": 30084301,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-0.9.88-windows.exe"
@@ -98,7 +98,7 @@
         "id": 384374235,
         "name": "app-release.apk",
         "category": "app",
-        "downloads": 81,
+        "downloads": 82,
         "size": 158440662,
         "content_type": "application/vnd.android.package-archive",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/app-release.apk"
@@ -131,6 +131,6 @@
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.88%2B586/otzaria-0.9.88-1.x86_64.rpm"
       }
     ],
-    "downloads": 2947
+    "downloads": 2949
   }
 }

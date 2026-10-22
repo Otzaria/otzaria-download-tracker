@@ -161,6 +161,10 @@
     "2026-10-19": [
       22,
       10
+    ],
+    "2026-10-20": [
+      50,
+      4
     ]
   },
   "clones": {
@@ -323,6 +327,10 @@
     "2026-10-19": [
       15,
       4
+    ],
+    "2026-10-20": [
+      12,
+      2
     ]
   },
   "referrers": {
@@ -819,6 +827,18 @@
         "claude.ai",
         1,
         1
+      ]
+    ],
+    "2026-10-22": [
+      [
+        "github.com",
+        28,
+        14
+      ],
+      [
+        "otzaria.org",
+        3,
+        3
       ]
     ]
   },
@@ -2121,6 +2141,58 @@
         "/Otzaria/Otzaria_Offline_update/actions/runs/38101056205",
         5,
         1
+      ]
+    ],
+    "2026-10-22": [
+      [
+        "/Otzaria/Otzaria_Offline_update/pulls",
+        66,
+        7
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/actions",
+        41,
+        4
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/releases",
+        35,
+        26
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update",
+        34,
+        28
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/issues",
+        28,
+        11
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/pull/114",
+        13,
+        5
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/actions/workflows/build-exe.yml",
+        11,
+        2
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/pull/111",
+        9,
+        3
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/releases/tag/v0.26.0",
+        6,
+        2
+      ],
+      [
+        "/Otzaria/Otzaria_Offline_update/pull/46",
+        5,
+        3
       ]
     ]
   }

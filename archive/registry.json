@@ -488,7 +488,7 @@
     "seforim:400441796": {"repository":"Otzaria/SeforimLibrary","tag":"v30-20260930165019","name":"v30-20260930165019","prerelease":true,"published_at":"2026-09-30T21:38:29Z","first_seen":"2026-10-01","removed_on":null},
     "seforim:403219700": {"repository":"Otzaria/SeforimLibrary","tag":"v31-20261004170255","name":"v31-20261004170255","prerelease":false,"published_at":"2026-10-04T21:58:16Z","first_seen":"2026-10-05","removed_on":null},
     "seforim:409213893": {"repository":"Otzaria/SeforimLibrary","tag":"v32-20261010190601","name":"v32-20261010190601","prerelease":false,"published_at":"2026-10-10T21:55:08Z","first_seen":"2026-10-11","removed_on":null},
-    "seforim:421276633": {"repository":"Otzaria/SeforimLibrary","tag":"v33-20261022095235","name":"v33-20261022095235","prerelease":false,"published_at":"2026-10-22T23:18:16Z","first_seen":"2026-10-23","removed_on":null},
+    "seforim:421276633": {"repository":"Otzaria/SeforimLibrary","tag":"v33-20261022095235","name":"v33-20261022095235","prerelease":true,"published_at":"2026-10-22T23:18:16Z","first_seen":"2026-10-23","removed_on":null},
     "sivan22:140089249": {"repository":"Sivan22/otzaria","tag":"0.0.1pre-realease","name":"0.0.1+alpha","prerelease":true,"published_at":"2024-02-06T13:27:32Z","first_seen":"2026-07-19","removed_on":null},
     "sivan22:141534452": {"repository":"Sivan22/otzaria","tag":"v0.0.2beta","name":"0.0.2+beta","prerelease":true,"published_at":"2024-02-11T13:53:30Z","first_seen":"2026-07-19","removed_on":null},
     "sivan22:142495622": {"repository":"Sivan22/otzaria","tag":"v0.0.3-beta","name":"0.0.3+beta","prerelease":true,"published_at":"2024-02-18T13:28:51Z","first_seen":"2026-07-19","removed_on":null},

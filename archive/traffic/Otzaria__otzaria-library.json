@@ -181,6 +181,10 @@
     "2026-10-24": [
       19,
       6
+    ],
+    "2026-10-25": [
+      139,
+      25
     ]
   },
   "clones": {
@@ -363,6 +367,10 @@
     "2026-10-24": [
       607,
       53
+    ],
+    "2026-10-25": [
+      18295,
+      143
     ]
   },
   "referrers": {
@@ -857,6 +865,38 @@
       ],
       [
         "otzaria.org",
+        1,
+        1
+      ],
+      [
+        "perplexity.ai",
+        1,
+        1
+      ]
+    ],
+    "2026-10-27": [
+      [
+        "github.com",
+        81,
+        28
+      ],
+      [
+        "Google",
+        4,
+        3
+      ],
+      [
+        "otzaria.org",
+        2,
+        2
+      ],
+      [
+        "deutsch-family.sites.tab.bot",
+        2,
+        1
+      ],
+      [
+        "Bing",
         1,
         1
       ],
@@ -2426,6 +2466,58 @@
         "/Otzaria/otzaria-library/issues/116",
         13,
         7
+      ]
+    ],
+    "2026-10-27": [
+      [
+        "/Otzaria/otzaria-library/pulls",
+        124,
+        13
+      ],
+      [
+        "/Otzaria/otzaria-library",
+        66,
+        37
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        33,
+        9
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        28,
+        20
+      ],
+      [
+        "/Otzaria/otzaria-library/commits/main",
+        22,
+        4
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/206",
+        20,
+        2
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/127",
+        13,
+        3
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/MoreBooks/ספרים/אוצריא/תנך",
+        13,
+        2
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/MoreBooks/ספרים/אוצריא",
+        12,
+        4
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/192",
+        11,
+        5
       ]
     ]
   }

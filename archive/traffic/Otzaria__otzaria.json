@@ -185,6 +185,10 @@
     "2026-10-25": [
       975,
       98
+    ],
+    "2026-10-26": [
+      938,
+      100
     ]
   },
   "clones": {
@@ -371,6 +375,10 @@
     "2026-10-25": [
       1764,
       172
+    ],
+    "2026-10-26": [
+      1670,
+      134
     ]
   },
   "referrers": {
@@ -1504,6 +1512,38 @@
         "otzaria.org",
         28,
         27
+      ],
+      [
+        "claude.ai",
+        5,
+        3
+      ],
+      [
+        "tora-forum.co.il",
+        2,
+        2
+      ],
+      [
+        "bo.enativ.com",
+        1,
+        1
+      ]
+    ],
+    "2026-10-28": [
+      [
+        "github.com",
+        993,
+        118
+      ],
+      [
+        "Google",
+        53,
+        19
+      ],
+      [
+        "otzaria.org",
+        24,
+        24
       ],
       [
         "claude.ai",
@@ -3133,6 +3173,58 @@
         "/Otzaria/otzaria/pull/2558",
         31,
         14
+      ]
+    ],
+    "2026-10-28": [
+      [
+        "/Otzaria/otzaria/issues",
+        897,
+        66
+      ],
+      [
+        "/Otzaria/otzaria/pulls",
+        817,
+        46
+      ],
+      [
+        "/Otzaria/otzaria",
+        192,
+        78
+      ],
+      [
+        "/Otzaria/otzaria/releases",
+        181,
+        99
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.98+801",
+        124,
+        78
+      ],
+      [
+        "/Otzaria/otzaria/actions",
+        122,
+        30
+      ],
+      [
+        "/otzaria/otzaria",
+        90,
+        61
+      ],
+      [
+        "/Otzaria/otzaria/pull/2726",
+        42,
+        25
+      ],
+      [
+        "/Otzaria/otzaria/commits/dev",
+        42,
+        14
+      ],
+      [
+        "/Otzaria/otzaria/actions/workflows/build-and-announce.yml",
+        40,
+        10
       ]
     ]
   }

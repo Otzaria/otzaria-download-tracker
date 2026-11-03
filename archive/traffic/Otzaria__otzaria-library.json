@@ -209,6 +209,10 @@
     "2026-10-31": [
       24,
       7
+    ],
+    "2026-11-01": [
+      130,
+      19
     ]
   },
   "clones": {
@@ -419,6 +423,10 @@
     "2026-10-31": [
       569,
       64
+    ],
+    "2026-11-01": [
+      7661,
+      97
     ]
   },
   "referrers": {
@@ -1167,6 +1175,43 @@
       ],
       [
         "search.brave.com",
+        1,
+        1
+      ]
+    ],
+    "2026-11-03": [
+      [
+        "github.com",
+        69,
+        38
+      ],
+      [
+        "Google",
+        8,
+        6
+      ],
+      [
+        "search.brave.com",
+        3,
+        1
+      ],
+      [
+        "deutsch-family.sites.tab.bot",
+        2,
+        1
+      ],
+      [
+        "Bing",
+        1,
+        1
+      ],
+      [
+        "huggingface.co",
+        1,
+        1
+      ],
+      [
+        "otzaria.org",
         1,
         1
       ]
@@ -3095,6 +3140,58 @@
         "/Otzaria/otzaria-library/actions",
         6,
         4
+      ]
+    ],
+    "2026-11-03": [
+      [
+        "/Otzaria/otzaria-library",
+        105,
+        51
+      ],
+      [
+        "/Otzaria/otzaria-library/pulls",
+        73,
+        10
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        50,
+        35
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        26,
+        12
+      ],
+      [
+        "/Otzaria/otzaria-library/releases/tag/library-links-40242308538-1-e73bd9a779f6",
+        9,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        9,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/extraBooks",
+        7,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/commits/main",
+        7,
+        3
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/381",
+        6,
+        4
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/BeitAharonVeYisraelToOtzaria/ספרים/בהמתנה/קובץ בית אהרן וישראל",
+        6,
+        1
       ]
     ]
   }

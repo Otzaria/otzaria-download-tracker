@@ -574,9 +574,54 @@ function assetNameIndex() {
   return state.assetIndex;
 }
 
+// Both panels and overlapping range changes share this queue as well as the
+// per-date promise cache. A 90-day range can need more than 90 snapshots, but
+// only a few requests (including their JSON bodies) should be active at once.
+const HISTORY_REQUEST_LIMIT = 4;
+const HISTORY_REQUEST_TIMEOUT_MS = 30_000;
+const historyQueue = [];
+let activeHistoryRequests = 0;
+
+function drainHistoryQueue() {
+  while (activeHistoryRequests < HISTORY_REQUEST_LIMIT && historyQueue.length) {
+    const { date, resolve, reject } = historyQueue.shift();
+    activeHistoryRequests += 1;
+    fetchHistoryPoint(date).then(resolve, reject);
+  }
+}
+
+async function fetchHistoryPoint(date) {
+  const controller = new AbortController();
+  // Start the deadline when a request gets a slot, not while it is queued.
+  const timeout = setTimeout(() => controller.abort(), HISTORY_REQUEST_TIMEOUT_MS);
+  try {
+    return await fetchJson(`data/history/${date}.json`, { signal: controller.signal });
+  } catch (error) {
+    if (controller.signal.aborted) throw new Error(t("error.historyTimeout"));
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+    // HTTP errors can leave an unread streaming body. Cancel that transfer
+    // before releasing its slot; completed successful bodies are unaffected.
+    controller.abort();
+    activeHistoryRequests -= 1;
+    drainHistoryQueue();
+  }
+}
+
 function loadHistoryPoint(date) {
   if (!state.historyPromises[date]) {
-    state.historyPromises[date] = fetchJson(`data/history/${date}.json`);
+    const pending = new Promise((resolve, reject) => {
+      historyQueue.push({ date, resolve, reject });
+    });
+    const cached = pending.catch((error) => {
+      // Keep successful snapshots reusable; a transient failure must not make
+      // every later range selection fail until the page is reloaded.
+      if (state.historyPromises[date] === cached) delete state.historyPromises[date];
+      throw error;
+    });
+    state.historyPromises[date] = cached;
+    drainHistoryQueue();
   }
   return state.historyPromises[date];
 }
@@ -1748,9 +1793,14 @@ function bindControls() {
   });
 }
 
-async function fetchJson(path) {
-  const response = await fetch(path, { cache: "no-cache" });
-  if (!response.ok) throw new Error(t("error.fetchFailed", { path, status: response.status }));
+async function fetchJson(path, options = {}) {
+  const response = await fetch(path, { cache: "no-cache", ...options });
+  if (!response.ok) {
+    // No caller consumes an error body. Cancel it explicitly instead of
+    // leaving a potentially unbounded response streaming in the background.
+    try { await response.body?.cancel(); } catch { /* Preserve the HTTP error. */ }
+    throw new Error(t("error.fetchFailed", { path, status: response.status }));
+  }
   return response.json();
 }
 

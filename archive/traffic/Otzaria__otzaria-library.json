@@ -217,6 +217,10 @@
     "2026-11-02": [
       84,
       12
+    ],
+    "2026-11-03": [
+      35,
+      14
     ]
   },
   "clones": {
@@ -435,6 +439,10 @@
     "2026-11-02": [
       4091,
       123
+    ],
+    "2026-11-03": [
+      4284,
+      121
     ]
   },
   "referrers": {
@@ -1234,6 +1242,43 @@
         "Google",
         10,
         7
+      ],
+      [
+        "search.brave.com",
+        3,
+        1
+      ],
+      [
+        "otzaria.org",
+        2,
+        2
+      ],
+      [
+        "deutsch-family.sites.tab.bot",
+        2,
+        1
+      ],
+      [
+        "Bing",
+        1,
+        1
+      ],
+      [
+        "huggingface.co",
+        1,
+        1
+      ]
+    ],
+    "2026-11-05": [
+      [
+        "github.com",
+        76,
+        39
+      ],
+      [
+        "Google",
+        11,
+        8
       ],
       [
         "search.brave.com",
@@ -3289,6 +3334,58 @@
         "/Otzaria/otzaria-library/issues/199",
         6,
         6
+      ]
+    ],
+    "2026-11-05": [
+      [
+        "/Otzaria/otzaria-library",
+        116,
+        55
+      ],
+      [
+        "/Otzaria/otzaria-library/pulls",
+        86,
+        10
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        52,
+        35
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        33,
+        12
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/670",
+        12,
+        3
+      ],
+      [
+        "/Otzaria/otzaria-library/releases/tag/library-links-40242308538-1-e73bd9a779f6",
+        9,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        9,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/releases/tag/library-links-41280111512-1-80faf4d6cae2",
+        8,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/issues/199",
+        6,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/extraBooks",
+        6,
+        5
       ]
     ]
   }

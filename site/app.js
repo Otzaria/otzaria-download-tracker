@@ -281,8 +281,7 @@ function applyTheme(choice, persist = true) {
 
   palette = currentPalette();
   if (state.statsReady) {
-    renderChart();
-    renderOsChart();
+    renderStats();
   }
 }
 
@@ -333,9 +332,7 @@ async function applyLanguageToUI() {
   }
   if (state.timeseries) updateRecentChange();
   if (state.statsReady) {
-    syncRangeChips();
-    await renderChart();
-    await renderOsChart();
+    await renderStats();
   }
   if (state.releasesReady) renderReleases();
 }
@@ -580,30 +577,68 @@ function assetNameIndex() {
 const HISTORY_REQUEST_LIMIT = 4;
 const HISTORY_REQUEST_TIMEOUT_MS = 30_000;
 const historyQueue = [];
+const historyJobs = new Map();
 let activeHistoryRequests = 0;
+
+function historyCancellation() {
+  const error = new Error("History selection changed");
+  error.name = "AbortError";
+  return error;
+}
+
+// Both panels use the same selected date range. Reconcile their combined
+// demand before rendering either one, retaining every overlapping request.
+function syncHistorySelection(requiredDates) {
+  const wanted = new Set(requiredDates);
+  const obsolete = [...historyJobs.values()].filter((job) => !wanted.has(job.date));
+  // Remove all obsolete queued work before any aborted request can drain it.
+  const retained = historyQueue.filter((job) => wanted.has(job.date));
+  historyQueue.length = 0;
+  historyQueue.push(...retained);
+  for (const job of obsolete) {
+    job.cancelled = true;
+    // Evict now: another selection can request this date again before the
+    // aborted fetch settles. Its later cleanup must not erase a replacement.
+    if (state.historyPromises[job.date] === job.promise) delete state.historyPromises[job.date];
+    if (historyJobs.get(job.date) === job) historyJobs.delete(job.date);
+    if (job.controller) job.controller.abort();
+    else job.reject(historyCancellation());
+  }
+  // Active jobs retain their slots until fetch/body cleanup reaches finally.
+  drainHistoryQueue();
+}
 
 function drainHistoryQueue() {
   while (activeHistoryRequests < HISTORY_REQUEST_LIMIT && historyQueue.length) {
-    const { date, resolve, reject } = historyQueue.shift();
+    const job = historyQueue.shift();
     activeHistoryRequests += 1;
-    fetchHistoryPoint(date).then(resolve, reject);
+    fetchHistoryPoint(job).then(job.resolve, job.reject);
   }
 }
 
-async function fetchHistoryPoint(date) {
+async function fetchHistoryPoint(job) {
   const controller = new AbortController();
+  job.controller = controller;
+  let timedOut = false;
   // Start the deadline when a request gets a slot, not while it is queued.
-  const timeout = setTimeout(() => controller.abort(), HISTORY_REQUEST_TIMEOUT_MS);
+  const timeout = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, HISTORY_REQUEST_TIMEOUT_MS);
   try {
-    return await fetchJson(`data/history/${date}.json`, { signal: controller.signal });
+    const snapshot = await fetchJson(`data/history/${job.date}.json`, { signal: controller.signal });
+    if (job.cancelled) throw historyCancellation();
+    return snapshot;
   } catch (error) {
-    if (controller.signal.aborted) throw new Error(t("error.historyTimeout"));
+    if (job.cancelled) throw historyCancellation();
+    if (timedOut) throw new Error(t("error.historyTimeout"));
     throw error;
   } finally {
     clearTimeout(timeout);
     // HTTP errors can leave an unread streaming body. Cancel that transfer
     // before releasing its slot; completed successful bodies are unaffected.
     controller.abort();
+    if (historyJobs.get(job.date) === job) historyJobs.delete(job.date);
     activeHistoryRequests -= 1;
     drainHistoryQueue();
   }
@@ -611,8 +646,10 @@ async function fetchHistoryPoint(date) {
 
 function loadHistoryPoint(date) {
   if (!state.historyPromises[date]) {
+    const job = { date, controller: null, cancelled: false };
     const pending = new Promise((resolve, reject) => {
-      historyQueue.push({ date, resolve, reject });
+      job.resolve = resolve;
+      job.reject = reject;
     });
     const cached = pending.catch((error) => {
       // Keep successful snapshots reusable; a transient failure must not make
@@ -620,7 +657,10 @@ function loadHistoryPoint(date) {
       if (state.historyPromises[date] === cached) delete state.historyPromises[date];
       throw error;
     });
+    job.promise = cached;
     state.historyPromises[date] = cached;
+    historyJobs.set(date, job);
+    historyQueue.push(job);
     drainHistoryQueue();
   }
   return state.historyPromises[date];
@@ -1865,9 +1905,7 @@ async function ensureStatsReady() {
     state.statsReady = true;
     $("#stats").setAttribute("aria-busy", "false");
     updateRecentChange();
-    syncRangeChips();
-    await renderChart();
-    await renderOsChart();
+    await renderStats();
   } catch (error) {
     $("#stats").setAttribute("aria-busy", "false");
     summary.textContent = error.message;
@@ -1879,9 +1917,19 @@ async function refreshStats() {
     await ensureStatsReady();
     return;
   }
+  await renderStats();
+}
+
+async function renderStats() {
   syncRangeChips();
-  await renderChart();
-  await renderOsChart();
+  const range = donutRange();
+  // A finite ranking needs snapshots for every family. A timeline only needs
+  // them for its app OS breakdown; library/delta timelines use timeseries.
+  const needsHistory = range !== "all" && (state.mode === "releases" || osFamily() !== null);
+  syncHistorySelection(needsHistory ? historyDatesForRange(range) : []);
+  // Start both generations before yielding, so obsolete completions cannot
+  // render a stale fallback or start a delayed second-panel refresh.
+  await Promise.all([renderChart(), renderOsChart()]);
 }
 
 async function ensureReleasesReady() {

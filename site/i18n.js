@@ -301,6 +301,7 @@
       "toast.linkCopied": "הקישור הועתק ללוח",
       "toast.linkCopyFailed": "לא ניתן היה להעתיק את הקישור",
       "error.fetchFailed": "טעינת {path} נכשלה ({status})",
+      "error.historyTimeout": "טעינת היסטוריית ההורדות ארכה זמן רב מדי. אפשר לנסות שוב.",
       "error.chartLibrary": "ספריית התרשימים לא נטענה",
       "error.fileProtocol.title": "פתיחה ישירה מהקובץ לא תומכת בטעינת נתונים",
       "error.fileProtocol.detail":
@@ -598,6 +599,7 @@
       "toast.linkCopied": "Link copied to the clipboard",
       "toast.linkCopyFailed": "The link could not be copied",
       "error.fetchFailed": "Loading {path} failed ({status})",
+      "error.historyTimeout": "Loading download history timed out. Please try again.",
       "error.chartLibrary": "The chart library failed to load",
       "error.fileProtocol.title": "Opening the file directly cannot load data",
       "error.fileProtocol.detail":

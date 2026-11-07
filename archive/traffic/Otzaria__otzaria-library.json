@@ -225,6 +225,10 @@
     "2026-11-04": [
       212,
       18
+    ],
+    "2026-11-05": [
+      31,
+      12
     ]
   },
   "clones": {
@@ -451,6 +455,10 @@
     "2026-11-04": [
       4426,
       137
+    ],
+    "2026-11-05": [
+      4152,
+      134
     ]
   },
   "referrers": {
@@ -1319,6 +1327,43 @@
         "github.com",
         85,
         41
+      ],
+      [
+        "Google",
+        11,
+        8
+      ],
+      [
+        "otzaria.org",
+        5,
+        5
+      ],
+      [
+        "search.brave.com",
+        3,
+        1
+      ],
+      [
+        "deutsch-family.sites.tab.bot",
+        2,
+        1
+      ],
+      [
+        "Bing",
+        1,
+        1
+      ],
+      [
+        "huggingface.co",
+        1,
+        1
+      ]
+    ],
+    "2026-11-07": [
+      [
+        "github.com",
+        88,
+        43
       ],
       [
         "Google",
@@ -3478,6 +3523,58 @@
         "/Otzaria/otzaria-library/actions",
         9,
         5
+      ],
+      [
+        "/Otzaria/otzaria-library/releases/tag/library-links-41280111512-1-80faf4d6cae2",
+        8,
+        6
+      ]
+    ],
+    "2026-11-07": [
+      [
+        "/Otzaria/otzaria-library",
+        123,
+        59
+      ],
+      [
+        "/Otzaria/otzaria-library/pulls",
+        90,
+        11
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        57,
+        40
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        34,
+        13
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main",
+        16,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        13,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/670",
+        12,
+        3
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/extraBooks",
+        11,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/releases/tag/library-links-40242308538-1-e73bd9a779f6",
+        9,
+        6
       ],
       [
         "/Otzaria/otzaria-library/releases/tag/library-links-41280111512-1-80faf4d6cae2",

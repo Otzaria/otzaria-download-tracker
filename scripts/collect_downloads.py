@@ -31,6 +31,7 @@ ARCHIVE_SCHEMA_VERSION = 1
 # Build/CI by-products and checksums are downloaded by pipelines, not people.
 CHECKSUM_PATTERN = re.compile(r"\.(sha256|sig)$")
 DELTA_MANIFEST_PATTERN = re.compile(r"patch-.+\.db\.zst\.manifest\.json")
+ANDROID_UPDATE_METADATA = "otzaria-android.json"
 
 
 @dataclass(frozen=True)
@@ -75,10 +76,10 @@ def utc_now() -> datetime:
 
 def asset_category(source: Source, filename: str) -> str:
     """Return the UI/aggregation category for a release asset."""
-    if source.kind == "app":
-        return "app"
-
     normalized = filename.casefold()
+    if source.kind == "app":
+        return "auxiliary" if normalized == ANDROID_UPDATE_METADATA else "app"
+
     if normalized == "seforim.db.zst":
         return "library"
     if re.fullmatch(r"patch-.+\.db\.zst", normalized):
@@ -340,6 +341,8 @@ def update_timeseries(
 def archive_category(source: Source, filename: str) -> str | None:
     """Category of a release file worth archiving, or None for pipeline by-products."""
     normalized = filename.casefold()
+    if source.kind == "app" and normalized == ANDROID_UPDATE_METADATA:
+        return "update_check"
     if source.kind in ("app", "library"):
         category = asset_category(source, filename)
         if category in TRACKED_CATEGORIES:

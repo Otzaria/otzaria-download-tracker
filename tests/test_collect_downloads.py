@@ -52,6 +52,15 @@ class AssetCategoryTests(unittest.TestCase):
     def test_application_repositories_are_grouped_as_app(self):
         self.assertEqual(asset_category(SOURCES[0], "otzaria-windows.exe"), "app")
 
+    def test_android_update_metadata_is_not_an_installer(self):
+        for source in SOURCES[:2]:
+            for filename in ("otzaria-android.json", "OTZARIA-ANDROID.JSON"):
+                with self.subTest(source=source.id, filename=filename):
+                    self.assertEqual(asset_category(source, filename), "auxiliary")
+            for filename in ("app-release.apk", "otzaria-android.apk", "otzaria-android.json.apk"):
+                with self.subTest(source=source.id, filename=filename):
+                    self.assertEqual(asset_category(source, filename), "app")
+
     def test_library_and_delta_are_distinct(self):
         seforim = Source("seforim", "Otzaria/SeforimLibrary", "ספרייה", "library")
         self.assertEqual(asset_category(seforim, "seforim.db.zst"), "library")
@@ -98,6 +107,25 @@ class SnapshotTests(unittest.TestCase):
         self.assertEqual(changes["by_category"]["library"], 0)
         self.assertEqual(changes["by_category"]["delta"], 5)
 
+    def test_android_metadata_does_not_add_downloads_or_daily_changes(self):
+        def collect(apk_name, apk_downloads, metadata_downloads):
+            app = release(1, 101, apk_name, apk_downloads)
+            app["assets"].append(release(1, 102, "otzaria-android.json", metadata_downloads)["assets"][0])
+            return build_latest({"sivan22": [], "otzaria": [app], "seforim": []}, self.collected_at)
+
+        before = collect("app-release.apk", 15, 100)
+        after = collect("otzaria-android.apk", 19, 400)
+        self.assertEqual(before["summary"]["by_category"]["app"], 15)
+        self.assertEqual(after["summary"]["by_category"]["app"], 19)
+        metadata = next(asset for asset in after["releases"][0]["assets"] if asset["id"] == 102)
+        self.assertEqual(metadata["downloads"], 400)
+        self.assertEqual(metadata["category"], "auxiliary")
+        previous = build_snapshot(before, "2026-07-18")
+        current = build_snapshot(after, "2026-07-19")
+        self.assertEqual(previous["assets"], {"otzaria:101": [15, "app"]})
+        self.assertEqual(current["assets"], {"otzaria:101": [19, "app"]})
+        self.assertEqual(calculate_changes(current, previous)["tracked_downloads"], 4)
+
     def test_first_snapshot_has_no_invented_change(self):
         current = build_snapshot(build_latest(self.raw(), self.collected_at), "2026-07-19")
         self.assertIsNone(calculate_changes(current, None))
@@ -137,6 +165,28 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(archive_category(self.catalog, "version.txt"), "update_check")
         self.assertEqual(archive_category(self.catalog, "otzar-HB_catalog.db.zst"), "catalog")
         self.assertIsNone(archive_category(self.catalog, "biographies.sha256"))
+
+    def test_android_metadata_keeps_its_identity_and_update_check_counter(self):
+        source = next(source for source in SOURCES if source.id == "otzaria")
+        app = release(1, 101, "otzaria-android.apk", 15)
+        app["assets"].append(release(1, 102, "otzaria-android.json", 100)["assets"][0])
+        records = archive_records(source, [app])
+        self.assertEqual(records["otzaria:102"]["asset"]["category"], "update_check")
+        registry = update_registry({}, records, [source.id], "2026-07-18")
+        self.assertEqual(registry["assets"]["otzaria:102"]["name"], "otzaria-android.json")
+        self.assertEqual(registry["assets"]["otzaria:102"]["first_seen"], "2026-07-18")
+        self.assertEqual(registry["assets"]["otzaria:102"]["release"], "otzaria:1")
+        daily = build_archive_daily("2026-07-18", "2026-07-18T12:00:00Z", records, {})
+        self.assertEqual(daily["assets"], {"otzaria:102": 100})
+        app["assets"][1]["download_count"] = 400
+        records = archive_records(source, [app])
+        registry = update_registry(registry, records, [source.id], "2026-07-19")
+        self.assertEqual(registry["assets"]["otzaria:102"]["first_seen"], "2026-07-18")
+        self.assertIsNone(registry["assets"]["otzaria:102"]["removed_on"])
+        daily = build_archive_daily("2026-07-19", "2026-07-19T12:00:00Z", records, {"otzaria:102": 100})
+        self.assertEqual(daily["assets"], {"otzaria:102": 400})
+        self.assertEqual(archive_category(source, "OTZARIA-ANDROID.JSON"), "update_check")
+        self.assertEqual(archive_category(self.catalog, "otzaria-android.json"), "catalog")
 
     def records(self, *assets):
         raw = release(3, assets[0][0], assets[0][1], assets[0][2])

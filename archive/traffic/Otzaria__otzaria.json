@@ -229,6 +229,10 @@
     "2026-11-05": [
       422,
       80
+    ],
+    "2026-11-06": [
+      362,
+      52
     ]
   },
   "clones": {
@@ -459,6 +463,10 @@
     "2026-11-05": [
       2584,
       178
+    ],
+    "2026-11-06": [
+      8138,
+      480
     ]
   },
   "referrers": {
@@ -2019,6 +2027,48 @@
         "otzaria.org",
         51,
         49
+      ],
+      [
+        "aocr.org",
+        21,
+        21
+      ],
+      [
+        "tora-forum.co.il",
+        10,
+        8
+      ],
+      [
+        "claude.ai",
+        4,
+        2
+      ],
+      [
+        "app.devin.ai",
+        1,
+        1
+      ],
+      [
+        "bo.enativ.com",
+        1,
+        1
+      ]
+    ],
+    "2026-11-08": [
+      [
+        "github.com",
+        1653,
+        174
+      ],
+      [
+        "Google",
+        62,
+        30
+      ],
+      [
+        "otzaria.org",
+        52,
+        50
       ],
       [
         "aocr.org",
@@ -4220,6 +4270,58 @@
         "/Otzaria/otzaria/releases/tag/0.9.98.3+809",
         76,
         53
+      ],
+      [
+        "/Otzaria/otzaria/milestone/6",
+        59,
+        29
+      ],
+      [
+        "/Otzaria/otzaria/pull/3366",
+        54,
+        10
+      ]
+    ],
+    "2026-11-08": [
+      [
+        "/Otzaria/otzaria/issues",
+        1148,
+        76
+      ],
+      [
+        "/Otzaria/otzaria/pulls",
+        895,
+        52
+      ],
+      [
+        "/Otzaria/otzaria",
+        296,
+        98
+      ],
+      [
+        "/Otzaria/otzaria/releases",
+        287,
+        116
+      ],
+      [
+        "/Otzaria/otzaria/actions",
+        143,
+        31
+      ],
+      [
+        "/otzaria/otzaria",
+        138,
+        92
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.98.2+807",
+        137,
+        92
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.98.3+809",
+        87,
+        62
       ],
       [
         "/Otzaria/otzaria/milestone/6",

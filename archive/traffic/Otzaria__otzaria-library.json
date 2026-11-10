@@ -237,6 +237,10 @@
     "2026-11-07": [
       24,
       5
+    ],
+    "2026-11-08": [
+      131,
+      10
     ]
   },
   "clones": {
@@ -475,6 +479,10 @@
     "2026-11-07": [
       584,
       50
+    ],
+    "2026-11-08": [
+      4356,
+      128
     ]
   },
   "referrers": {
@@ -1473,6 +1481,38 @@
       [
         "deutsch-family.sites.tab.bot",
         2,
+        1
+      ],
+      [
+        "Bing",
+        1,
+        1
+      ],
+      [
+        "huggingface.co",
+        1,
+        1
+      ]
+    ],
+    "2026-11-10": [
+      [
+        "github.com",
+        68,
+        35
+      ],
+      [
+        "Google",
+        11,
+        8
+      ],
+      [
+        "otzaria.org",
+        7,
+        7
+      ],
+      [
+        "search.brave.com",
+        3,
         1
       ],
       [
@@ -3769,6 +3809,58 @@
         "/Otzaria/otzaria-library/releases/tag/library-links-40242308538-1-e73bd9a779f6",
         9,
         6
+      ],
+      [
+        "/Otzaria/otzaria-library/releases/tag/library-links-41280111512-1-80faf4d6cae2",
+        8,
+        6
+      ]
+    ],
+    "2026-11-10": [
+      [
+        "/Otzaria/otzaria-library",
+        97,
+        52
+      ],
+      [
+        "/Otzaria/otzaria-library/pulls",
+        69,
+        9
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        55,
+        41
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        30,
+        11
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main",
+        23,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/extraBooks",
+        12,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/670",
+        12,
+        3
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        11,
+        4
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/Ben-YehudaToOtzaria/ספרים",
+        11,
+        3
       ],
       [
         "/Otzaria/otzaria-library/releases/tag/library-links-41280111512-1-80faf4d6cae2",

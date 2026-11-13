@@ -249,6 +249,10 @@
     "2026-11-10": [
       105,
       13
+    ],
+    "2026-11-11": [
+      31,
+      12
     ]
   },
   "clones": {
@@ -499,6 +503,10 @@
     "2026-11-10": [
       1782,
       111
+    ],
+    "2026-11-11": [
+      4725,
+      130
     ]
   },
   "referrers": {
@@ -1603,6 +1611,28 @@
       [
         "huggingface.co",
         1,
+        1
+      ]
+    ],
+    "2026-11-13": [
+      [
+        "github.com",
+        66,
+        34
+      ],
+      [
+        "Google",
+        9,
+        6
+      ],
+      [
+        "otzaria.org",
+        8,
+        8
+      ],
+      [
+        "search.brave.com",
+        2,
         1
       ]
     ]
@@ -4025,6 +4055,58 @@
         "/Otzaria/otzaria-library/issues",
         28,
         11
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/extraBooks",
+        13,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/670",
+        12,
+        3
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        11,
+        3
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/Ben-YehudaToOtzaria/ספרים",
+        10,
+        2
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/MoreBooks/ספרים/אוצריא",
+        9,
+        3
+      ]
+    ],
+    "2026-11-13": [
+      [
+        "/Otzaria/otzaria-library",
+        84,
+        47
+      ],
+      [
+        "/Otzaria/otzaria-library/pulls",
+        58,
+        9
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        46,
+        33
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main",
+        33,
+        7
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        30,
+        12
       ],
       [
         "/Otzaria/otzaria-library/tree/main/extraBooks",

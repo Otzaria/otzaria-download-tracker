@@ -1750,6 +1750,38 @@
         2,
         1
       ]
+    ],
+    "2026-11-17": [
+      [
+        "github.com",
+        72,
+        35
+      ],
+      [
+        "Google",
+        11,
+        7
+      ],
+      [
+        "otzaria.org",
+        8,
+        8
+      ],
+      [
+        "Bing",
+        3,
+        2
+      ],
+      [
+        "Yahoo",
+        2,
+        1
+      ],
+      [
+        "search.brave.com",
+        2,
+        1
+      ]
     ]
   },
   "paths": {
@@ -4354,6 +4386,58 @@
       ]
     ],
     "2026-11-16": [
+      [
+        "/Otzaria/otzaria-library",
+        98,
+        49
+      ],
+      [
+        "/Otzaria/otzaria-library/pulls",
+        60,
+        11
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        54,
+        36
+      ],
+      [
+        "/Otzaria/otzaria-library/commit/acf7dc71b950cc63c3b0ee2bf3d1f18fe4166f56",
+        45,
+        42
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main",
+        33,
+        7
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        29,
+        13
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main/extraBooks",
+        13,
+        6
+      ],
+      [
+        "/Otzaria/otzaria-library/pull/670",
+        12,
+        3
+      ],
+      [
+        "/Otzaria/otzaria-library/releases/tag/סנכרון",
+        10,
+        8
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        10,
+        3
+      ]
+    ],
+    "2026-11-17": [
       [
         "/Otzaria/otzaria-library",
         98,

@@ -34,6 +34,7 @@ function element(tag) {
     classList: { add() {} },
     append(...children) { this.children.push(...children); },
     setAttribute(name, value) { this.attributes[name] = String(value); },
+    addEventListener() {},
   };
 }
 

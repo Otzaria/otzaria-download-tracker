@@ -434,6 +434,30 @@ def update_registry(
     return {"schema_version": ARCHIVE_SCHEMA_VERSION, "releases": releases, "assets": assets}
 
 
+def build_historical_assets(registry: dict[str, Any]) -> dict[str, Any]:
+    """Keep enough public metadata to join removed assets to their snapshots."""
+    historical_assets = {}
+    for key, asset in sorted(registry["assets"].items()):
+        if not asset.get("removed_on") or asset["category"] not in TRACKED_CATEGORIES:
+            continue
+        release_key = asset["release"]
+        release = registry["releases"].get(release_key)
+        if release is None:
+            continue
+        source, release_id = release_key.split(":", 1)
+        historical_assets[key] = {
+            "name": asset["name"],
+            "release": {
+                "id": int(release_id),
+                "source": source,
+                "tag": release["tag"],
+                "name": release["name"],
+                "published_at": release["published_at"],
+            },
+        }
+    return historical_assets
+
+
 def build_archive_daily(
     date: str,
     collected_at: str,
@@ -591,15 +615,16 @@ def update_archive(
     date: str,
     collected_at: str,
     token: str | None,
-) -> None:
+) -> dict[str, Any]:
     sources = {source.id: source for source in SOURCES + EXTRA_SOURCES}
     records: dict[str, dict[str, Any]] = {}
     for source_id, releases in {**raw, **extra_raw}.items():
         records.update(archive_records(sources[source_id], releases))
 
     registry_path = archive_dir / "registry.json"
-    registry = read_json(registry_path) if registry_path.exists() else {}
-    write_registry(registry_path, update_registry(registry, records, [*raw, *extra_raw], date))
+    previous_registry = read_json(registry_path) if registry_path.exists() else {}
+    registry = update_registry(previous_registry, records, [*raw, *extra_raw], date)
+    write_registry(registry_path, registry)
 
     previous_counts = previous_archive_counts(archive_dir, previous_site_snapshot, date)
     repositories = fetch_repository_stats([source.repository for source in sources.values()], token)
@@ -607,6 +632,7 @@ def update_archive(
     write_json(archive_dir / "daily" / f"{date}.json", daily, compact=True)
 
     archive_traffic(archive_dir, date, os.getenv("TRAFFIC_TOKEN"))
+    return registry
 
 
 def backfill_archive_from_git(repository_root: Path, archive_dir: Path) -> int:
@@ -735,12 +761,13 @@ def collect(output_dir: Path, readme_path: Path, archive_dir: Path) -> dict[str,
 
     timeseries_path = output_dir / "timeseries.json"
     timeseries = update_timeseries(timeseries_path, snapshot, changes)
+    registry = update_archive(archive_dir, raw, extra_raw, previous, date, latest["collected_at"], token)
+    timeseries["historical_assets"] = build_historical_assets(registry)
     write_json(output_dir / "latest.json", latest)
     write_json(output_dir / "overview.json", build_overview(latest))
     write_json(history_dir / f"{date}.json", snapshot, compact=True)
     write_json(timeseries_path, timeseries)
     update_readme(readme_path, latest, timeseries)
-    update_archive(archive_dir, raw, extra_raw, previous, date, latest["collected_at"], token)
     return latest
 
 

@@ -1316,6 +1316,41 @@ html[data-i18n-pending] body {
   font-size: var(--text-sm);
 }
 
+.ranking-selection {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.ranking-selection select {
+  max-width: 100%;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--space-2);
+  background: var(--card-background);
+  color: var(--on-surface);
+  font: inherit;
+}
+
+.ranking-selection[hidden],
+.chart-all-link[hidden],
+.release-rank-scope[hidden] {
+  display: none;
+}
+
+.release-rank-scope {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block: var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
 .donut-stage {
   position: relative;
   height: 200px;

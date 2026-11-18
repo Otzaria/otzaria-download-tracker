@@ -11,7 +11,7 @@ const flush = () => new Promise(setImmediate);
 const plain = (value) => JSON.parse(JSON.stringify(value));
 const dates = Array.from({ length: 110 }, (_, index) =>
   new Date(Date.UTC(2026, 6, 19 + index)).toISOString().slice(0, 10));
-const recentDates = new Set(dates.slice(-9));
+const recentDates = new Set(dates.slice(-8));
 const snapshotFor = (date) => ({ assets: { "otzaria:1": [dates.indexOf(date), "app"] } });
 
 function deferred() {
@@ -221,8 +221,34 @@ function assertRangeCharts(app, count) {
   assert.deepEqual(plain(app.state.osChart.config.data.datasets[0].data), [count]);
 }
 
+test("finite ranges share the same UTC dates and load one baseline snapshot", () => {
+  const app = loadApp();
+  for (const days of [7, 30, 90]) {
+    app.state.range = String(days);
+    assert.deepEqual(plain(app.api.filteredTimePoints()).map(({ date }) => date), dates.slice(-days));
+    assert.deepEqual(plain(app.api.historyDatesForRange(days)), dates.slice(-(days + 1)));
+  }
+});
+
+test("timeline labels preserve the snapshot date west of UTC", () => {
+  const previousTimezone = process.env.TZ;
+  process.env.TZ = "America/New_York";
+  try {
+    const app = loadApp();
+    app.state.mode = "daily";
+    app.api.renderTimeChart();
+    const options = app.state.chart.config.options;
+    const x = Date.parse("2026-11-18");
+    assert.equal(options.plugins.tooltip.callbacks.title([{ raw: { x } }]), "Nov 18, 2026");
+    assert.equal(options.scales.x.ticks.callback(x), "Nov 18, 2026");
+  } finally {
+    if (previousTimezone === undefined) delete process.env.TZ;
+    else process.env.TZ = previousTimezone;
+  }
+});
+
 for (const obsolete of ["healthy", "stalled"]) {
-  test(`90→7 renders in three batches even when obsolete requests are ${obsolete}`, async () => {
+  test(`90→7 renders in two batches even when obsolete requests are ${obsolete}`, async () => {
     const app = loadApp({ responseDelay: (date) => obsolete === "healthy" || recentDates.has(date) ? 100 : null });
     app.state.range = "90";
     const oldRender = observed(app.api.renderStats(), app.clock);
@@ -237,10 +263,10 @@ for (const obsolete of ["healthy", "stalled"]) {
     await app.clock.runAll();
 
     assert.equal((await oldRender).status, "fulfilled");
-    assert.equal((await currentRender).at, 300);
-    assertRangeCharts(app, 8);
+    assert.equal((await currentRender).at, 200);
+    assertRangeCharts(app, 7);
     assert.equal(app.charts.length, 2, "the obsolete selection must never create a chart or fallback");
-    assert.equal(app.network.requests.length, 13, "only four old requests and the nine selected snapshots should start");
+    assert.equal(app.network.requests.length, 12, "only four old requests and the eight selected snapshots should start");
     assert.equal(app.network.requests.find((item) => recentDates.has(item.date)).startedAt, 0);
     assert.equal(app.network.peak, 4);
     assert.equal(app.network.active, 0);
@@ -293,11 +319,11 @@ test("overlapping active and queued snapshots keep their promises for both panel
   assert.ok(app.network.requests.filter((request) => recentDates.has(request.date)).every((request) => !request.signal.aborted));
   await completeAll(app);
   const [os, ranking] = await Promise.all(selected);
-  assert.equal(os.value.android, 8);
-  assert.equal(ranking.value[0].value, 8);
+  assert.equal(os.value.android, 7);
+  assert.equal(ranking.value[0].value, 7);
   assert.ok((await Promise.all(oldCalculations)).every((result) => result.error.name === "AbortError"));
   await Promise.all(seeded);
-  assert.equal(app.network.requests.length, 11);
+  assert.equal(app.network.requests.length, 10);
   shortDates.forEach((date) => {
     assert.equal(app.api.loadHistoryPoint(date), original.get(date), "completed snapshots stay cached");
     assert.equal(app.network.requests.filter((request) => request.date === date).length, 1);
@@ -327,11 +353,11 @@ for (const initial of [90, 7]) {
     await app.clock.runAll();
     assert.ok((await Promise.all(previous)).every((result) => result.error.name === "AbortError"));
     const [os, ranking] = await Promise.all(selected);
-    assert.equal(os.at, 325);
-    assert.equal(os.value.android, 8);
-    assert.equal(ranking.value[0].value, 8);
+    assert.equal(os.at, 225);
+    assert.equal(os.value.android, 7);
+    assert.equal(ranking.value[0].value, 7);
     assert.equal(app.network.peak, 4);
-    assert.equal(app.network.requests.length, 13);
+    assert.equal(app.network.requests.length, 12);
     assert.equal(app.network.active, 0);
     assert.equal(app.clock.size, 0);
   });
@@ -347,16 +373,16 @@ test("repeated quick switches retain the shared short range and never revive obs
   for (const selection of selections) {
     const [os, ranking] = await Promise.all(selection.pending);
     if (selection.days === 7) {
-      assert.equal(os.value.android, 8);
-      assert.equal(ranking.value[0].value, 8);
+      assert.equal(os.value.android, 7);
+      assert.equal(ranking.value[0].value, 7);
     } else {
       assert.equal(os.error.name, "AbortError");
       assert.equal(ranking.error.name, "AbortError");
     }
   }
-  assert.equal(app.network.requests.length, 13);
+  assert.equal(app.network.requests.length, 12);
   assert.equal(app.network.peak, 4);
-  assert.equal(app.clock.now, 300);
+  assert.equal(app.clock.now, 200);
 });
 
 test("after a range cancellation and network failure, both panels retry only the failed snapshot", async () => {
@@ -380,11 +406,11 @@ test("after a range cancellation and network failure, both panels retry only the
   assert.equal(app.network.requests.at(-1).date, failed.date);
   await completeAll(app);
   const [os, ranking] = await Promise.all(retried);
-  assert.equal(os.value.android, 8);
-  assert.equal(ranking.value[0].value, 8);
+  assert.equal(os.value.android, 7);
+  assert.equal(ranking.value[0].value, 7);
   cache.forEach((promise, date) => assert.equal(app.state.historyPromises[date], promise));
   app.api.syncHistorySelection([]);
-  assert.equal(Object.keys(app.state.historyPromises).length, 9, "all-time selection retains completed cache entries");
+  assert.equal(Object.keys(app.state.historyPromises).length, 8, "all-time selection retains completed cache entries");
   assert.equal(app.network.peak, 4);
   assert.equal(app.clock.size, 0);
 });
@@ -395,8 +421,8 @@ for (const outcome of ["resolve", "reject"]) {
     const oldRows = deferred();
     const oldTotals = deferred();
     const row = (value) => ({ value, colorKey: "otzaria", axisLabel: "v1", name: "v1", tag: "v1" });
-    app.api.rangeRankingRows = (days) => days === "90" ? oldRows.promise : Promise.resolve([row(8)]);
-    app.api.osTotalsForRange = (_family, days) => days === "90" ? oldTotals.promise : Promise.resolve({ android: 8 });
+    app.api.rangeRankingRows = (days) => days === "90" ? oldRows.promise : Promise.resolve([row(7)]);
+    app.api.osTotalsForRange = (_family, days) => days === "90" ? oldTotals.promise : Promise.resolve({ android: 7 });
     app.state.range = "90";
     const previous = app.api.renderStats();
     assert.equal(app.state.chartRenderToken, 1);
@@ -418,7 +444,7 @@ for (const outcome of ["resolve", "reject"]) {
     assert.equal(app.state.osChart, donut);
     assert.equal(app.node("#chart-summary").textContent, summary);
     assert.equal(app.node("#donut-subtitle").textContent, subtitle);
-    assertRangeCharts(app, 8);
+    assertRangeCharts(app, 7);
     assert.equal(app.charts.length, 2);
     assert.equal(app.network.requests.length, 0);
   });
@@ -458,8 +484,8 @@ test("language and theme refreshes invalidate both pending panels immediately", 
     assert.equal(app.state.osRenderToken, 2, refresh);
     await app.clock.runAll();
     await Promise.all([previous, current]);
-    assertRangeCharts(app, 8);
-    assert.equal(app.network.requests.length, 13, refresh);
+    assertRangeCharts(app, 7);
+    assert.equal(app.network.requests.length, 12, refresh);
     assert.equal(app.network.peak, 4, refresh);
   }
 });
@@ -478,8 +504,8 @@ test("initial all-time rendering stays lazy and initial ranged rendering starts 
     await app.clock.runAll();
     await initial;
     assert.equal(app.state.statsReady, true);
-    assertRangeCharts(app, range === "all" ? 109 : 8);
-    assert.equal(app.network.requests.length, range === "all" ? 0 : 9);
+    assertRangeCharts(app, range === "all" ? 109 : 7);
+    assert.equal(app.network.requests.length, range === "all" ? 0 : 8);
     assert.equal(app.clock.size, 0);
   }
 });

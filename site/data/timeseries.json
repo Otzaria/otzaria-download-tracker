@@ -3679,5 +3679,207 @@
         }
       }
     }
-  ]
+  ],
+  "historical_assets": {
+    "otzaria:513759953": {
+      "name": "otzaria-0.9.96-windows-full.exe",
+      "release": {
+        "id": 370300199,
+        "source": "otzaria",
+        "tag": "0.9.96+741",
+        "name": "Otzaria 0.9.96 (Preview from dev)",
+        "published_at": "2026-08-14T01:38:27Z"
+      }
+    },
+    "otzaria:513759960": {
+      "name": "otzaria-0.9.96+90960-linux.deb",
+      "release": {
+        "id": 370300199,
+        "source": "otzaria",
+        "tag": "0.9.96+741",
+        "name": "Otzaria 0.9.96 (Preview from dev)",
+        "published_at": "2026-08-14T01:38:27Z"
+      }
+    },
+    "otzaria:513759961": {
+      "name": "otzaria-windows.zip",
+      "release": {
+        "id": 370300199,
+        "source": "otzaria",
+        "tag": "0.9.96+741",
+        "name": "Otzaria 0.9.96 (Preview from dev)",
+        "published_at": "2026-08-14T01:38:27Z"
+      }
+    },
+    "otzaria:513759962": {
+      "name": "otzaria-macos.dmg",
+      "release": {
+        "id": 370300199,
+        "source": "otzaria",
+        "tag": "0.9.96+741",
+        "name": "Otzaria 0.9.96 (Preview from dev)",
+        "published_at": "2026-08-14T01:38:27Z"
+      }
+    },
+    "otzaria:513759968": {
+      "name": "otzaria-0.9.96+90960-90960.x86_64.rpm",
+      "release": {
+        "id": 370300199,
+        "source": "otzaria",
+        "tag": "0.9.96+741",
+        "name": "Otzaria 0.9.96 (Preview from dev)",
+        "published_at": "2026-08-14T01:38:27Z"
+      }
+    },
+    "otzaria:513759989": {
+      "name": "otzaria-android-full.zip",
+      "release": {
+        "id": 370300199,
+        "source": "otzaria",
+        "tag": "0.9.96+741",
+        "name": "Otzaria 0.9.96 (Preview from dev)",
+        "published_at": "2026-08-14T01:38:27Z"
+      }
+    },
+    "otzaria:513759993": {
+      "name": "otzaria-0.9.96-windows.exe",
+      "release": {
+        "id": 370300199,
+        "source": "otzaria",
+        "tag": "0.9.96+741",
+        "name": "Otzaria 0.9.96 (Preview from dev)",
+        "published_at": "2026-08-14T01:38:27Z"
+      }
+    },
+    "otzaria:513759995": {
+      "name": "app-release.apk",
+      "release": {
+        "id": 370300199,
+        "source": "otzaria",
+        "tag": "0.9.96+741",
+        "name": "Otzaria 0.9.96 (Preview from dev)",
+        "published_at": "2026-08-14T01:38:27Z"
+      }
+    },
+    "otzaria:513759996": {
+      "name": "otzaria-macos.zip",
+      "release": {
+        "id": 370300199,
+        "source": "otzaria",
+        "tag": "0.9.96+741",
+        "name": "Otzaria 0.9.96 (Preview from dev)",
+        "published_at": "2026-08-14T01:38:27Z"
+      }
+    },
+    "otzaria:523635446": {
+      "name": "otzaria-windows.zip",
+      "release": {
+        "id": 374346381,
+        "source": "otzaria",
+        "tag": "0.9.97+743",
+        "name": "Otzaria 0.9.97 (Preview from hb-test-0.9.97)",
+        "published_at": "2026-08-21T11:11:25Z"
+      }
+    },
+    "otzaria:523635447": {
+      "name": "otzaria-0.9.96-windows.exe",
+      "release": {
+        "id": 374346381,
+        "source": "otzaria",
+        "tag": "0.9.97+743",
+        "name": "Otzaria 0.9.97 (Preview from hb-test-0.9.97)",
+        "published_at": "2026-08-21T11:11:25Z"
+      }
+    },
+    "otzaria:523635454": {
+      "name": "otzaria-0.9.97+90970-linux.deb",
+      "release": {
+        "id": 374346381,
+        "source": "otzaria",
+        "tag": "0.9.97+743",
+        "name": "Otzaria 0.9.97 (Preview from hb-test-0.9.97)",
+        "published_at": "2026-08-21T11:11:25Z"
+      }
+    },
+    "otzaria:523635455": {
+      "name": "otzaria-macos.dmg",
+      "release": {
+        "id": 374346381,
+        "source": "otzaria",
+        "tag": "0.9.97+743",
+        "name": "Otzaria 0.9.97 (Preview from hb-test-0.9.97)",
+        "published_at": "2026-08-21T11:11:25Z"
+      }
+    },
+    "otzaria:523635456": {
+      "name": "app-release.apk",
+      "release": {
+        "id": 374346381,
+        "source": "otzaria",
+        "tag": "0.9.97+743",
+        "name": "Otzaria 0.9.97 (Preview from hb-test-0.9.97)",
+        "published_at": "2026-08-21T11:11:25Z"
+      }
+    },
+    "otzaria:523635458": {
+      "name": "otzaria-0.9.97+90970-90970.x86_64.rpm",
+      "release": {
+        "id": 374346381,
+        "source": "otzaria",
+        "tag": "0.9.97+743",
+        "name": "Otzaria 0.9.97 (Preview from hb-test-0.9.97)",
+        "published_at": "2026-08-21T11:11:25Z"
+      }
+    },
+    "otzaria:523635459": {
+      "name": "otzaria-macos.zip",
+      "release": {
+        "id": 374346381,
+        "source": "otzaria",
+        "tag": "0.9.97+743",
+        "name": "Otzaria 0.9.97 (Preview from hb-test-0.9.97)",
+        "published_at": "2026-08-21T11:11:25Z"
+      }
+    },
+    "otzaria:612345742": {
+      "name": "Otzaria-Download-Assistant-windows.exe",
+      "release": {
+        "id": 403616426,
+        "source": "otzaria",
+        "tag": "0.9.98+801",
+        "name": "Otzaria 0.9.98 (Preview from dev)",
+        "published_at": "2026-10-05T10:54:00Z"
+      }
+    },
+    "otzaria:635307654": {
+      "name": "Otzaria-Download-Assistant-windows.exe",
+      "release": {
+        "id": 403616426,
+        "source": "otzaria",
+        "tag": "0.9.98+801",
+        "name": "Otzaria 0.9.98 (Preview from dev)",
+        "published_at": "2026-10-05T10:54:00Z"
+      }
+    },
+    "otzaria:647162082": {
+      "name": "Otzaria-Download-Assistant-windows.exe",
+      "release": {
+        "id": 403616426,
+        "source": "otzaria",
+        "tag": "0.9.98+801",
+        "name": "Otzaria 0.9.98 (Preview from dev)",
+        "published_at": "2026-10-05T10:54:00Z"
+      }
+    },
+    "seforim:491915784": {
+      "name": "seforim.db.zst",
+      "release": {
+        "id": 360700523,
+        "source": "seforim",
+        "tag": "v18-20260727202417",
+        "name": "v18-20260727202417",
+        "published_at": "2026-07-27T21:54:43Z"
+      }
+    }
+  }
 }

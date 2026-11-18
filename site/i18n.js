@@ -131,10 +131,12 @@
       "donut.subtitle.sameFile": "{family} · אותו קובץ לכל המערכות",
       "donut.subtitle.calculating": "{family} · מחשב את הפילוח לטווח הנבחר…",
       "donut.subtitle.allTime": "{family} · מונים מצטברים לכל הזמן, בכל הגרסאות",
+      "donut.subtitle.releaseAllTime": "{family} · מוני הורדה מצטברים לגרסה",
       "donut.subtitle.range": "{family} · הורדות חדשות שנמדדו בטווח «{range}»",
       "donut.fallback.snapshotError": "לא הצלחנו לטעון את תמונות המצב היומיות, ולכן מוצג הפילוח המצטבר לכל הזמן.",
       "donut.fallback.notEnough": "אין מספיק תמונות מצב יומיות לטווח הזה, ולכן מוצג הפילוח המצטבר לכל הזמן.",
       "donut.empty.allTime": "אין עדיין נתוני הורדה של {family} לפילוח לפי מערכת הפעלה.",
+      "donut.empty.removed": "אין מוני הורדה זמינים כיום עבור {family}. בחרו טווח תאריכים להצגת המדידות שנשמרו.",
       "donut.empty.range":
         "לא נמדדו הורדות חדשות של {family} בטווח «{range}». בחרו טווח רחב יותר או «הכול» כדי לראות את הפילוח המצטבר.",
       "donut.canvasAriaData": "התפלגות {family} לפי מערכת הפעלה: {breakdown}",
@@ -145,7 +147,7 @@
       "donut.centerRange": "הורדות בטווח",
       "donut.note.allTimeSince":
         "הפילוח המצטבר סופר גם הורדות שקדמו לתחילת האיסוף היומי ({date}), ולכן הוא גדול מסכום ההורדות החדשות שבגרף שלצדו. בחרו טווח זמן כדי לראות פילוח של התקופה בלבד.",
-      "donut.note.allTime": "הפילוח המצטבר סופר את כל ההורדות שנרשמו אי פעם.",
+      "donut.note.allTime": "הפילוח המצטבר מבוסס על המונים של הקבצים הזמינים כיום ב־GitHub.",
       "donut.note.other":
         "«אחר / קבצים ישנים» הם קבצים ששמם אינו מציין מערכת הפעלה — בעיקר ארכיוני התקנה מוקדמים (‎.zip, ‎.rar, ‎.7z, ‎.bin) וקובצי עזר שפורסמו לצד הגרסאות.",
       "donut.note.filename": "השיוך נעשה לפי שם הקובץ שפורסם ב־GitHub, ולא לפי המערכת שממנה בוצעה ההורדה בפועל.",
@@ -162,7 +164,7 @@
         "לא הצלחנו לטעון את תמונות המצב היומיות, ולכן הדירוג מוצג לפי המונים המצטברים לכל הזמן.",
       "ranking.fallback.notEnough":
         "אין מספיק תמונות מצב יומיות לטווח הזה, ולכן הדירוג מוצג לפי המונים המצטברים לכל הזמן.",
-      "ranking.allLink.range": "הצג ברשימה המלאה את כל {count} הגרסאות שנמדדו בטווח «{range}»",
+      "ranking.allLink.range": "הצג ברשימה {count} גרסאות זמינות שנמדדו בטווח «{range}»",
       "ranking.allLink.family": "הצג ברשימה המלאה את כל {count} הגרסאות של {family}",
       "ranking.summary.emptyRange": "לא נמדדו {scope} בטווח «{range}» · {family}",
       "ranking.summary.emptyAll": "אין עדיין נתונים · {family}",
@@ -179,23 +181,34 @@
       "ranking.note.range":
         "הדירוג סופר רק הורדות חדשות שנמדדו בטווח «{range}», ולכן כל הגרסאות נמדדות באותם ימים בדיוק וגרסה ותיקה אינה נהנית מיתרון גיל.",
       "ranking.note.pickRange": "בחרו טווח זמן למעלה כדי לדרג לפי הורדות חדשות בלבד, בלי יתרון הגיל.",
-      "ranking.note.click": "לחיצה על עמודה פותחת את אותה גרסה ברשימת הגרסאות המלאה שלמטה.",
+      "ranking.note.click": "בחרו עמודה כדי לראות את פילוח מערכות ההפעלה של אותה גרסה. לחיצה נוספת מחזירה לפילוח המלא.",
+      "ranking.note.clickSameFile": "בחרו עמודה כדי להגיע לפרטי הגרסה.",
+      "ranking.note.unavailable": "הדירוג כולל גם גרסאות שנמדדו בטווח והוסרו מאז מ־GitHub.",
+      "ranking.releaseLabel": "{tag} · {source}",
+      "ranking.selection.label": "גרסה נבחרת",
+      "ranking.selection.all": "כל הגרסאות",
+      "ranking.selection.open": "פתחו את הגרסה ברשימה",
+      "ranking.selection.unavailable": "פרטי הגרסה אינם זמינים עוד ב־GitHub",
+      "ranking.list.release": "גרסה מהדירוג · {release}",
+      "ranking.list.ranked": "{count} גרסאות מהדירוג · {family} · {range}",
+      "ranking.list.clear": "הסרת סינון הדירוג",
       "ranking.aria.base": "דירוג {count} הגרסאות המובילות של {family} לפי {scope}",
       "ranking.aria.range": " בטווח «{range}»",
       "ranking.aria.allTime": " מאז ומתמיד",
       "ranking.tooltip.label": " {scope}: {count}",
-      "ranking.tooltip.after": " תגית: {tag} · פורסמה {published}\n לחצו כדי למצוא אותה ברשימת הגרסאות",
+      "ranking.tooltip.after": " {tag} · {source} · פורסמה {published}\n לחצו לבחירת הגרסה",
 
       /* ---------- Download section ---------- */
       "download.kicker": "מותקן תוך פחות מדקה",
       "download.title": "הורדת הגרסה היציבה האחרונה",
       "download.versionLoading": "טוען פרטי גרסה…",
       "download.allPlatforms": "אודות כל הפלטפורמות",
-      "download.note": "הקבצים מגיעים ישירות מ־GitHub Releases; מערכת שאינה מופיעה כאן זמינה לרוב בהיסטוריית הגרסאות.",
+      "download.note": "הקבצים מגיעים ישירות מ־GitHub Releases. אפשר לחפש גרסאות ישנות יותר בהיסטוריית הגרסאות.",
       "download.recommended": "מומלץ עבורכם",
       "download.unavailable": "לא פורסם קובץ עבור {platform} בגרסה היציבה הנוכחית.",
       "download.searchOlder": "חיפוש בגרסאות קודמות",
       "download.assetMeta": "{variant} · {size} · {count} הורדות לקובץ זה",
+      "download.assistant": "אשף ההורדה",
       "download.button": "הורדה",
       "download.moreOptions": "אפשרויות נוספות ({count})",
       "download.moreRow": "{variant} · {size} ↓",
@@ -424,12 +437,14 @@
       "donut.subtitle.sameFile": "{family} · the same file on every platform",
       "donut.subtitle.calculating": "{family} · calculating the breakdown for the selected range…",
       "donut.subtitle.allTime": "{family} · all-time cumulative counters, across every release",
+      "donut.subtitle.releaseAllTime": "{family} · cumulative download counters for this release",
       "donut.subtitle.range": "{family} · new downloads measured in “{range}”",
       "donut.fallback.snapshotError":
         "We could not load the daily snapshots, so the all-time cumulative breakdown is shown instead.",
       "donut.fallback.notEnough":
         "There are not enough daily snapshots for this range, so the all-time cumulative breakdown is shown instead.",
       "donut.empty.allTime": "There is no data for {family} yet to break down by operating system.",
+      "donut.empty.removed": "Current download counters are unavailable for {family}. Choose a date range to see the recorded downloads.",
       "donut.empty.range":
         "No new downloads were measured for {family} in “{range}”. Pick a wider range, or “All time”, to see the cumulative breakdown.",
       "donut.canvasAriaData": "{family} by operating system: {breakdown}",
@@ -440,7 +455,7 @@
       "donut.centerRange": "downloads in range",
       "donut.note.allTimeSince":
         "The cumulative breakdown also counts downloads from before the daily collection began ({date}), which is why it is larger than the new-download total in the chart beside it. Pick a time range to see a breakdown of that period alone.",
-      "donut.note.allTime": "The cumulative breakdown counts every download ever recorded.",
+      "donut.note.allTime": "The cumulative breakdown uses the counters of files currently listed on GitHub.",
       "donut.note.other":
         "“Other / legacy files” are files whose name says nothing about an operating system — mostly early installation archives (.zip, .rar, .7z, .bin) and helper files published alongside the releases.",
       "donut.note.filename":
@@ -458,7 +473,7 @@
         "We could not load the daily snapshots, so the ranking follows the all-time cumulative counters.",
       "ranking.fallback.notEnough":
         "There are not enough daily snapshots for this range, so the ranking follows the all-time cumulative counters.",
-      "ranking.allLink.range": "Show all {count} releases measured in “{range}” in the full list",
+      "ranking.allLink.range": "Show {count} available releases measured in “{range}” in the full list",
       "ranking.allLink.family": "Show all {count} releases for {family} in the full list",
       "ranking.summary.emptyRange": "No {scope} were measured in “{range}” · {family}",
       "ranking.summary.emptyAll": "No data yet · {family}",
@@ -475,12 +490,22 @@
       "ranking.note.range":
         "The ranking counts only new downloads measured in “{range}”, so every release is judged over exactly the same days and an older release gains no advantage from its age.",
       "ranking.note.pickRange": "Pick a time range above to rank by new downloads alone, without the age advantage.",
-      "ranking.note.click": "Clicking a bar opens that release in the full list below.",
+      "ranking.note.click": "Select a bar to see that release’s operating-system breakdown. Select it again to return to the full breakdown.",
+      "ranking.note.clickSameFile": "Select a bar to get to that release’s details.",
+      "ranking.note.unavailable": "The ranking includes releases measured in this range that have since been removed from GitHub.",
+      "ranking.releaseLabel": "{tag} · {source}",
+      "ranking.selection.label": "Selected release",
+      "ranking.selection.all": "All releases",
+      "ranking.selection.open": "Open this release in the list",
+      "ranking.selection.unavailable": "Release details are no longer available on GitHub",
+      "ranking.list.release": "Ranked release · {release}",
+      "ranking.list.ranked": "{count} ranked releases · {family} · {range}",
+      "ranking.list.clear": "Clear ranking filter",
       "ranking.aria.base": "The top {count} {family} releases ranked by {scope}",
       "ranking.aria.range": " in “{range}”",
       "ranking.aria.allTime": " of all time",
       "ranking.tooltip.label": " {scope}: {count}",
-      "ranking.tooltip.after": " Tag: {tag} · published {published}\n Click to find it in the release list",
+      "ranking.tooltip.after": " {tag} · {source} · published {published}\n Click to select this release",
 
       /* ---------- Download section ---------- */
       "download.kicker": "Installed in under a minute",
@@ -488,11 +513,12 @@
       "download.versionLoading": "Loading release details…",
       "download.allPlatforms": "About every platform",
       "download.note":
-        "Files are served straight from GitHub Releases; a platform that is missing here is usually available in the release history.",
+        "Files are served straight from GitHub Releases. Check the release history for earlier builds.",
       "download.recommended": "Recommended for you",
       "download.unavailable": "No {platform} build was published in the current stable release.",
       "download.searchOlder": "Search earlier releases",
       "download.assetMeta": "{variant} · {size} · {count} downloads of this file",
+      "download.assistant": "Download Assistant",
       "download.button": "Download",
       "download.moreOptions": "More options ({count})",
       "download.moreRow": "{variant} · {size} ↓",
@@ -710,9 +736,10 @@
         // The choice still holds for this page view when storage is blocked.
       }
     }
+    if (!changed && persist) return;
     applyDocumentLanguage();
     applyStatic();
-    if (changed || !persist) listeners.forEach((listener) => listener(safe));
+    listeners.forEach((listener) => listener(safe));
   }
 
   applyDocumentLanguage();

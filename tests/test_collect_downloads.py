@@ -3,6 +3,7 @@ import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.collect_downloads import (
     EXTRA_SOURCES,
@@ -16,6 +17,7 @@ from scripts.collect_downloads import (
     build_overview,
     build_snapshot,
     calculate_changes,
+    collect,
     merge_traffic,
     previous_snapshot,
     release_channel,
@@ -203,6 +205,54 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(removed["first_seen"], "2026-07-18")
         self.assertEqual(removed["removed_on"], "2026-07-19")
         self.assertIsNone(registry["assets"]["seforim:302"]["removed_on"])
+
+    def test_collection_publishes_metadata_only_for_removed_tracked_assets(self):
+        older = release(1, 101, "app.exe", 20)
+        newer = release(2, 201, "app.apk", 25)
+        newer["assets"].append(release(2, 202, "app.dmg", 30)["assets"][0])
+        newer["assets"].append(release(2, 203, "otzaria-android.json", 31)["assets"][0])
+        raw = {"sivan22": [older], "otzaria": [newer], "seforim": []}
+        extra = {self.catalog.id: [release(3, 301, "catalog.db.zst", 40)]}
+        collection_dates = [datetime(2026, 7, day, tzinfo=timezone.utc) for day in (18, 19)]
+
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch("scripts.collect_downloads.utc_now", side_effect=collection_dates),
+            patch("scripts.collect_downloads.fetch_all_releases", side_effect=lambda source, token: raw[source.id]),
+            patch("scripts.collect_downloads.fetch_extra_sources", return_value=extra),
+            patch("scripts.collect_downloads.fetch_repository_stats", return_value={}),
+            patch("scripts.collect_downloads.archive_traffic"),
+        ):
+            root = Path(directory)
+            output = root / "data"
+            paths = (output, root / "README.md", root / "archive")
+            collect(*paths)
+            raw["sivan22"] = []
+            newer["assets"] = newer["assets"][:1]
+            extra[self.catalog.id] = []
+            collect(*paths)
+            timeseries = json.loads((output / "timeseries.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(len(timeseries["points"]), 2)
+        self.assertEqual(
+            timeseries["historical_assets"],
+            {
+                "otzaria:202": {
+                    "name": "app.dmg",
+                    "release": {
+                        "id": 2, "source": "otzaria", "tag": "v2", "name": "Release 2",
+                        "published_at": newer["published_at"],
+                    },
+                },
+                "sivan22:101": {
+                    "name": "app.exe",
+                    "release": {
+                        "id": 1, "source": "sivan22", "tag": "v1", "name": "Release 1",
+                        "published_at": older["published_at"],
+                    },
+                },
+            },
+        )
 
     def test_a_source_that_failed_to_fetch_marks_nothing_removed(self):
         registry = update_registry({}, self.records((301, "seforim.db.zst", 5)), ["seforim"], "2026-07-18")

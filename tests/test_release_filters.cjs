@@ -118,6 +118,31 @@ test("the recommended download prefers a complete installer over popular helpers
   assert.equal(context.platformAssetLabel(assistant), "download.assistant");
 });
 
+test("filtered split builds include the appropriate assembly script", () => {
+  const part = asset("otzaria-windows-full.exe.part-000");
+  const ps1 = asset("assemble_split_asset.ps1");
+  const shell = asset("assemble_split_asset.sh");
+  const current = release(1, [part, ps1, shell]);
+  const { context } = loadApp([current]);
+
+  context.setReleaseListFilters({ os: "windows", variant: "full" });
+  assert.deepEqual(Array.from(context.filteredReleases()), [current]);
+  assert.deepEqual(Array.from(context.matchingReleaseAssets(current, "", "en-US")), [part, ps1]);
+  assert.deepEqual(Array.from(context.matchingReleaseAssets(current, "part-000", "en-US")), [part, ps1]);
+});
+
+test("OS filtering finds and displays a release that only offers a download assistant", () => {
+  const assistant = asset("Otzaria-Download-Assistant-windows.exe");
+  const current = release(1, [assistant]);
+  const { context } = loadApp([current]);
+
+  context.setReleaseListFilters({ os: "windows" });
+  assert.deepEqual(Array.from(context.filteredReleases()), [current]);
+  assert.deepEqual(Array.from(context.matchingReleaseAssets(current, "", "en-US")), [assistant]);
+  context.setReleaseListFilters({ os: "ios" });
+  assert.equal(context.filteredReleases().length, 0);
+});
+
 test("the missing-platform shortcut clears stale history filters and searches the requested OS", () => {
   const current = release(1, [asset("otzaria-windows.exe")]);
   const { context, state, search, os } = loadApp([current]);
@@ -128,13 +153,19 @@ test("the missing-platform shortcut clears stale history filters and searches th
   assert.equal(link.href, "#releases");
 
   let refreshes = 0;
+  let chartRefreshes = 0;
   context.refreshReleases = () => { refreshes += 1; };
+  context.renderOsChart = () => { chartRefreshes += 1; };
   context.setReleaseListFilters({ type: "library", os: "windows", variant: "full", channel: "pr", search: "old" });
   state.releaseLimit = 24;
   state.rankedReleaseList = { keys: new Set() };
+  state.statsReady = true;
+  state.osFocus = "windows";
   link.click();
 
   assert.equal(refreshes, 1);
+  assert.equal(chartRefreshes, 1);
+  assert.equal(state.osFocus, "ios");
   assert.equal(state.rankedReleaseList, null);
   assert.deepEqual(
     [state.releaseType, state.releaseOS, state.releaseVariant, state.releaseChannel, state.releaseSearch, state.releaseLimit],

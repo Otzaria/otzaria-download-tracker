@@ -488,6 +488,8 @@ function buildPlatformCard(platform, current, detected) {
     link.addEventListener("click", () => {
       clearRankedReleaseList();
       setReleaseListFilters({ type: "app", os: platform.id });
+      state.osFocus = platform.id;
+      if (state.statsReady) renderOsChart();
       refreshReleases();
     });
     card.append(link);
@@ -1752,13 +1754,24 @@ function matchingReleaseAssets(release, query, collation) {
   const category = state.rankedReleaseList?.category;
   const applyAssetFilters = releaseAssetFiltersActive();
   const matchesRelease = releaseTextMatches(release, query, collation);
-  return release.assets.filter((asset) => {
+  const matches = release.assets.filter((asset) => {
     if (asset.category === "auxiliary" || (category && asset.category !== category)) return false;
-    if (applyAssetFilters && !isAppBuild(asset)) return false;
+    if (applyAssetFilters && !isAppBuild(asset) && !(asset.category === "app" && isDownloadAssistant(asset))) return false;
     if (state.releaseOS !== "all" && classifyOS(asset.name) !== state.releaseOS) return false;
     if (state.releaseVariant !== "all" && classifyVariant(asset) !== state.releaseVariant) return false;
     return matchesRelease || asset.name.toLocaleLowerCase(collation).includes(query);
   });
+  // Split builds need their accompanying assembly script even though the
+  // script itself has no platform or build variant in its filename.
+  if (applyAssetFilters && matches.some((asset) => SPLIT_PACKAGE.test(asset.name))) {
+    const helpers = release.assets.filter((asset) =>
+      asset.category === "app" && /^assemble_split_asset\.(ps1|sh)$/i.test(asset.name) &&
+      (state.releaseOS === "all" ||
+        (state.releaseOS === "windows" ? /\.ps1$/i : /\.sh$/i).test(asset.name)),
+    );
+    matches.push(...helpers);
+  }
+  return matches;
 }
 
 function releaseKind(release) {

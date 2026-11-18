@@ -13,6 +13,7 @@ let numberFormat;
 let compactFormat;
 let dateFormat;
 let dateTimeFormat;
+let snapshotDateFormat;
 let relativeTimeFormat;
 let percentFormat;
 
@@ -22,6 +23,9 @@ function buildFormatters() {
   numberFormat = new Intl.NumberFormat(numberLocale);
   compactFormat = new Intl.NumberFormat(numberLocale, { notation: "compact", maximumFractionDigits: 1 });
   dateFormat = new Intl.DateTimeFormat(dateLocale, { day: "numeric", month: "short", year: "numeric" });
+  snapshotDateFormat = new Intl.DateTimeFormat(dateLocale, {
+    day: "numeric", month: "short", year: "numeric", timeZone: "UTC",
+  });
   dateTimeFormat = new Intl.DateTimeFormat(dateLocale, {
     day: "numeric",
     month: "short",
@@ -73,12 +77,15 @@ const state = {
   releaseChannel: "all",
   releaseSearch: "",
   releaseLimit: 8,
+  rankedReleaseList: null,
+  rankedRows: [],
+  rankedRange: "all",
+  selectedRankingRow: null,
   latestPromise: null,
   timeseriesPromise: null,
   chartLibraryPromise: null,
   historyPromises: {},
   assetIndex: null,
-  releaseByAsset: null,
   chartRenderToken: 0,
   osFocus: null,
   osRenderToken: 0,
@@ -170,17 +177,6 @@ function classifyVariant(asset) {
   return "regular";
 }
 
-function platformAssetPriority(asset) {
-  const variant = classifyVariant(asset);
-  if (variant === "regular" || variant === "mobile") return 0;
-  if (variant === "full") return 1;
-  return 2;
-}
-
-function sortPlatformAssets(left, right) {
-  return platformAssetPriority(left) - platformAssetPriority(right) || right.downloads - left.downloads;
-}
-
 /** Classify a release by maturity/channel from its tag+name text. GitHub's own
  * "prerelease" flag is inconsistently set by the maintainers (the newest
  * release is literally titled "Preview from dev" yet flagged non-prerelease),
@@ -222,12 +218,19 @@ function isAppRelease(release) {
   return release.source === "otzaria" || release.source === "sivan22";
 }
 
+function releaseKey(release) {
+  return `${release.source}:${release.id ?? release.tag}`;
+}
+
 /** Per-release counters, split by family so a library release never reports its
  * delta files as if they were the same kind of download. */
-function releaseDownloadParts(release) {
+function releaseDownloadParts(release, assets) {
   const categories = isAppRelease(release) ? ["app"] : ["library", "delta"];
   return categories
-    .map((category) => ({ category, label: categoryLabel(category), value: releaseDownloads(release, category) }))
+    .map((category) => ({
+      label: categoryLabel(category),
+      value: assets.reduce((sum, asset) => sum + (asset.category === category ? asset.downloads : 0), 0),
+    }))
     .filter((part) => part.value > 0);
 }
 
@@ -331,10 +334,11 @@ async function applyLanguageToUI() {
     renderDownloadGrid();
   }
   if (state.timeseries) updateRecentChange();
+  renderRankedReleaseScope();
+  if (state.releasesReady) renderReleases();
   if (state.statsReady) {
     await renderStats();
   }
-  if (state.releasesReady) renderReleases();
 }
 
 function bindLanguageControls() {
@@ -412,17 +416,54 @@ function pickCurrentRelease() {
   return release;
 }
 
+const NATIVE_PACKAGE = /\.(exe|msi|msix|dmg|pkg|deb|rpm|appimage|apk|ipa)$/i;
+const PACKAGE_ARCHIVE = /\.(zip|tar\.(?:gz|xz|zst)|rar|7z|bin)$/i;
+const SPLIT_PACKAGE = /(?:\.part-\d+|[-_.]part-?\d+\.zip)$/i;
+
+function isDownloadAssistant(asset) {
+  return /^otzaria-download-assistant[-_.]/i.test(asset.name);
+}
+
+function isAppBuild(asset) {
+  if (asset.category !== "app" || isDownloadAssistant(asset)) return false;
+  const name = asset.name;
+  if (/^otzaria-update[-_.]|-library(?:-index)?\.tar\./i.test(name)) return false;
+  return NATIVE_PACKAGE.test(name) || PACKAGE_ARCHIVE.test(name) || SPLIT_PACKAGE.test(name);
+}
+
+function platformAssetPriority(asset) {
+  if (isDownloadAssistant(asset)) return 3;
+  if (classifyVariant(asset) === "full") return 2;
+  return NATIVE_PACKAGE.test(asset.name) ? 0 : 1;
+}
+
+function platformDownloadAssets(release, platform) {
+  return release.assets.filter((asset) => {
+    if (asset.category !== "app" || classifyOS(asset.name) !== platform) return false;
+    if (isDownloadAssistant(asset)) return NATIVE_PACKAGE.test(asset.name) || PACKAGE_ARCHIVE.test(asset.name);
+    return isAppBuild(asset) && !SPLIT_PACKAGE.test(asset.name);
+  }).sort((left, right) =>
+    platformAssetPriority(left) - platformAssetPriority(right) || right.downloads - left.downloads,
+  );
+}
+
+function platformAssetLabel(asset) {
+  return isDownloadAssistant(asset) ? t("download.assistant") : variantLabel(classifyVariant(asset));
+}
+
 function buildPlatformCard(platform, current, detected) {
+  const variants = platformDownloadAssets(current, platform.id);
+  const recommended = variants.length > 0 && platform.id === detected;
   const card = document.createElement("article");
   card.className = "platform-card";
-  if (platform.id === detected) card.classList.add("is-recommended");
+  if (recommended) card.classList.add("is-recommended");
 
   const icon = document.createElement("span");
   icon.className = "platform-icon";
   icon.innerHTML = `<span class="material-symbols" aria-hidden="true">${platform.icon}</span>`;
   card.append(icon);
 
-  if (platform.id === detected) {
+  if (recommended) {
     const tag = document.createElement("span");
     tag.className = "recommended-tag";
     tag.textContent = t("download.recommended");
@@ -437,10 +478,6 @@ function buildPlatformCard(platform, current, detected) {
   meta.className = "platform-meta";
   card.append(meta);
 
-  const variants = current.assets
-    .filter((asset) => asset.category === "app" && classifyOS(asset.name) === platform.id)
-    .sort(sortPlatformAssets);
-
   if (!variants.length) {
     card.classList.add("is-unavailable");
     meta.textContent = t("download.unavailable", { platform: platform.label });
@@ -448,13 +485,20 @@ function buildPlatformCard(platform, current, detected) {
     link.className = "btn btn-outlined";
     link.href = "#releases";
     link.textContent = t("download.searchOlder");
+    link.addEventListener("click", () => {
+      clearRankedReleaseList();
+      setReleaseListFilters({ type: "app", os: platform.id });
+      state.osFocus = platform.id;
+      if (state.statsReady) renderOsChart();
+      refreshReleases();
+    });
     card.append(link);
     return card;
   }
 
   const primary = variants[0];
   meta.textContent = t("download.assetMeta", {
-    variant: variantLabel(classifyVariant(primary)),
+    variant: platformAssetLabel(primary),
     size: formatBytes(primary.size),
     count: formatNumber(primary.downloads),
   });
@@ -487,7 +531,7 @@ function buildPlatformCard(platform, current, detected) {
       const link = document.createElement("a");
       link.href = asset.download_url;
       link.rel = "noopener noreferrer";
-      link.textContent = t("download.moreRow", { variant: variantLabel(classifyVariant(asset)), size: formatBytes(asset.size) });
+      link.textContent = t("download.moreRow", { variant: platformAssetLabel(asset), size: formatBytes(asset.size) });
       row.append(name, link);
       list.append(row);
     });
@@ -501,8 +545,13 @@ function buildPlatformCard(platform, current, detected) {
 function renderDownloadGrid() {
   const container = $("#download-grid");
   const current = pickCurrentRelease();
+  const version = $("#download-version-line");
+  const banner = $("#os-banner");
   container.replaceChildren();
   container.setAttribute("aria-busy", "false");
+  version.removeAttribute("data-i18n");
+  version.hidden = !current;
+  banner.hidden = true;
 
   if (!current) {
     const empty = document.createElement("p");
@@ -512,24 +561,20 @@ function renderDownloadGrid() {
     return;
   }
 
-  $("#download-version-line").textContent = t("download.versionLine", {
+  version.textContent = t("download.versionLine", {
     tag: current.tag,
     date: dateFormat.format(new Date(current.published_at)),
     count: formatNumber(releaseDownloads(current, "app")),
   });
 
-  const detected = detectPlatform();
-  const banner = $("#os-banner");
-  const knownPlatform = PLATFORMS.some((platform) => platform.id === detected && detected !== "ios") || detected === "ios";
-  if (detected && knownPlatform) {
+  const detectedId = detectPlatform();
+  const detected = PLATFORMS.find((platform) => platform.id === detectedId);
+  if (detected && platformDownloadAssets(current, detected.id).length) {
     banner.hidden = false;
-    const label = PLATFORMS.find((platform) => platform.id === detected)?.label || detected;
-    $("#os-banner-text").textContent = t("download.osBanner", { platform: label });
-  } else {
-    banner.hidden = true;
+    $("#os-banner-text").textContent = t("download.osBanner", { platform: detected.label });
   }
 
-  PLATFORMS.forEach((platform) => container.append(buildPlatformCard(platform, current, detected)));
+  PLATFORMS.forEach((platform) => container.append(buildPlatformCard(platform, current, detectedId)));
 }
 
 /* ---------- OS breakdown chart ---------- */
@@ -558,14 +603,23 @@ function donutRange() {
   return state.rangeChipsVisible ? state.range : "all";
 }
 
-/** Daily snapshots store counters per asset id only; the filename that reveals
- * the platform lives in latest.json. This index joins the two. */
-function assetNameIndex() {
+/** Daily snapshots store counters per asset id. Join them to their platform
+ * and release in the catalog for both charts. */
+function historyAssetIndex() {
   if (!state.assetIndex) {
     const index = new Map();
+    const liveReleases = new Map();
     state.latest.releases.forEach((release) => {
-      release.assets.forEach((asset) => index.set(`${release.source}:${asset.id}`, asset.name));
+      liveReleases.set(releaseKey(release), release);
+      release.assets.forEach((asset) => {
+        index.set(`${release.source}:${asset.id}`, { release, name: asset.name, available: true });
+      });
     });
+    for (const [key, asset] of Object.entries(state.timeseries?.historical_assets || {})) {
+      if (index.has(key)) continue;
+      const liveRelease = liveReleases.get(releaseKey(asset.release));
+      index.set(key, { ...asset, release: liveRelease || asset.release, available: Boolean(liveRelease) });
+    }
     state.assetIndex = index;
   }
   return state.assetIndex;
@@ -666,53 +720,65 @@ function loadHistoryPoint(date) {
   return state.historyPromises[date];
 }
 
-/** The snapshot dates needed for a range: every point inside it, plus the one
- * before it, because a day's downloads are the difference against the previous
- * snapshot. Mirrors filteredTimePoints so both panels cover the same days. */
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
+/** Use the latest N calendar dates, including the latest snapshot date itself. */
+function firstTimePointIndex(points, range) {
+  if (range === "all" || !points.length) return 0;
+  const cutoff = Date.parse(points.at(-1).date) - (Number(range) - 1) * MILLISECONDS_PER_DAY;
+  const firstIndex = points.findIndex((point) => Date.parse(point.date) >= cutoff);
+  return firstIndex >= 0 ? firstIndex : points.length;
+}
+
+/** Load the selected dates plus the preceding snapshot as a baseline for gains. */
 function historyDatesForRange(days) {
-  const dates = (state.timeseries?.points || []).map((point) => point.date).filter(Boolean);
-  if (dates.length < 2) return [];
-  const cutoff = Date.parse(dates.at(-1)) - Number(days) * 86400000;
-  const firstIndex = dates.findIndex((date) => Date.parse(date) >= cutoff);
-  if (firstIndex < 0) return [];
-  return dates.slice(Math.max(0, firstIndex - 1));
+  const points = state.timeseries?.points || [];
+  if (points.length < 2) return [];
+  const firstIndex = firstTimePointIndex(points, days);
+  if (firstIndex === points.length) return [];
+  return points.slice(Math.max(0, firstIndex - 1)).map((point) => point.date);
 }
 
 /** All-time totals: the cumulative counter GitHub reports for every asset today. */
-function osTotalsAllTime(family) {
+function osTotalsAllTime(family, selectedKey = null) {
   const totals = emptyOsTotals();
   state.latest.releases.forEach((release) => {
     if (!isAppRelease(release)) return;
     if (family !== "app" && release.source !== family) return;
-    release.assets.forEach((asset) => {
-      if (asset.category !== "app") return;
+    if (selectedKey && releaseKey(release) !== selectedKey) return;
+    trackedAssets(release, "app").forEach((asset) => {
       totals[classifyOS(asset.name)] += asset.downloads;
     });
   });
   return totals;
 }
 
-/** Range totals: the same positive per-asset daily differences the collector
- * uses, summed per platform. Summing this donut therefore reproduces exactly
- * the "new downloads observed in this range" figure of the chart beside it. */
-async function osTotalsForRange(family, days) {
-  const dates = historyDatesForRange(days);
-  if (dates.length < 2) return null;
-  const snapshots = await Promise.all(dates.map(loadHistoryPoint));
-  const index = assetNameIndex();
-  const totals = emptyOsTotals();
+function forEachHistoryGain(snapshots, visit) {
   for (let day = 1; day < snapshots.length; day += 1) {
     const previous = snapshots[day - 1]?.assets || {};
     const current = snapshots[day]?.assets || {};
     Object.entries(current).forEach(([key, entry]) => {
       const [downloads, category] = Array.isArray(entry) ? entry : [0, ""];
-      if (category !== "app") return;
-      if (family !== "app" && key.split(":")[0] !== family) return;
       const gained = downloads - (previous[key]?.[0] ?? 0);
-      if (gained <= 0) return;
-      totals[classifyOS(index.get(key) || "")] += gained;
+      if (gained > 0) visit(key, category, gained);
     });
   }
+}
+
+/** Range totals use the same positive asset-counter differences as the ranking. */
+async function osTotalsForRange(family, days, selectedKey = null) {
+  const dates = historyDatesForRange(days);
+  if (dates.length < 2) return null;
+  const snapshots = await Promise.all(dates.map(loadHistoryPoint));
+  const index = historyAssetIndex();
+  const totals = emptyOsTotals();
+  forEachHistoryGain(snapshots, (key, category, gained) => {
+    if (category !== "app") return;
+    if (family !== "app" && !key.startsWith(`${family}:`)) return;
+    const asset = index.get(key);
+    if (selectedKey && (!asset || releaseKey(asset.release) !== selectedKey)) return;
+    totals[classifyOS(asset?.name)] += gained;
+  });
   return totals;
 }
 
@@ -739,36 +805,38 @@ function formatShare(tenths) {
   return `${percentFormat.format(tenths / 10)}%`;
 }
 
-function osSliceColors(keys) {
+function osSliceColors(keys, focus) {
   return keys.map((key) => {
     const color = palette[key] || palette.other;
-    return state.osFocus && state.osFocus !== key ? hexToRgba(color, 0.2) : color;
+    return focus && focus !== key ? hexToRgba(color, 0.2) : color;
   });
 }
 
 /** A click on a slice or a legend row isolates that platform here and feeds the
  * very same choice into the "all releases" filter below. */
 function toggleOsFocus(key) {
-  state.osFocus = state.osFocus === key ? null : key;
-  const hasChip = Boolean(state.osFocus && $(`[data-os="${state.osFocus}"]`));
-  const target = hasChip ? state.osFocus : "all";
-  if (state.releaseOS !== target) {
-    state.releaseOS = target;
-    state.releaseLimit = 8;
-    setButtonState($$("[data-os]"), state.releaseOS, "os");
-    refreshReleases();
-  }
-  if (!state.osFocus) {
-    showToast(t("toast.osFilterCleared"));
-  } else if (hasChip) {
-    showToast(t("toast.osFiltered", { os: osLabel(state.osFocus) }));
+  if (key === "other") {
+    state.osFocus = state.osFocus === key
+      ? (state.releaseOS === "all" ? null : state.releaseOS)
+      : key;
+    if (state.osFocus === key) showToast(t("toast.osOther"));
   } else {
-    showToast(t("toast.osOther"));
+    state.osFocus = state.osFocus === key ? null : key;
+    const target = state.osFocus || "all";
+    if (state.releaseOS !== target) {
+      state.releaseOS = target;
+      state.releaseLimit = 8;
+      setButtonState($$("[data-os]"), state.releaseOS, "os");
+      refreshReleases();
+    }
+    showToast(state.osFocus
+      ? t("toast.osFiltered", { os: osLabel(state.osFocus) })
+      : t("toast.osFilterCleared"));
   }
   renderOsChart();
 }
 
-function showOsMessage(text) {
+function hideOsData() {
   if (state.osChart) {
     state.osChart.destroy();
     state.osChart = null;
@@ -776,13 +844,17 @@ function showOsMessage(text) {
   $("#donut-stage").hidden = true;
   $("#os-legend").replaceChildren();
   $("#os-legend").hidden = true;
-  const empty = $("#os-empty");
-  empty.hidden = false;
-  empty.textContent = text;
   $("#os-note").hidden = true;
 }
 
-function renderOsLegend(entries, shares, total) {
+function showOsMessage(text) {
+  hideOsData();
+  const empty = $("#os-empty");
+  empty.hidden = false;
+  empty.textContent = text;
+}
+
+function renderOsLegend(entries, shares, total, focus) {
   const legend = $("#os-legend");
   legend.replaceChildren();
   legend.hidden = false;
@@ -793,9 +865,9 @@ function renderOsLegend(entries, shares, total) {
     row.type = "button";
     row.className = "donut-legend-row";
     row.dataset.osKey = key;
-    const isFocused = state.osFocus === key;
+    const isFocused = focus === key;
     row.classList.toggle("is-focused", isFocused);
-    row.classList.toggle("is-dimmed", Boolean(state.osFocus) && !isFocused);
+    row.classList.toggle("is-dimmed", Boolean(focus) && !isFocused);
     row.setAttribute("aria-pressed", String(isFocused));
 
     const dot = document.createElement("span");
@@ -845,7 +917,9 @@ async function renderOsChart() {
   const subtitle = $("#donut-subtitle");
   const family = osFamily();
   const range = donutRange();
-  const familyName = familyLabel(state.source);
+  const selected = state.mode === "releases" ? state.selectedRankingRow : null;
+  const selectedKey = selected?.key ?? null;
+  const familyName = selected ? rankingReleaseLabel(selected) : familyLabel(state.source);
 
   if (!family) {
     subtitle.textContent = t("donut.subtitle.sameFile", { family: familyName });
@@ -856,26 +930,29 @@ async function renderOsChart() {
   let totals = null;
   let fallbackNote = "";
   if (range === "all") {
-    totals = osTotalsAllTime(family);
+    totals = osTotalsAllTime(family, selectedKey);
   } else {
+    hideOsData();
+    $("#os-empty").hidden = true;
     subtitle.textContent = t("donut.subtitle.calculating", { family: familyName });
     try {
-      totals = await osTotalsForRange(family, range);
+      totals = await osTotalsForRange(family, range, selectedKey);
     } catch (_) {
       totals = null;
       fallbackNote = t("donut.fallback.snapshotError");
     }
     if (token !== state.osRenderToken) return;
     if (!totals) {
-      totals = osTotalsAllTime(family);
+      totals = osTotalsAllTime(family, selectedKey);
       fallbackNote = fallbackNote || t("donut.fallback.notEnough");
     }
   }
 
   const rangeLabel = rangeChipLabel(range);
+  const isCumulative = range === "all" || Boolean(fallbackNote);
   subtitle.textContent =
-    range === "all" || fallbackNote
-      ? t("donut.subtitle.allTime", { family: familyName })
+    isCumulative
+      ? t(selected ? "donut.subtitle.releaseAllTime" : "donut.subtitle.allTime", { family: familyName })
       : t("donut.subtitle.range", { family: familyName, range: rangeLabel });
 
   const entries = Object.entries(totals)
@@ -883,17 +960,21 @@ async function renderOsChart() {
     .sort((left, right) => right[1] - left[1]);
 
   if (!entries.length) {
-    showOsMessage(
-      range === "all"
-        ? t("donut.empty.allTime", { family: familyName })
-        : t("donut.empty.range", { family: familyName, range: rangeLabel }),
-    );
+    const message = isCumulative
+      ? t(selected?.available === false ? "donut.empty.removed" : "donut.empty.allTime", { family: familyName })
+      : t("donut.empty.range", { family: familyName, range: rangeLabel });
+    showOsMessage(message);
+    if (fallbackNote) {
+      $("#os-note").textContent = fallbackNote;
+      $("#os-note").hidden = false;
+    }
     return;
   }
 
   const total = entries.reduce((sum, [, value]) => sum + value, 0);
   const shares = percentShares(entries.map(([, value]) => value));
   const keys = entries.map(([key]) => key);
+  const focus = keys.includes(state.osFocus) ? state.osFocus : null;
 
   $("#donut-stage").hidden = false;
   $("#os-empty").hidden = true;
@@ -923,10 +1004,10 @@ async function renderOsChart() {
       datasets: [
         {
           data: entries.map(([, value]) => value),
-          backgroundColor: osSliceColors(keys),
+          backgroundColor: osSliceColors(keys, focus),
           borderColor: cssColor("--card-background"),
           borderWidth: 2,
-          offset: keys.map((key) => (state.osFocus === key ? 10 : 0)),
+          offset: keys.map((key) => (focus === key ? 10 : 0)),
         },
       ],
     },
@@ -969,10 +1050,10 @@ async function renderOsChart() {
   const centerValue = document.createElement("strong");
   centerValue.textContent = formatCompact(total);
   const centerLabel = document.createElement("span");
-  centerLabel.textContent = range === "all" || fallbackNote ? t("donut.centerAll") : t("donut.centerRange");
+  centerLabel.textContent = isCumulative ? t("donut.centerAll") : t("donut.centerRange");
   center.append(centerValue, centerLabel);
 
-  renderOsLegend(entries, shares, total);
+  renderOsLegend(entries, shares, total, focus);
 
   const note = $("#os-note");
   const notes = [];
@@ -983,7 +1064,7 @@ async function renderOsChart() {
     const firstDate = state.timeseries?.points?.[0]?.date;
     notes.push(
       firstDate
-        ? t("donut.note.allTimeSince", { date: dateFormat.format(new Date(firstDate)) })
+        ? t("donut.note.allTimeSince", { date: snapshotDateFormat.format(Date.parse(firstDate)) })
         : t("donut.note.allTime"),
     );
   }
@@ -1014,7 +1095,7 @@ function syncRangeChips() {
   const firstDate = Date.parse(points[0]?.date ?? "");
   const lastDate = Date.parse(points.at(-1)?.date ?? "");
   const spanDays =
-    Number.isFinite(firstDate) && Number.isFinite(lastDate) ? (lastDate - firstDate) / 86400000 : 0;
+    Number.isFinite(firstDate) && Number.isFinite(lastDate) ? (lastDate - firstDate) / MILLISECONDS_PER_DAY : 0;
 
   let usableRanges = 0;
   chips.forEach((chip) => {
@@ -1035,11 +1116,8 @@ function syncRangeChips() {
 }
 
 function filteredTimePoints() {
-  const points = state.timeseries.points || [];
-  if (state.range === "all" || !points.length) return points;
-  const latestDate = Date.parse(points.at(-1).date);
-  const cutoff = latestDate - Number(state.range) * 86400000;
-  return points.filter((point) => Date.parse(point.date) >= cutoff);
+  const points = state.timeseries?.points || [];
+  return points.slice(firstTimePointIndex(points, state.range));
 }
 
 function timeDataset() {
@@ -1151,8 +1229,12 @@ function releaseAxisLabel(release) {
   return release.source === "seforim" ? release.tag.split("-")[0] : release.tag;
 }
 
-function rankingRow(release, config, value) {
+function rankingRow(release, config, value, available = true) {
   return {
+    key: releaseKey(release),
+    category: config.category,
+    source: release.source,
+    available,
     value,
     colorKey: config.key,
     axisLabel: releaseAxisLabel(release),
@@ -1175,19 +1257,6 @@ function allTimeRankingRows() {
   return rows.sort((left, right) => right.value - left.value);
 }
 
-/** Daily snapshots key every counter by asset id only; this joins those ids back
- * to the release that published them. */
-function assetReleaseIndex() {
-  if (!state.releaseByAsset) {
-    const index = new Map();
-    state.latest.releases.forEach((release) => {
-      release.assets.forEach((asset) => index.set(`${release.source}:${asset.id}`, release));
-    });
-    state.releaseByAsset = index;
-  }
-  return state.releaseByAsset;
-}
-
 /** Range ranking: the same positive per-asset daily differences the collector
  * records, grouped by the release each asset belongs to. Unlike the cumulative
  * counters this ordering carries no age bias at all — every release is measured
@@ -1196,27 +1265,20 @@ function assetReleaseIndex() {
 async function rangeRankingRows(days) {
   const dates = historyDatesForRange(days);
   if (dates.length < 2) return null;
-  const snapshots = await Promise.all(dates.map(loadHistoryPoint));
-  const index = assetReleaseIndex();
   const configs = activeRankingConfigurations();
+  const snapshots = await Promise.all(dates.map(loadHistoryPoint));
+  const index = historyAssetIndex();
   const rows = new Map();
-  for (let day = 1; day < snapshots.length; day += 1) {
-    const previous = snapshots[day - 1]?.assets || {};
-    const current = snapshots[day]?.assets || {};
-    Object.entries(current).forEach(([key, entry]) => {
-      const [downloads, category] = Array.isArray(entry) ? entry : [0, ""];
-      const gained = downloads - (previous[key]?.[0] ?? 0);
-      if (gained <= 0) return;
-      const release = index.get(key);
-      if (!release) return;
-      const config = configs.find((item) => item.category === category && item.match(release));
-      if (!config) return;
-      const rowKey = `${config.key}|${release.source}|${release.tag}`;
-      const existing = rows.get(rowKey);
-      if (existing) existing.value += gained;
-      else rows.set(rowKey, rankingRow(release, config, gained));
-    });
-  }
+  forEachHistoryGain(snapshots, (key, category, gained) => {
+    const asset = index.get(key);
+    if (!asset) return;
+    const config = configs.find((item) => item.category === category && item.match(asset.release));
+    if (!config) return;
+    const rowKey = releaseKey(asset.release);
+    const row = rows.get(rowKey);
+    if (row) row.value += gained;
+    else rows.set(rowKey, rankingRow(asset.release, config, gained, asset.available));
+  });
   return [...rows.values()].sort((left, right) => right.value - left.value);
 }
 
@@ -1224,42 +1286,108 @@ function rangeChipLabel(range) {
   return $(`[data-range="${range}"]`)?.textContent?.trim() || t("range.daysFallback", { count: range });
 }
 
-/** Reaching one specific release is the job of the full list below, which
- * already has a search box — so a bar simply hands that list the tag. */
-function focusReleaseInList(row) {
-  const input = $("#release-search");
-  state.releaseSearch = row.tag;
-  if (input) input.value = row.tag;
-  state.releaseLimit = 8;
-  // The list has filters of its own that could hide the very release just
-  // clicked; the family filters are reset so the result is never empty.
-  state.releaseType = "all";
-  state.releaseVariant = "all";
-  state.releaseChannel = "all";
-  setButtonState($$("[data-type]"), state.releaseType, "type");
-  setButtonState($$("[data-variant]"), state.releaseVariant, "variant");
-  setButtonState($$("[data-channel]"), state.releaseChannel, "channel");
-  refreshReleases();
-  document.getElementById("releases")?.scrollIntoView({
-    behavior: reduceMotion() ? "auto" : "smooth",
-    block: "start",
+function rankingReleaseLabel(row) {
+  return t("ranking.releaseLabel", { tag: row.tag, source: sourceLabel(row.source) });
+}
+
+function renderRankingSelection() {
+  const controls = $("#ranking-selection");
+  if (!controls) return;
+  const selected = state.selectedRankingRow;
+  const options = state.rankedRows.slice(0, TOP_RELEASES);
+  if (selected && !options.some((row) => row.key === selected.key)) options.push(selected);
+  controls.hidden = state.mode !== "releases" || !options.length;
+  if (controls.hidden) return;
+
+  const select = $("#ranking-release-select");
+  const all = document.createElement("option");
+  all.value = "";
+  all.textContent = t("ranking.selection.all");
+  select.replaceChildren(all);
+  options.forEach((row) => {
+    const option = document.createElement("option");
+    option.value = row.key;
+    option.textContent = rankingReleaseLabel(row);
+    select.append(option);
   });
-  showToast(t("toast.releaseFiltered", { tag: row.tag }));
+  select.value = selected?.key ?? "";
+
+  $("#ranking-selected-link").hidden = !selected || selected.available === false;
+  $("#ranking-selected-unavailable").hidden = selected?.available !== false;
+}
+
+function rankingBarColors(rows) {
+  const selected = state.selectedRankingRow;
+  return rows.map((row) => {
+    const color = palette[row.colorKey];
+    return selected && row.key !== selected.key ? hexToRgba(color, 0.35) : color;
+  });
+}
+
+function selectRankingRelease(key) {
+  if (state.mode !== "releases") return;
+  const selected = state.rankedRows.find((row) => row.key === key) || null;
+  if (key && !selected) return;
+  if (state.selectedRankingRow?.key === selected?.key) return;
+  state.selectedRankingRow = selected;
+  renderRankingSelection();
+  if (state.chart) {
+    const dataset = state.chart.data.datasets[0];
+    dataset.backgroundColor = rankingBarColors(state.rankedRows.slice(0, TOP_RELEASES));
+    state.chart.update("none");
+  }
+  return renderOsChart();
+}
+
+function renderRankedReleaseScope() {
+  const scope = $("#release-rank-scope");
+  if (!scope) return;
+  const selection = state.rankedReleaseList;
+  scope.hidden = !selection;
+  if (!selection) return;
+  $("#release-rank-scope-label").textContent = selection.single
+    ? t("ranking.list.release", { release: rankingReleaseLabel(selection.single) })
+    : t("ranking.list.ranked", {
+        count: formatNumber(selection.keys.size),
+        family: familyLabel(selection.source),
+        range: rangeChipLabel(selection.range),
+      });
+}
+
+function clearRankedReleaseList() {
+  state.rankedReleaseList = null;
+  renderRankedReleaseScope();
+}
+
+function showRankedReleaseList(rows, single = false) {
+  const available = rows.filter((row) => row.available !== false);
+  if (state.mode !== "releases" || !available.length) return;
+  const category = available[0].category;
+  state.rankedReleaseList = {
+    keys: new Set(available.map((row) => row.key)),
+    category: category === "app" ? null : category,
+    single: single ? available[0] : null,
+    source: state.source,
+    range: state.rankedRange,
+  };
+  setReleaseListFilters();
+  if (state.osFocus) {
+    state.osFocus = null;
+    renderOsChart();
+  }
+  renderRankedReleaseScope();
+  return refreshReleases();
 }
 
 function bindRankingLink() {
-  const link = $("#chart-all-releases");
-  if (!link) return;
-  link.addEventListener("click", () => {
-    // Hand the list the same family the ranking is showing, so "all N releases"
-    // really means the N that were just ranked.
-    const target = state.source === "delta" ? "library" : state.source;
-    state.releaseSearch = "";
-    const input = $("#release-search");
-    if (input) input.value = "";
+  $("#chart-all-releases")?.addEventListener("click", () => showRankedReleaseList(state.rankedRows));
+  $("#ranking-release-select")?.addEventListener("change", (event) => selectRankingRelease(event.target.value));
+  $("#ranking-selected-link")?.addEventListener("click", () => {
+    if (state.selectedRankingRow) showRankedReleaseList([state.selectedRankingRow], true);
+  });
+  $("#release-rank-scope-clear")?.addEventListener("click", () => {
+    clearRankedReleaseList();
     state.releaseLimit = 8;
-    state.releaseType = target;
-    setButtonState($$("[data-type]"), state.releaseType, "type");
     refreshReleases();
   });
 }
@@ -1282,6 +1410,12 @@ async function renderReleaseRanking(token) {
   if (range === "all") {
     rows = allTimeRankingRows();
   } else {
+    state.rankedRows = [];
+    if (link) link.hidden = true;
+    renderRankingSelection();
+    showChartEmpty(t("ranking.calculating", { range: rangeChipLabel(range) }), "");
+    renderChartLegend([]);
+    note.textContent = "";
     summary.textContent = t("ranking.calculating", { range: rangeChipLabel(range) });
     try {
       rows = await rangeRankingRows(range);
@@ -1299,12 +1433,16 @@ async function renderReleaseRanking(token) {
   const rangeActive = range !== "all" && !fallbackNote;
   const rangeLabel = rangeActive ? rangeChipLabel(range) : "";
   const scope = rankingScopeWord(rangeActive);
+  state.rankedRows = rows;
+  state.rankedRange = rangeActive ? range : "all";
+  renderRankingSelection();
 
   if (link) {
-    link.hidden = !rows.length;
+    const availableCount = rows.filter((row) => row.available !== false).length;
+    link.hidden = !availableCount;
     $("#chart-all-releases-text").textContent = rangeActive
-      ? t("ranking.allLink.range", { count: formatNumber(rows.length), range: rangeLabel })
-      : t("ranking.allLink.family", { count: formatNumber(rows.length), family });
+      ? t("ranking.allLink.range", { count: formatNumber(availableCount), range: rangeLabel })
+      : t("ranking.allLink.family", { count: formatNumber(availableCount), family });
   }
 
   if (!rows.length) {
@@ -1312,9 +1450,9 @@ async function renderReleaseRanking(token) {
       ? t("ranking.summary.emptyRange", { scope, range: rangeLabel, family })
       : t("ranking.summary.emptyAll", { family });
     renderChartLegend([]);
-    note.textContent = rangeActive
+    note.textContent = fallbackNote || (rangeActive
       ? t("ranking.note.emptyRange", { family, range: rangeLabel })
-      : t("ranking.note.emptyAll", { family });
+      : t("ranking.note.emptyAll", { family }));
     showChartEmpty(
       t("ranking.empty.title"),
       rangeActive
@@ -1354,7 +1492,8 @@ async function renderReleaseRanking(token) {
     notes.push(t("chart.note.allTime"));
     if (state.rangeChipsVisible) notes.push(t("ranking.note.pickRange"));
   }
-  notes.push(t("ranking.note.click"));
+  if (rows.some((row) => row.available === false)) notes.push(t("ranking.note.unavailable"));
+  notes.push(t(osFamily() ? "ranking.note.click" : "ranking.note.clickSameFile"));
   note.textContent = notes.join(" ");
 
   const canvas = $("#downloads-chart");
@@ -1404,7 +1543,7 @@ async function renderReleaseRanking(token) {
         {
           label: scope,
           data: shown.map((row) => row.value),
-          backgroundColor: shown.map((row) => palette[row.colorKey]),
+          backgroundColor: rankingBarColors(shown),
           hoverBackgroundColor: shown.map((row) => palette[row.colorKey]),
           borderRadius: 4,
           borderSkipped: false,
@@ -1425,7 +1564,8 @@ async function renderReleaseRanking(token) {
       layout: { padding: isRTL() ? { left: 8, right: 4 } : { left: 4, right: 8 } },
       onClick: (_event, elements) => {
         if (!elements.length) return;
-        focusReleaseInList(shown[elements[0].index]);
+        const key = shown[elements[0].index]?.key;
+        if (key) return selectRankingRelease(state.selectedRankingRow?.key === key ? "" : key);
       },
       onHover: (event, elements) => {
         const target = event.native?.target;
@@ -1450,7 +1590,7 @@ async function renderReleaseRanking(token) {
             afterLabel(context) {
               const row = shown[context.dataIndex];
               const published = row.publishedAt ? dateFormat.format(new Date(row.publishedAt)) : t("common.noDate");
-              return t("ranking.tooltip.after", { tag: row.tag, published });
+              return t("ranking.tooltip.after", { tag: row.tag, published, source: sourceLabel(row.source) });
             },
           },
         },
@@ -1538,7 +1678,7 @@ function renderTimeChart() {
           titleFont: { family: "Rubik", size: 12 },
           bodyFont: { family: "Rubik", size: 12 },
           callbacks: {
-            title: (items) => (items.length ? dateFormat.format(new Date(items[0].raw.x)) : ""),
+            title: (items) => (items.length ? snapshotDateFormat.format(items[0].raw.x) : ""),
             label: (context) => t("chart.tooltip.downloads", { count: formatNumber(context.raw.y) }),
           },
         },
@@ -1551,7 +1691,7 @@ function renderTimeChart() {
           ticks: {
             color: cssColor("--on-surface-variant"),
             maxTicksLimit: 8,
-            callback: (value) => dateFormat.format(new Date(value)),
+            callback: (value) => snapshotDateFormat.format(Number(value)),
           },
         },
         y: {
@@ -1578,10 +1718,61 @@ async function renderChart() {
     await renderReleaseRanking(token);
     return;
   }
+  state.rankedRows = [];
+  renderRankingSelection();
   renderTimeChart();
 }
 
 /* ---------- Releases list ---------- */
+
+function setReleaseListFilters({ type = "all", os = "all", variant = "all", channel = "all", search = "" } = {}) {
+  Object.assign(state, {
+    releaseType: type,
+    releaseOS: os,
+    releaseVariant: variant,
+    releaseChannel: channel,
+    releaseSearch: search,
+    releaseLimit: 8,
+  });
+  setButtonState($$("[data-type]"), type, "type");
+  setButtonState($$("[data-os]"), os, "os");
+  setButtonState($$("[data-variant]"), variant, "variant");
+  setButtonState($$("[data-channel]"), channel, "channel");
+  const input = $("#release-search");
+  if (input) input.value = search;
+}
+
+function releaseAssetFiltersActive() {
+  return state.releaseOS !== "all" || state.releaseVariant !== "all";
+}
+
+function releaseTextMatches(release, query, collation) {
+  return !query || `${release.name} ${release.tag}`.toLocaleLowerCase(collation).includes(query);
+}
+
+function matchingReleaseAssets(release, query, collation) {
+  const category = state.rankedReleaseList?.category;
+  const applyAssetFilters = releaseAssetFiltersActive();
+  const matchesRelease = releaseTextMatches(release, query, collation);
+  const matches = release.assets.filter((asset) => {
+    if (asset.category === "auxiliary" || (category && asset.category !== category)) return false;
+    if (applyAssetFilters && !isAppBuild(asset) && !(asset.category === "app" && isDownloadAssistant(asset))) return false;
+    if (state.releaseOS !== "all" && classifyOS(asset.name) !== state.releaseOS) return false;
+    if (state.releaseVariant !== "all" && classifyVariant(asset) !== state.releaseVariant) return false;
+    return matchesRelease || asset.name.toLocaleLowerCase(collation).includes(query);
+  });
+  // Split builds need their accompanying assembly script even though the
+  // script itself has no platform or build variant in its filename.
+  if (applyAssetFilters && matches.some((asset) => SPLIT_PACKAGE.test(asset.name))) {
+    const helpers = release.assets.filter((asset) =>
+      asset.category === "app" && /^assemble_split_asset\.(ps1|sh)$/i.test(asset.name) &&
+      (state.releaseOS === "all" ||
+        (state.releaseOS === "windows" ? /\.ps1$/i : /\.sh$/i).test(asset.name)),
+    );
+    matches.push(...helpers);
+  }
+  return matches;
+}
 
 function releaseKind(release) {
   if (release.source === "seforim") {
@@ -1595,10 +1786,11 @@ function releaseKind(release) {
   return channelLabel(classifyChannel(release));
 }
 
-function renderReleaseItem(release) {
+function renderReleaseItem(release, visibleAssets) {
   const fragment = $("#release-template").content.cloneNode(true);
   const details = $(".release-item", fragment);
   details.dataset.source = release.source;
+  if (state.rankedReleaseList?.single) details.open = true;
   $(".release-source-mark .material-symbols", fragment).textContent = release.source === "seforim" ? "menu_book" : "apps";
   $(".release-title", fragment).textContent = release.name;
   $(".release-subtitle", fragment).textContent = t("release.subtitle", {
@@ -1612,7 +1804,7 @@ function renderReleaseItem(release) {
 
   const downloadsCell = $(".release-downloads", fragment);
   downloadsCell.replaceChildren();
-  const parts = releaseDownloadParts(release);
+  const parts = releaseDownloadParts(release, visibleAssets);
   if (!parts.length) {
     downloadsCell.textContent = "—";
   } else {
@@ -1656,7 +1848,6 @@ function renderReleaseItem(release) {
   links.append(copyButton);
 
   const assets = $(".asset-list", fragment);
-  const visibleAssets = release.assets.filter((asset) => asset.category !== "auxiliary");
   visibleAssets.forEach((asset) => {
     const row = document.createElement("div");
     row.className = "asset-row";
@@ -1688,6 +1879,7 @@ function filteredReleases() {
   const collation = I18n.locale("collation");
   const query = state.releaseSearch.trim().toLocaleLowerCase(collation);
   return state.latest.releases.filter((release) => {
+    if (state.rankedReleaseList && !state.rankedReleaseList.keys.has(releaseKey(release))) return false;
     const typeMatches =
       state.releaseType === "all" ||
       (state.releaseType === "app"
@@ -1697,27 +1889,10 @@ function filteredReleases() {
           : release.source === state.releaseType);
     if (!typeMatches) return false;
 
-    if (state.releaseOS !== "all") {
-      const hasOs = release.assets.some(
-        (asset) => asset.category === "app" && classifyOS(asset.name) === state.releaseOS,
-      );
-      if (!hasOs) return false;
-    }
-
-    if (state.releaseVariant !== "all") {
-      const hasVariant = release.assets.some(
-        (asset) => asset.category === "app" && classifyVariant(asset) === state.releaseVariant,
-      );
-      if (!hasVariant) return false;
-    }
-
     if (state.releaseChannel !== "all" && classifyChannel(release) !== state.releaseChannel) return false;
 
-    if (!query) return true;
-    const haystack = [release.name, release.tag, ...release.assets.map((asset) => asset.name)]
-      .join(" ")
-      .toLocaleLowerCase(collation);
-    return haystack.includes(query);
+    if (!releaseAssetFiltersActive() && releaseTextMatches(release, query, collation)) return true;
+    return matchingReleaseAssets(release, query, collation).length > 0;
   });
 }
 
@@ -1734,11 +1909,16 @@ function renderReleases() {
     empty.textContent = t("release.noMatches");
     list.append(empty);
   } else {
-    visible.forEach((release) => list.append(renderReleaseItem(release)));
+    const collation = I18n.locale("collation");
+    const query = state.releaseSearch.trim().toLocaleLowerCase(collation);
+    visible.forEach((release) => list.append(renderReleaseItem(release, matchingReleaseAssets(release, query, collation))));
   }
 
-  $("#release-count").textContent = t("release.count", { count: formatNumber(releases.length) });
+  const count = $("#release-count");
+  count.removeAttribute("data-i18n");
+  count.textContent = t("release.count", { count: formatNumber(releases.length) });
   const loadMore = $("#load-more");
+  loadMore.removeAttribute("data-i18n");
   loadMore.hidden = releases.length <= state.releaseLimit;
   if (!loadMore.hidden) {
     loadMore.textContent = t("release.loadMore", {
@@ -1752,6 +1932,7 @@ function renderReleases() {
 function bindControls() {
   $$("[data-mode]").forEach((button) =>
     button.addEventListener("click", async () => {
+      if (state.mode !== button.dataset.mode) state.selectedRankingRow = null;
       state.mode = button.dataset.mode;
       setButtonState($$("[data-mode]"), state.mode, "mode");
       await refreshStats();
@@ -1760,6 +1941,7 @@ function bindControls() {
 
   $$("[data-source]").forEach((button) =>
     button.addEventListener("click", async () => {
+      if (state.source !== button.dataset.source) state.selectedRankingRow = null;
       state.source = button.dataset.source;
       setButtonState($$("[data-source]"), state.source, "source");
       await refreshStats();
@@ -1853,6 +2035,9 @@ function loadLatest() {
       });
       state.latest = latest;
       return latest;
+    }).catch((error) => {
+      state.latestPromise = null;
+      throw error;
     });
   }
   return state.latestPromise;
@@ -1863,6 +2048,9 @@ function loadTimeseries() {
     state.timeseriesPromise = fetchJson("data/timeseries.json").then((timeseries) => {
       state.timeseries = timeseries;
       return timeseries;
+    }).catch((error) => {
+      state.timeseriesPromise = null;
+      throw error;
     });
   }
   return state.timeseriesPromise;
@@ -1877,8 +2065,14 @@ function loadChartLibrary() {
       script.async = true;
       script.crossOrigin = "anonymous";
       script.addEventListener("load", () => resolve(window.Chart), { once: true });
-      script.addEventListener("error", () => reject(new Error(t("error.chartLibrary"))), { once: true });
+      script.addEventListener("error", () => {
+        script.remove();
+        reject(new Error(t("error.chartLibrary")));
+      }, { once: true });
       document.head.append(script);
+    }).catch((error) => {
+      state.chartLibraryPromise = null;
+      throw error;
     });
   }
   return state.chartLibraryPromise;
@@ -1900,8 +2094,10 @@ async function ensureStatsReady() {
   if (state.statsReady) return;
   const summary = $("#chart-summary");
   summary.textContent = t("chart.loading");
+  $("#stats").setAttribute("aria-busy", "true");
   try {
     await Promise.all([loadLatest(), loadTimeseries(), loadChartLibrary()]);
+    if (state.statsReady) return;
     state.statsReady = true;
     $("#stats").setAttribute("aria-busy", "false");
     updateRecentChange();
@@ -1936,6 +2132,7 @@ async function ensureReleasesReady() {
   if (state.releasesReady) return;
   try {
     await loadLatest();
+    if (state.releasesReady) return;
     state.releasesReady = true;
     renderReleases();
   } catch (error) {

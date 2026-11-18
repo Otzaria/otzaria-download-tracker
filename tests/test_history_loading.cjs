@@ -156,19 +156,19 @@ test("overlapping ranges and both panels share one four-request queue and per-da
   assert.equal(network.requests.length, 4);
   assert.equal(app.timers.size, 4);
   await completeAll(network, (date) => snapshots.get(date));
-  assert.equal((await longOs).android, 91);
-  assert.equal((await longRanking)[0].value, 91);
-  assert.equal((await shortOs).android, 31);
-  assert.equal((await shortRanking)[0].value, 31);
+  assert.equal((await longOs).android, 90);
+  assert.equal((await longRanking)[0].value, 90);
+  assert.equal((await shortOs).android, 30);
+  assert.equal((await shortRanking)[0].value, 30);
   assert.equal(network.peak, 4);
-  assert.equal(network.requests.length, 92);
-  assert.equal(new Set(network.requests.map((request) => request.url)).size, 92);
+  assert.equal(network.requests.length, 91);
+  assert.equal(new Set(network.requests.map((request) => request.url)).size, 91);
   assert.equal(network.active, 0);
   assert.equal(app.timers.size, 0);
   assert.ok(network.requests.every((request) => request.options.cache === "no-cache"));
 
   await Promise.all([app.api.osTotalsForRange("app", 90), app.api.rangeRankingRows(90)]);
-  assert.equal(network.requests.length, 92, "successful snapshots should be reused");
+  assert.equal(network.requests.length, 91, "successful snapshots should be reused");
 });
 
 test("a slot remains occupied until the response body has been consumed", async () => {

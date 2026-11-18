@@ -192,7 +192,7 @@
             </div>
             <div class="chart-legend" id="chart-legend" aria-live="polite" hidden></div>
             <p class="chart-actions" id="chart-actions">
-              <a class="chart-all-link" id="chart-all-releases" href="#releases"><span id="chart-all-releases-text" data-i18n="chart.allReleasesInitial">הצג ברשימה המלאה את כל הגרסאות</span><span class="material-symbols chart-all-arrow" aria-hidden="true">arrow_back</span></a>
+              <a class="chart-all-link" id="chart-all-releases" href="#releases" hidden><span id="chart-all-releases-text" data-i18n="chart.allReleasesInitial">הצג ברשימה המלאה את כל הגרסאות</span><span class="material-symbols chart-all-arrow" aria-hidden="true">arrow_back</span></a>
             </p>
             <p class="chart-note" id="chart-note" data-i18n="chart.note.allTime">המספר בכל עמודה הוא מונה מצטבר עד היום, מאז פרסום הגרסה. גרסה ותיקה צברה הורדות לאורך זמן רב יותר, ולכן מקום גבוה כאן אינו בהכרח פופולריות נוכחית.</p>
           </div>
@@ -201,6 +201,12 @@
             <div class="donut-heading">
               <p class="section-kicker" data-i18n="donut.kicker">לפי מערכת הפעלה</p>
               <p class="donut-subtitle" id="donut-subtitle" aria-live="polite" data-i18n="donut.loading">טוען את הפילוח…</p>
+            </div>
+            <div class="ranking-selection" id="ranking-selection" hidden>
+              <label for="ranking-release-select" data-i18n="ranking.selection.label">גרסה נבחרת</label>
+              <select id="ranking-release-select"></select>
+              <a class="chart-all-link" id="ranking-selected-link" href="#releases" data-i18n="ranking.selection.open" hidden>פתחו את הגרסה ברשימה</a>
+              <span id="ranking-selected-unavailable" data-i18n="ranking.selection.unavailable" hidden>פרטי הגרסה אינם זמינים עוד ב־GitHub</span>
             </div>
             <div class="donut-stage" id="donut-stage">
               <canvas id="os-chart" role="img" data-i18n-aria-label="donut.canvasAria" aria-label="גרף התפלגות הורדות לפי מערכת הפעלה"></canvas>
@@ -293,6 +299,10 @@
             </details>
           </div>
 
+          <div class="release-rank-scope" id="release-rank-scope" hidden>
+            <span id="release-rank-scope-label" aria-live="polite"></span>
+            <button class="link-button" id="release-rank-scope-clear" type="button" data-i18n="ranking.list.clear">הסרת סינון הדירוג</button>
+          </div>
           <div id="release-list" class="release-list" aria-busy="true"></div>
           <button id="load-more" class="load-more" type="button" hidden data-i18n="releases.loadMoreInitial">הצג עוד גרסאות</button>
         </div>

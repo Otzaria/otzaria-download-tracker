@@ -277,6 +277,10 @@
     "2026-11-17": [
       749,
       84
+    ],
+    "2026-11-18": [
+      558,
+      66
     ]
   },
   "clones": {
@@ -555,6 +559,10 @@
     "2026-11-17": [
       4683,
       338
+    ],
+    "2026-11-18": [
+      3915,
+      329
     ]
   },
   "referrers": {
@@ -2594,6 +2602,43 @@
         "claude.ai",
         6,
         2
+      ],
+      [
+        "bo.enativ.com",
+        3,
+        3
+      ]
+    ],
+    "2026-11-20": [
+      [
+        "github.com",
+        1145,
+        137
+      ],
+      [
+        "otzaria.org",
+        93,
+        63
+      ],
+      [
+        "Google",
+        61,
+        33
+      ],
+      [
+        "aocr.org",
+        12,
+        12
+      ],
+      [
+        "claude.ai",
+        12,
+        3
+      ],
+      [
+        "tora-forum.co.il",
+        9,
+        8
       ],
       [
         "bo.enativ.com",
@@ -5409,6 +5454,58 @@
         "/Otzaria/otzaria/issues/4798",
         44,
         7
+      ]
+    ],
+    "2026-11-20": [
+      [
+        "/Otzaria/otzaria/issues",
+        884,
+        56
+      ],
+      [
+        "/Otzaria/otzaria/pulls",
+        856,
+        44
+      ],
+      [
+        "/Otzaria/otzaria",
+        188,
+        78
+      ],
+      [
+        "/Otzaria/otzaria/releases/tag/0.9.98.3+809",
+        183,
+        128
+      ],
+      [
+        "/Otzaria/otzaria/releases",
+        173,
+        75
+      ],
+      [
+        "/Otzaria/otzaria/actions",
+        167,
+        12
+      ],
+      [
+        "/otzaria/otzaria",
+        159,
+        97
+      ],
+      [
+        "/Otzaria/otzaria/milestone/6",
+        89,
+        17
+      ],
+      [
+        "/Otzaria/otzaria/wiki/Plugin-Development",
+        52,
+        50
+      ],
+      [
+        "/Otzaria/otzaria/pull/5105",
+        44,
+        11
       ]
     ]
   }

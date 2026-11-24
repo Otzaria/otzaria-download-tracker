@@ -293,6 +293,10 @@
     "2026-11-21": [
       37,
       10
+    ],
+    "2026-11-22": [
+      132,
+      13
     ]
   },
   "clones": {
@@ -587,6 +591,10 @@
     "2026-11-21": [
       1114,
       115
+    ],
+    "2026-11-22": [
+      2271,
+      99
     ]
   },
   "referrers": {
@@ -1993,6 +2001,33 @@
       [
         "otzaria.org",
         2,
+        2
+      ],
+      [
+        "Yahoo",
+        2,
+        1
+      ]
+    ],
+    "2026-11-24": [
+      [
+        "github.com",
+        63,
+        35
+      ],
+      [
+        "Google",
+        12,
+        9
+      ],
+      [
+        "otzaria.org",
+        3,
+        3
+      ],
+      [
+        "Bing",
+        3,
         2
       ],
       [
@@ -5017,6 +5052,58 @@
         "/Otzaria/otzaria-library/issues/11",
         8,
         8
+      ]
+    ],
+    "2026-11-24": [
+      [
+        "/Otzaria/otzaria-library",
+        98,
+        48
+      ],
+      [
+        "/Otzaria/otzaria-library/commit/acf7dc71b950cc63c3b0ee2bf3d1f18fe4166f56",
+        75,
+        65
+      ],
+      [
+        "/Otzaria/otzaria-library/releases",
+        45,
+        29
+      ],
+      [
+        "/Otzaria/otzaria-library/pulls",
+        34,
+        10
+      ],
+      [
+        "/Otzaria/otzaria-library/tree/main",
+        24,
+        8
+      ],
+      [
+        "/Otzaria/otzaria-library/issues",
+        14,
+        12
+      ],
+      [
+        "/Otzaria/otzaria-library/releases/tag/library-links-43257538957-1-1917c47c4707",
+        14,
+        7
+      ],
+      [
+        "/Otzaria/otzaria-library/actions",
+        11,
+        3
+      ],
+      [
+        "/Otzaria/otzaria-library/commits/main",
+        9,
+        5
+      ],
+      [
+        "/Otzaria/otzaria-library/releases/tag/סנכרון",
+        8,
+        6
       ]
     ]
   }

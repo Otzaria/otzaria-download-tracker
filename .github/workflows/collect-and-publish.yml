@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Check out the current branch tip
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # Re-runs retain the original event SHA, even after the first
           # attempt has committed data. Collect and publish from the current
@@ -35,7 +35,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -62,13 +62,15 @@ jobs:
           fi
 
       - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload the site
         id: upload
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
+          # Keep .nojekyll and other hidden site files, as in v3.
+          include-hidden-files: true
           # A re-run shares the run ID with earlier attempts. Give each
           # attempt its own name so it cannot reuse or collide with old data.
           name: github-pages-${{ github.run_attempt }}
@@ -89,7 +91,7 @@ jobs:
       - name: Check Pages artifact availability
         id: pages_probe
         continue-on-error: true
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           artifact-ids: ${{ steps.upload.outputs.artifact_id }}
           path: ${{ runner.temp }}/pages-artifact-probe
@@ -102,7 +104,7 @@ jobs:
         id: pages_probe_retry
         if: steps.pages_probe.outcome == 'failure'
         continue-on-error: true
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           artifact-ids: ${{ steps.upload.outputs.artifact_id }}
           path: ${{ runner.temp }}/pages-artifact-probe
@@ -113,14 +115,14 @@ jobs:
 
       - name: Final Pages artifact availability check
         if: steps.pages_probe_retry.outcome == 'failure'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           artifact-ids: ${{ steps.upload.outputs.artifact_id }}
           path: ${{ runner.temp }}/pages-artifact-probe
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
         with:
           artifact_name: github-pages-${{ github.run_attempt }}
 

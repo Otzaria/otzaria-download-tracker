@@ -60,9 +60,55 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload the site
+        id: upload
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
+
+      # deploy-pages lists artifacts through the internal Actions artifact
+      # service, where a just-uploaded artifact may not be visible yet.
+      # Probe that same service (no github-token or run-id override) using
+      # the exact upload ID. Retry only the probe, not the deployment.
+      - name: Check upload returned an artifact ID
+        env:
+          ARTIFACT_ID: ${{ steps.upload.outputs.artifact_id }}
+        run: |
+          if [[ ! "$ARTIFACT_ID" =~ ^[0-9]+$ ]]; then
+            echo "::error::Pages upload did not return a valid artifact ID."
+            exit 1
+          fi
+
+      - name: Check Pages artifact availability
+        id: pages_probe
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ steps.upload.outputs.artifact_id }}
+          path: ${{ runner.temp }}/pages-artifact-probe
+
+      - name: Wait before retrying artifact lookup
+        if: steps.pages_probe.outcome == 'failure'
+        run: sleep 10
+
+      - name: Retry Pages artifact availability
+        id: pages_probe_retry
+        if: steps.pages_probe.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ steps.upload.outputs.artifact_id }}
+          path: ${{ runner.temp }}/pages-artifact-probe
+
+      - name: Wait before final artifact lookup
+        if: steps.pages_probe_retry.outcome == 'failure'
+        run: sleep 30
+
+      - name: Final Pages artifact availability check
+        if: steps.pages_probe_retry.outcome == 'failure'
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ steps.upload.outputs.artifact_id }}
+          path: ${{ runner.temp }}/pages-artifact-probe
 
       - name: Deploy to GitHub Pages
         id: deployment

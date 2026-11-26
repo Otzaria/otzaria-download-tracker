@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "collected_at": "2026-11-25T00:42:58Z",
+  "collected_at": "2026-11-26T00:41:51Z",
   "notice_he": "Y-PLONI/otzaria הועבר אל Otzaria/otzaria ואינו נספר כמקור נפרד.",
   "sources": [
     {
@@ -26,16 +26,16 @@
     }
   ],
   "summary": {
-    "tracked_downloads": 221750,
+    "tracked_downloads": 223218,
     "by_source": {
-      "sivan22": 50061,
-      "otzaria": 119387,
-      "seforim": 52302
+      "sivan22": 50070,
+      "otzaria": 120205,
+      "seforim": 52943
     },
     "by_category": {
-      "app": 169448,
-      "library": 15341,
-      "delta": 36961
+      "app": 170275,
+      "library": 15346,
+      "delta": 37597
     },
     "release_count": 566,
     "asset_count": 3020
@@ -53,7 +53,7 @@
         "id": 703113233,
         "name": "Otzaria-Download-Assistant-windows.exe",
         "category": "app",
-        "downloads": 3788,
+        "downloads": 3982,
         "size": 8560877,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/Otzaria-Download-Assistant-windows.exe"
@@ -62,7 +62,7 @@
         "id": 703201758,
         "name": "otzaria-release-manifest.json",
         "category": "app",
-        "downloads": 3108,
+        "downloads": 3283,
         "size": 22007,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-release-manifest.json"
@@ -71,7 +71,7 @@
         "id": 703146103,
         "name": "otzaria-0.9.98-windows.exe",
         "category": "app",
-        "downloads": 2891,
+        "downloads": 3041,
         "size": 62453618,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-windows.exe"
@@ -80,7 +80,7 @@
         "id": 703113727,
         "name": "otzaria-0.9.98-windows-full.exe.part-000",
         "category": "app",
-        "downloads": 2123,
+        "downloads": 2233,
         "size": 1992294400,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-windows-full.exe.part-000"
@@ -89,7 +89,7 @@
         "id": 703116164,
         "name": "otzaria-0.9.98-windows-full.exe.part-001",
         "category": "app",
-        "downloads": 1250,
+        "downloads": 1310,
         "size": 670348444,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-windows-full.exe.part-001"
@@ -98,7 +98,7 @@
         "id": 703147470,
         "name": "otzaria-update-windows-x64-0.9.98.2_807-to-0.9.98.3_809.zip",
         "category": "app",
-        "downloads": 828,
+        "downloads": 834,
         "size": 11012170,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-update-windows-x64-0.9.98.2_807-to-0.9.98.3_809.zip"
@@ -107,7 +107,7 @@
         "id": 703146512,
         "name": "otzaria-0.9.98-windows_arm64.exe",
         "category": "app",
-        "downloads": 745,
+        "downloads": 788,
         "size": 60757259,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-windows_arm64.exe"
@@ -116,7 +116,7 @@
         "id": 703147685,
         "name": "otzaria-update-windows-x64-0.9.98_801-to-0.9.98.3_809.zip",
         "category": "app",
-        "downloads": 695,
+        "downloads": 711,
         "size": 25819745,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-update-windows-x64-0.9.98_801-to-0.9.98.3_809.zip"
@@ -125,7 +125,7 @@
         "id": 703098241,
         "name": "app-release.apk",
         "category": "app",
-        "downloads": 272,
+        "downloads": 284,
         "size": 108738427,
         "content_type": "application/vnd.android.package-archive",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/app-release.apk"
@@ -134,7 +134,7 @@
         "id": 703132489,
         "name": "otzaria-0.9.98-library.tar.zst.part-000",
         "category": "app",
-        "downloads": 195,
+        "downloads": 198,
         "size": 1992294400,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-library.tar.zst.part-000"
@@ -143,7 +143,7 @@
         "id": 703129753,
         "name": "Otzaria-Download-Assistant-macos.zip",
         "category": "app",
-        "downloads": 118,
+        "downloads": 123,
         "size": 7549862,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/Otzaria-Download-Assistant-macos.zip"
@@ -161,7 +161,7 @@
         "id": 703136384,
         "name": "otzaria-0.9.98-library.tar.zst.part-001",
         "category": "app",
-        "downloads": 106,
+        "downloads": 108,
         "size": 513950788,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-library.tar.zst.part-001"
@@ -170,7 +170,7 @@
         "id": 703113329,
         "name": "otzaria-0.9.98-windows-full.exe.manifest.json",
         "category": "app",
-        "downloads": 81,
+        "downloads": 83,
         "size": 636,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-windows-full.exe.manifest.json"
@@ -185,6 +185,24 @@
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-android-full-part2.zip"
       },
       {
+        "id": 703088112,
+        "name": "Otzaria-Download-Assistant-linux-x64.tar.gz",
+        "category": "app",
+        "downloads": 62,
+        "size": 5496264,
+        "content_type": "application/octet-stream",
+        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/Otzaria-Download-Assistant-linux-x64.tar.gz"
+      },
+      {
+        "id": 703134476,
+        "name": "otzaria-macos.dmg",
+        "category": "app",
+        "downloads": 62,
+        "size": 102616029,
+        "content_type": "application/octet-stream",
+        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-macos.dmg"
+      },
+      {
         "id": 703121569,
         "name": "otzaria-0.9.98-windows_arm64-full.exe.part-001",
         "category": "app",
@@ -194,31 +212,13 @@
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-windows_arm64-full.exe.part-001"
       },
       {
-        "id": 703088112,
-        "name": "Otzaria-Download-Assistant-linux-x64.tar.gz",
-        "category": "app",
-        "downloads": 61,
-        "size": 5496264,
-        "content_type": "application/octet-stream",
-        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/Otzaria-Download-Assistant-linux-x64.tar.gz"
-      },
-      {
         "id": 703129314,
         "name": "otzaria-0.9.98-library-index.tar.zst.part-000",
         "category": "app",
-        "downloads": 59,
+        "downloads": 60,
         "size": 1984720465,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-library-index.tar.zst.part-000"
-      },
-      {
-        "id": 703134476,
-        "name": "otzaria-macos.dmg",
-        "category": "app",
-        "downloads": 58,
-        "size": 102616029,
-        "content_type": "application/octet-stream",
-        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-macos.dmg"
       },
       {
         "id": 703145535,
@@ -233,10 +233,19 @@
         "id": 703153520,
         "name": "otzaria-linux-full.tar.zst.part-000",
         "category": "app",
-        "downloads": 56,
+        "downloads": 57,
         "size": 1992294400,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-linux-full.tar.zst.part-000"
+      },
+      {
+        "id": 703107518,
+        "name": "otzaria-0.9.98+99803-linux.deb",
+        "category": "app",
+        "downloads": 53,
+        "size": 112788296,
+        "content_type": "application/octet-stream",
+        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98%2B99803-linux.deb"
       },
       {
         "id": 703142652,
@@ -257,15 +266,6 @@
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-macos-full.tar.zst.part-000"
       },
       {
-        "id": 703107518,
-        "name": "otzaria-0.9.98+99803-linux.deb",
-        "category": "app",
-        "downloads": 49,
-        "size": 112788296,
-        "content_type": "application/octet-stream",
-        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98%2B99803-linux.deb"
-      },
-      {
         "id": 703147384,
         "name": "otzaria-update-windows-x64-0.9.98.2_807-to-0.9.98.3_809-files.zip",
         "category": "app",
@@ -284,6 +284,15 @@
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-linux-full.tar.zst.part-001"
       },
       {
+        "id": 703147566,
+        "name": "otzaria-update-windows-x64-0.9.98_801-to-0.9.98.3_809-files.zip",
+        "category": "app",
+        "downloads": 35,
+        "size": 43546513,
+        "content_type": "application/octet-stream",
+        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-update-windows-x64-0.9.98_801-to-0.9.98.3_809-files.zip"
+      },
+      {
         "id": 703133577,
         "name": "otzaria-macos-full.tar.zst.part-001",
         "category": "app",
@@ -291,15 +300,6 @@
         "size": 570074736,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-macos-full.tar.zst.part-001"
-      },
-      {
-        "id": 703147566,
-        "name": "otzaria-update-windows-x64-0.9.98_801-to-0.9.98.3_809-files.zip",
-        "category": "app",
-        "downloads": 34,
-        "size": 43546513,
-        "content_type": "application/octet-stream",
-        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-update-windows-x64-0.9.98_801-to-0.9.98.3_809-files.zip"
       },
       {
         "id": 703096966,
@@ -359,10 +359,19 @@
         "id": 703159312,
         "name": "otzaria-update-macos-universal-0.9.98_801-to-0.9.98.3_809.zip",
         "category": "app",
-        "downloads": 16,
+        "downloads": 17,
         "size": 45643258,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-update-macos-universal-0.9.98_801-to-0.9.98.3_809.zip"
+      },
+      {
+        "id": 703122673,
+        "name": "otzaria-linux-full-arm64.tar.zst.part-000",
+        "category": "app",
+        "downloads": 16,
+        "size": 1992294400,
+        "content_type": "application/octet-stream",
+        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-linux-full-arm64.tar.zst.part-000"
       },
       {
         "id": 703117197,
@@ -383,13 +392,13 @@
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-0.9.98-library.tar.zst.manifest.json"
       },
       {
-        "id": 703122673,
-        "name": "otzaria-linux-full-arm64.tar.zst.part-000",
+        "id": 703125063,
+        "name": "otzaria-linux-full-arm64.tar.zst.part-001",
         "category": "app",
         "downloads": 14,
-        "size": 1992294400,
+        "size": 641856407,
         "content_type": "application/octet-stream",
-        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-linux-full-arm64.tar.zst.part-000"
+        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-linux-full-arm64.tar.zst.part-001"
       },
       {
         "id": 703129049,
@@ -399,15 +408,6 @@
         "size": 2814,
         "content_type": "application/octet-stream",
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/assemble_split_asset.ps1"
-      },
-      {
-        "id": 703125063,
-        "name": "otzaria-linux-full-arm64.tar.zst.part-001",
-        "category": "app",
-        "downloads": 13,
-        "size": 641856407,
-        "content_type": "application/octet-stream",
-        "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-linux-full-arm64.tar.zst.part-001"
       },
       {
         "id": 703129131,
@@ -662,6 +662,6 @@
         "download_url": "https://github.com/Otzaria/otzaria/releases/download/0.9.98.3%2B809/otzaria-update-windows-arm64-0.9.98_801-to-0.9.98.3_809-files.zip"
       }
     ],
-    "downloads": 17441
+    "downloads": 18235
   }
 }
